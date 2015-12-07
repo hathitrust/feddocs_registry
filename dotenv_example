@@ -1,0 +1,7 @@
+MONGOID_ENV = 'development'
+log_dir_path = '/l1/govdocs/logs/'
+
+db_user   = 
+db_pw     = 
+db_host   = 
+db_name   = 

@@ -1,0 +1,7 @@
+development:
+  clients:
+    default:
+      database: testing
+      hosts:
+        - <ip>:<port>
+     
