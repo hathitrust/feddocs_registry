@@ -13,3 +13,5 @@ gem 'library_stdnums', '~> 1.0.2'
 gem 'celluloid'
 
 gem 'mysql2'
+
+gemspec
