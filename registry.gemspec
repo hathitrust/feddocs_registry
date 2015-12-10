@@ -19,9 +19,9 @@ Gem::Specification.new do |spec|
   spec.add_dependency 'rspec'
   spec.add_dependency 'dotenv'
   spec.add_dependency 'marc'
-  spec.add_dependency 'traject', :git => 'https://github.com/traject/traject.git'
-  spec.add_dependency 'normalize', :git => 'https://github.com/HTGovdocs/normalize.git';
-  spec.add_dependency 'viaf', :git => 'https://github.com/HTGovdocs/viaf.git';
+  spec.add_dependency 'traject'
+  spec.add_dependency 'normalize'
+  spec.add_dependency 'viaf'
   spec.add_dependency 'library_stdnums', '~> 1.0.2'
   spec.add_dependency 'mysql2'
 
