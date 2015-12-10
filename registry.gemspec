@@ -4,7 +4,7 @@ require 'registry/version'
 
 Gem::Specification.new do |spec|
   spec.name          = "registry"
-  spec.version       = "0.1"
+  spec.version       = Registry::VERSION 
   spec.authors       = ["Josh Steverman"]
   spec.email         = ["jstever@umich.edu"]
   spec.description   = "Registry Mongoid classes."
