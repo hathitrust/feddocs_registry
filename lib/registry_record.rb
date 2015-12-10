@@ -62,10 +62,8 @@ class RegistryRecord
   end
 
   def sources
-    unless @sources
-      @sources = SourceRecord.where(:source_id.in => self.source_record_ids)
-    end
-    @sources
+    @sources ||= SourceRecord.where(:source_id.in => self.source_record_ids)
+    return @sources
   end
 
   def save
