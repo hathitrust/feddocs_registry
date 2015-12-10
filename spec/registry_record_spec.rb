@@ -45,6 +45,7 @@ RSpec.describe RegistryRecord, "#merge" do
       r.unset(:deprecated_reason)
       r.unset(:deprecated_timestamp)
       r.unset(:successors)
+      r.save
     end
   end
 
@@ -73,6 +74,7 @@ RSpec.describe RegistryRecord, "#deprecate" do
     @rec.unset(:deprecated_reason)
     @rec.unset(:deprecated_timestamp)
     @rec.unset(:successors)
+    @rec.save
   end
 
   it "adds a deprecated field" do

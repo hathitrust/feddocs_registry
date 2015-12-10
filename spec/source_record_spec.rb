@@ -18,5 +18,22 @@ RSpec.describe SourceRecord do
     expect(sr.source["fields"][0]["008"]).to eq("980327         dcu          f000 0 eng d")
   end
 
-
 end
+
+RSpec.describe SourceRecord, "#deprecate" do
+  before(:each) do
+    @rec = SourceRecord.first
+  end
+
+  after(:each) do
+    @rec.unset(:deprecated_reason)
+    @rec.unset(:deprecated_timestamp)
+  end
+
+  it "adds a deprecated field" do
+    @rec.deprecate("testing deprecation")
+    expect(@rec.deprecated_reason).to eq("testing deprecation")
+  end
+end
+
+

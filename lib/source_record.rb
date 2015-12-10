@@ -10,10 +10,12 @@ class SourceRecord
   field :file_path, type: String
   field :line_number, type: Integer
   field :source
+  field :deprecated_reason, type: String
+  field :deprecated_timestamp, type: DateTime
 
   def initialize
     super
-    self.source_id = SecureRandom.uuid()
+    self.source_id ||= SecureRandom.uuid()
   end
 
   def source=(value)

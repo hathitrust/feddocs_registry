@@ -22,7 +22,7 @@ class RegistryRecord
     @sources = SourceRecord.where(:source_id.in => sid_cluster)
     self.ancestors = ancestors
     self.creation_notes = notes
-    self.registry_id = SecureRandom.uuid()
+    self.registry_id ||= SecureRandom.uuid()
     self.enumchron_display = enum_chron
   end   
     
