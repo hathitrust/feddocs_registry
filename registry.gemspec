@@ -12,7 +12,7 @@ Gem::Specification.new do |spec|
   spec.homepage      = ""
   spec.license       = "MIT"
 
-  spec.files         = `git ls-files -z`.split($/)
+  spec.files         = `git ls-files -z`.split("\x0")
 
   spec.add_dependency 'multi_json'
   spec.add_dependency 'mongoid'
