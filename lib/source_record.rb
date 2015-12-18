@@ -12,6 +12,8 @@ class SourceRecord
   field :source
   field :deprecated_reason, type: String
   field :deprecated_timestamp, type: DateTime
+  field :oclc_location, type: String
+  field :stated_oclcnum, type: String
 
   def initialize
     super
