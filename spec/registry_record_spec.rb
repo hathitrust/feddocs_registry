@@ -5,16 +5,27 @@ Dotenv.load
 Mongoid.load!("config/mongoid.yml")
 
 RSpec.describe RegistryRecord, "#initialize" do
-  it "creates a new registry record" do
+  before(:all) do
     cluster = [
-                "d1110c28-fa35-411c-9af9-e573a351378e",
-                "c728b935-6606-460a-bd8d-3a03385eab45",
-                "4e64308f-a07b-453e-b647-29ebffae5a6d"
+              "c6c38adb-2533-4997-85f5-328e91c224a8",
+              "c514673d-f634-4f74-a8de-68cd4b281ced",
+              "55f97400-6497-46ce-9b9f-477dbbf5e78b",    
                ]
     ec = 'ec A'
-    new_rec = RegistryRecord.new(cluster, ec, 'testing')
-    expect(new_rec).to be_instance_of(RegistryRecord)
+    @new_rec = RegistryRecord.new(cluster, ec, 'testing')
+    @new_rec.save()
+    puts "tacos !!"+@new_rec.registry_id
   end
+
+  it "creates a new registry record" do
+    expect(@new_rec).to be_instance_of(RegistryRecord)
+  end
+
+  it "collates the source records" do 
+    expect(@new_rec.author_display).to be_instance_of(Array)
+    expect(@new_rec.sudoc_display).to eq ["Y 4.R 86/2:SM 6-6/2","Y 4.R 86/2:SM 6/965"]
+  end
+
 end
 
 RSpec.describe RegistryRecord, "#save" do

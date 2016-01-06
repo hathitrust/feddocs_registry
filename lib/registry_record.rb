@@ -1,6 +1,8 @@
 require 'mongoid'
 require 'securerandom'
 require 'pp'
+require 'source_record'
+require 'collator'
 
 class RegistryRecord
   include Mongoid::Document
@@ -14,12 +16,15 @@ class RegistryRecord
   field :source_record_ids, type: Array
   field :creation_notes, type: String
   field :enumchron_display, type: String
+  @@collator = Collator.new('config/traject_config.rb')
 
   def initialize( sid_cluster, enum_chron, notes, ancestors=nil )
     super()
     #collate the source records into a coherent whole 
     self.source_record_ids = sid_cluster
     @sources = SourceRecord.where(:source_id.in => sid_cluster)
+    @@collator.extract_fields(@sources).each_with_index {|(k,v),i| self[k] = v}
+    
     self.ancestors = ancestors
     self.creation_notes = notes
     self.registry_id ||= SecureRandom.uuid()
