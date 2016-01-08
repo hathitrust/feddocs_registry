@@ -16,7 +16,7 @@ class RegistryRecord
   field :source_record_ids, type: Array
   field :creation_notes, type: String
   field :enumchron_display, type: String
-  @@collator = Collator.new('config/traject_config.rb')
+  @@collator = Collator.new(__dir__+'/../config/traject_config.rb')
 
   def initialize( sid_cluster, enum_chron, notes, ancestors=nil )
     super()
