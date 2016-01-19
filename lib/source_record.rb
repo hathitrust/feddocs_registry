@@ -12,8 +12,12 @@ class SourceRecord
   field :source
   field :deprecated_reason, type: String
   field :deprecated_timestamp, type: DateTime
-  field :oclc_location, type: String
-  field :stated_oclcnum, type: String
+  field :isbn_raw, type: String
+  field :isbn_normalized, type: String
+  field :sudoc_raw, type: String
+  field :sudoc_stem, type: String
+  field :sudoc_suffix, type: String
+  
 
   def initialize
     super
