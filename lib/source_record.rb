@@ -10,8 +10,13 @@ class SourceRecord
   field :file_path, type: String
   field :line_number, type: Integer
   field :source
+  field :source_blob, type: String
   field :deprecated_reason, type: String
   field :deprecated_timestamp, type: DateTime
+  field :oclc_alleged
+  field :oclc_resolved
+  field :lccn_normalized
+  field :issn_normalized
   field :isbn_raw, type: String
   field :isbn_normalized, type: String
   field :sudoc_raw, type: String
