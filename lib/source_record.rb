@@ -5,6 +5,7 @@ require 'marc'
 class SourceRecord
   include Mongoid::Document
   include Mongoid::Attributes::Dynamic
+  store_in collection: "source_records"
 
   field :source_id, type: String
   field :file_path, type: String
@@ -17,12 +18,20 @@ class SourceRecord
   field :oclc_resolved
   field :lccn_normalized
   field :issn_normalized
-  field :isbn_raw, type: String
-  field :isbn_normalized, type: String
-  field :sudoc_raw, type: String
-  field :sudoc_stem, type: String
-  field :sudoc_suffix, type: String
-  
+  field :isbns
+  field :isbns_normalized
+  field :sudocs
+  field :publisher_viaf_ids
+  field :publisher_headings
+  field :publisher_normalized
+  field :author_viaf_ids
+  field :author_headings
+  field :author_normalized
+  field :author_addl_viaf_ids
+  field :author_addl_headings
+  field :author_addl_normalized
+
+  @@collator = Collator.new(__dir__+'/../config/traject_config.rb')
 
   def initialize
     super
@@ -30,7 +39,9 @@ class SourceRecord
   end
 
   def source=(value)
-    super(JSON.parse(value))
+    s = JSON.parse(value)
+    super(s)
+    @@collator.normalize_viaf(s).each {|k, v| self.send("#{k}=",v) }
   end
 
   def deprecate( reason )

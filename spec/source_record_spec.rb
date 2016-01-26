@@ -5,6 +5,10 @@ Dotenv.load
 Mongoid.load!("config/mongoid.yml")
 
 RSpec.describe SourceRecord do
+  before(:each) do
+    @raw_source = "{\"leader\":\"00878cam a2200241   4500\",\"fields\":[{\"001\":\"ocm00000038 \"},{\"003\":\"OCoLC\"},{\"005\":\"20080408033517.8\"},{\"008\":\"690605s1965    dcu           000 0 eng  \"},{\"010\":{\"ind1\":\" \",\"ind2\":\" \",\"subfields\":[{\"a\":\"   65062399 \"}]}},{\"035\":{\"ind1\":\" \",\"ind2\":\" \",\"subfields\":[{\"a\":\"(OCoLC)38\"}]}},{\"040\":{\"ind1\":\" \",\"ind2\":\" \",\"subfields\":[{\"a\":\"DLC\"},{\"c\":\"DLC\"},{\"d\":\"IUL\"},{\"d\":\"BTCTA\"}]}},{\"029\":{\"ind1\":\"1\",\"ind2\":\" \",\"subfields\":[{\"a\":\"AU@\"},{\"b\":\"000024867271\"}]}},{\"050\":{\"ind1\":\"0\",\"ind2\":\"0\",\"subfields\":[{\"a\":\"KF26\"},{\"b\":\".R885 1965\"}]}},{\"082\":{\"ind1\":\"0\",\"ind2\":\"0\",\"subfields\":[{\"a\":\"507/.4/0153\"}]}},{\"086\":{\"ind1\":\"0\",\"ind2\":\" \",\"subfields\":[{\"a\":\"Y 4.R 86/2:SM 6/965\"}]}},{\"110\":{\"ind1\":\"1\",\"ind2\":\" \",\"subfields\":[{\"a\":\"United States.\"},{\"b\":\"Congress.\"},{\"b\":\"Senate.\"},{\"b\":\"Committee on Rules and Administration.\"},{\"b\":\"Subcommittee on the Smithsonian Institution.\"}]}},{\"245\":{\"ind1\":\"1\",\"ind2\":\"0\",\"subfields\":[{\"a\":\"Smithsonian Institution (National Museum act of 1965)\"},{\"b\":\"Hearing, Eighty-ninth Congress, first session, on S. 1310 and H.R. 7315 ... June 24, 1965.\"}]}},{\"260\":{\"ind1\":\" \",\"ind2\":\" \",\"subfields\":[{\"a\":\"Washington,\"},{\"b\":\"U.S. Govt. Print. Off.,\"},{\"c\":\"1965.\"}]}},{\"300\":{\"ind1\":\" \",\"ind2\":\" \",\"subfields\":[{\"a\":\"iii, 67 p.\"},{\"c\":\"23 cm.\"}]}},{\"610\":{\"ind1\":\"2\",\"ind2\":\"0\",\"subfields\":[{\"a\":\"Smithsonian Institution.\"}]}},{\"938\":{\"ind1\":\" \",\"ind2\":\" \",\"subfields\":[{\"a\":\"Baker and Taylor\"},{\"b\":\"BTCP\"},{\"n\":\"65062399\"}]}},{\"945\":{\"ind1\":\" \",\"ind2\":\" \",\"subfields\":[{\"a\":\"IUL\"}]}}]}"
+  end
+
   it "sets an id on initialization" do 
     sr = SourceRecord.new
     expect(sr.source_id).to be_instance_of(String)
@@ -13,11 +17,21 @@ RSpec.describe SourceRecord do
 
   it "converts the source string to a hash" do
     sr = SourceRecord.new
-    sr.source = "{\"leader\":\"00554nam a2200193 a 4500\",\"fields\":[{\"008\":\"980327         dcu          f000 0 eng d\"},{\"035\":{\"ind1\":\" \",\"ind2\":\" \",\"subfields\":[{\"a\":\"tmp97208858\"}]}},{\"049\":{\"ind1\":\" \",\"ind2\":\" \",\"subfields\":[{\"a\":\"SCIR\"}]}},{\"074\":{\"ind1\":\" \",\"ind2\":\" \",\"subfields\":[{\"a\":\"0254-A\"}]}},{\"086\":{\"ind1\":\"0\",\"ind2\":\" \",\"subfields\":[{\"a\":\"C 21.14/2:F 76/996/REV.1\"}]}},{\"086\":{\"ind1\":\"0\",\"ind2\":\" \",\"subfields\":[{\"a\":\"C 21.14/2:F 76/996/REV.1\"}]}},{\"245\":{\"ind1\":\" \",\"ind2\":\" \",\"subfields\":[{\"a\":\"Manual Of Patent Examining Form Paragraphs, Revision 1 Of The Third Edition, December 1997\"}]}},{\"955\":{\"ind1\":\" \",\"ind2\":\" \",\"subfields\":[{\"a\":\".b38427254\"}]}},{\"998\":{\"ind1\":\" \",\"ind2\":\" \",\"subfields\":[{\"a\":\".b38427254\"},{\"b\":\"slref\"},{\"c\":\"m\"}]}},{\"902\":{\"ind1\":\" \",\"ind2\":\" \",\"subfields\":[{\"a\":\"040927\"}]}},{\"999\":{\"ind1\":\" \",\"ind2\":\" \",\"subfields\":[{\"b\":\"1\"},{\"c\":\"980327\"},{\"d\":\"m\"},{\"e\":\"a\"},{\"f\":\"m\"},{\"g\":\"0\"}]}},{\"994\":{\"ind1\":\" \",\"ind2\":\" \",\"subfields\":[{\"a\":\"slref\"}]}},{\"910\":{\"ind1\":\" \",\"ind2\":\" \",\"subfields\":[{\"a\":\"USDOCS\"}]}},{\"949\":{\"ind1\":\" \",\"ind2\":\"1\",\"subfields\":[{\"l\":\"slref\"},{\"c\":\"1\"},{\"i\":\"39001037089193\"},{\"t\":\"0\"}]}}],\"file_name\":\"/htdata/govdocs/MARC/raw_xml/arizona20140207-15.xml\"}"
+    sr.source = @raw_source
     expect(sr.source).to be_instance_of(Hash)
-    expect(sr.source["fields"][0]["008"]).to eq("980327         dcu          f000 0 eng d")
+    expect(sr.source["fields"][3]["008"]).to eq("690605s1965    dcu           000 0 eng  ")
   end
 
+  it "extracts normalized author/publisher/corp" do
+    sr = SourceRecord.new
+    sr.source = @raw_source
+    sr.save
+    sr_id = sr.source_id
+    copy = SourceRecord.find_by(:source_id => sr_id) 
+    expect(copy.author_viaf_ids).to eq([151244789])
+    expect(copy.author_normalized).to eq(["UNITED STATES CONGRESS SENATE COMMITTEE ON RULES AND ADMINISTRATION SUBCOMMITTEE ON SMITHSONIAN INSTITUTION"])
+
+  end
 end
 
 RSpec.describe SourceRecord, "#deprecate" do
