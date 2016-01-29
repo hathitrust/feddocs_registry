@@ -30,6 +30,10 @@ RSpec.describe SourceRecord do
     copy = SourceRecord.find_by(:source_id => sr_id) 
     expect(copy.author_viaf_ids).to eq([151244789])
     expect(copy.author_normalized).to eq(["UNITED STATES CONGRESS SENATE COMMITTEE ON RULES AND ADMINISTRATION SUBCOMMITTEE ON SMITHSONIAN INSTITUTION"])
+    expect(copy.oclc_resolved).to eq([38])
+    expect(copy.sudocs).to eq(["Y 4.R 86/2:SM 6/965"])
+
+    sr.deprecate('rspec test')
 
   end
 end
