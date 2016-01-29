@@ -165,8 +165,7 @@ class SourceRecord
     end #each field
   
     self.oclc_alleged.uniq!
-    self.oclc_resolved = self.resolve_oclc(oclc_alleged)
-    self.oclc_resolved.uniq!
+    self.oclc_resolved = self.resolve_oclc(self.oclc_alleged).uniq
     self.lccn_normalized.uniq!
     self.issn_normalized.uniq!
     self.sudocs.uniq!

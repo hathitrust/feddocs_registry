@@ -24,6 +24,10 @@ RSpec.describe RegistryRecord, "#initialize" do
   it "collates the source records" do 
     expect(@new_rec.author_display).to be_instance_of(Array)
     expect(@new_rec.sudoc_display).to eq ["Y 4.R 86/2:SM 6-6/2","Y 4.R 86/2:SM 6/965"]
+    expect(@new_rec.oclcnum_t).to eq [38]
+    expect(@new_rec.lccn_t).to eq ["65062399"]
+    expect(@new_rec.isbn_t).to eq []
+    expect(@new_rec.issn_t).to eq []
   end
 
 end

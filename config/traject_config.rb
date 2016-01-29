@@ -81,7 +81,7 @@ to_field "published_display",   extract_marc("260a:264|1*|abc", :trim_punctuatio
 to_field "pub_date",            marc_publication_date
 
 #sudoc
-to_field "sudoc_display",       extract_marc("086a")
+#to_field "sudoc_display",       extract_marc("086a")
 
 #lc call number
 to_field "lc_callnum_display",  extract_marc("050ab")
@@ -91,7 +91,7 @@ to_field "material_type_display", extract_marc("300")
 
 
 #OCLC number
-to_field "oclcnum_t",           oclcnum
+#to_field "oclcnum_t",           oclcnum
 
 
 #series titles [4xx, 830]
@@ -109,13 +109,13 @@ to_field "subject_topic_facet",           extract_marc("600:610:611:630:650:651a
 #format
 to_field "format",              marc_formats
 
-to_field "isbn_t",		extract_marc('020a', :separator=>nil) do |rec, acc|
-     orig = acc.dup
-     acc.map!{|x| StdNum::ISBN.allNormalizedValues(x)}
-     acc << orig
-     acc.flatten!
-     acc.uniq!
-end
+#to_field "isbn_t",		extract_marc('020a', :separator=>nil) do |rec, acc|
+#     orig = acc.dup
+#     acc.map!{|x| StdNum::ISBN.allNormalizedValues(x)}
+#     acc << orig
+#     acc.flatten!
+#     acc.uniq!
+#end
 	
 
 
