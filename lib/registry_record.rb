@@ -16,6 +16,8 @@ class RegistryRecord
   field :source_record_ids, type: Array
   field :creation_notes, type: String
   field :enumchron_display, type: String
+  field :suppressed, type: Boolean, default: false
+
   @@collator = Collator.new(__dir__+'/../config/traject_config.rb')
 
   def initialize( sid_cluster, enum_chron, notes, ancestors=nil )
@@ -50,6 +52,7 @@ class RegistryRecord
     #successors is an optional array of new RegistryRecords that replaced this one
     self.deprecated_reason = reason
     self.deprecated_timestamp = Time.now.utc
+    self.suppressed = true
     if successors 
       self[:successors] = successors
     end
