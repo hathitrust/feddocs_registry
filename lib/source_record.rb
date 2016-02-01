@@ -3,6 +3,7 @@ require 'securerandom'
 require 'marc'
 require 'pp'
 require 'dotenv'
+require 'collator'
 
 class SourceRecord
   include Mongoid::Document
