@@ -15,7 +15,8 @@ class SourceRecord
   field :source_blob, type: String
   field :deprecated_reason, type: String
   field :deprecated_timestamp, type: DateTime
-  field :org_code
+  field :org_code, type: String
+  field :local_id, type: String
   field :oclc_alleged
   field :oclc_resolved
   field :lccn_normalized
