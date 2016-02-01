@@ -2,6 +2,7 @@ require 'mongoid'
 require 'securerandom'
 require 'marc'
 require 'pp'
+require 'dotenv'
 
 class SourceRecord
   include Mongoid::Document
