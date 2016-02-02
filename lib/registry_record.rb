@@ -9,7 +9,7 @@ class RegistryRecord
   include Mongoid::Attributes::Dynamic
   store_in collection: "registry"
   field :registry_id, type: String
-  field :lastModified, type: DateTime
+  field :last_modified, type: DateTime
   field :ancestors, type: Array
   field :deprecated_reason, type: String
   field :deprecated_timestamp, type: DateTime
@@ -75,7 +75,7 @@ class RegistryRecord
   end
 
   def save
-    self.lastModified = Time.now.utc
+    self.last_modified = Time.now.utc
     super
   end
 

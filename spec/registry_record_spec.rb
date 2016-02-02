@@ -33,11 +33,11 @@ RSpec.describe RegistryRecord, "#initialize" do
 end
 
 RSpec.describe RegistryRecord, "#save" do
-  it "changes lastModified before saving" do
+  it "changes last_modified before saving" do
     rec = RegistryRecord.first
     now = Time.now.utc
     rec.save
-    samerec = RegistryRecord.where(:lastModified.gte => now).first
+    samerec = RegistryRecord.where(:last_modified.gte => now).first
     expect(rec.registry_id).to eq samerec.registry_id
   end
 end
