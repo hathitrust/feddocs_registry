@@ -2,3 +2,4 @@ config/mongoid.yml
 .env
 .rspec
 .bundle
+.ruby-version
