@@ -19,6 +19,7 @@ class SourceRecord
   field :deprecated_timestamp, type: DateTime
   field :org_code, type: String
   field :local_id, type: String
+  field :last_modified, type: DateTime
   field :oclc_alleged
   field :oclc_resolved
   field :lccn_normalized
@@ -36,6 +37,7 @@ class SourceRecord
   field :author_addl_headings
   field :author_addl_normalized
 
+  #this stuff is extra ugly
   Dotenv.load
   @@collator = Collator.new(__dir__+'/../config/traject_config.rb')
   @@contrib_001 = {}
@@ -190,7 +192,17 @@ class SourceRecord
     end
     return resolved 
   end
-   
+
+  def extract_local_id field = nil
+    field ||= '001'
+    id = self.source["fields"].find{|f| f[field]}[field].gsub(/ /, '')
+    return id
+  end
+
+  def save
+    self.last_modified = Time.now.utc
+    super
+  end
 end
 
 

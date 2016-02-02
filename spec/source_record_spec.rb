@@ -15,6 +15,12 @@ RSpec.describe SourceRecord do
     expect(sr.source_id.length).to eq(36)
   end
 
+  it "timestamps on save" do
+    sr = SourceRecord.new
+    sr.save 
+    expect(sr.last_modified).to be_instance_of(DateTime)
+  end
+
   it "converts the source string to a hash" do
     sr = SourceRecord.new
     sr.source = @raw_source
@@ -25,6 +31,7 @@ RSpec.describe SourceRecord do
   it "extracts normalized author/publisher/corp" do
     sr = SourceRecord.new
     sr.source = @raw_source
+    sr.org_code = "iul"
     sr.save
     sr_id = sr.source_id
     copy = SourceRecord.find_by(:source_id => sr_id) 
@@ -35,8 +42,14 @@ RSpec.describe SourceRecord do
     expect(copy.sudocs).to eq(["Y 4.R 86/2:SM 6/965"])
 
     sr.deprecate('rspec test')
-
   end
+
+  it "can extract local id from MARC" do
+    sr = SourceRecord.new
+    sr.source = @raw_source
+    expect(sr.extract_local_id).to eq("ocm00000038")
+  end
+
 end
 
 RSpec.describe SourceRecord, "#deprecate" do
