@@ -58,6 +58,8 @@ class SourceRecord
     self.source_id ||= SecureRandom.uuid()
   end
 
+  # On assignment of source json string, record is parsed, author/publisher 
+  # fields are normalized/VIAFed, and identifiers extracted. 
   def source=(value)
     s = JSON.parse(value)
     super(s)
@@ -65,15 +67,20 @@ class SourceRecord
     self.extract_identifiers
   end
 
+  # A source record may be deprecated if it is out of scope. 
+  #
+  # Typically a RegistryRecord should be identified as out of scope, then
+  # associated SourceRecords are dealt with. 
   def deprecate( reason )
     self.deprecated_reason = reason
     self.deprecated_timestamp = Time.now.utc
     self.save
   end
 
-  # Extracts identifiers from self.source
+  # Extracts and normalizes identifiers from self.source
+  # todo: Refactor. Traject might be a better way of addressing this. 
   def extract_identifiers
-    self.org_code ||= ""
+    self.org_code ||= "" #should be set on ingest. 
     self.oclc_alleged ||= []
     self.oclc_resolved ||= []
     self.lccn_normalized ||= []
@@ -179,6 +186,8 @@ class SourceRecord
 
   end #extract_identifiers
 
+  # Hit the oclc_authoritative collection for OCLC resolution. 
+  # Bit of a kludge.
   def resolve_oclc oclcs
     resolved = []
     oclcs.each do | oa |
@@ -193,6 +202,10 @@ class SourceRecord
     return resolved 
   end
 
+  # Extract the contributing institutions id for this record. 
+  # Enables update/replacement of source records. 
+  #
+  # Assumes if "001" if no field is provided. 
   def extract_local_id field = nil
     field ||= '001'
     id = self.source["fields"].find{|f| f[field]}[field].gsub(/ /, '')

@@ -20,6 +20,13 @@ class RegistryRecord
 
   @@collator = Collator.new(__dir__+'/../config/traject_config.rb')
 
+  # Creates RegistryRecord. 
+  # 
+  # sid_cluster - Array of source record ids. 
+  # enum_chron  - Enumeration/chronology string. Possibly "". 
+  # notes       - Tracks reason for creation, e.g. merge or split.
+  # ancestors   - Tracks id for deprecated RegistryRecords this was split or
+  #               merged from.  
   def initialize( sid_cluster, enum_chron, notes, ancestors=nil )
     super()
     #collate the source records into a coherent whole 
@@ -34,10 +41,21 @@ class RegistryRecord
   end   
     
 
-  #splits registry record into two or more successor records
+  # Splits registry record into two or more successor records.
+  # Deprecates self. 
+  #
+  # sid_clusters - hash of arrays to enum/chron
+  #                {[source_ids] => "enum_chron", [source_ids] => "enum_chron"}
+  # reason       - Why? 
+  # 
+  # Examples 
+  #  rec.split({ ["<sid_1>", "<sid_2>"] => "v. 1", 
+  #              ["<sid_3>", "<sid_4>"] => "v. 1"},
+  #            "We were wrong. Not related.")
+  #  rec.split({ ["<sid_1>", "<sid_2>"] => "v. 1",
+  #              ["<sid_3>"] => "v. 4"},
+  #            "Looked in the wrong spot for the enum/chrons.")
   def split( sid_clusters, reason )
-    #sid_clusters is hash of arrays to enum chron
-    # { ["<sid_1>", "<sid_2>"] => "ec a", ["<sid_3>", "<sid_4>"] => "ec b"}
     new_recs = []
     sid_clusters.each do | cluster, enum_chron |
       new_recs << RegistryRecord.new(cluster, enum_chron, reason, [self.registry_id])
@@ -48,6 +66,9 @@ class RegistryRecord
     return new_recs
   end
 
+  # Deprecation of a RegistryRecord. 
+  # Caused by splits, merges, or out of scope. Tracks successor records
+  # from splits and merges. 
   def deprecate( reason, successors=nil )
     #successors is an optional array of new RegistryRecords that replaced this one
     self.deprecated_reason = reason
@@ -60,6 +81,12 @@ class RegistryRecord
     self.save
   end
 
+  # Merging of two or more RegistryRecords. 
+  # Deprecates ancestor records.
+  #
+  # ids - RegistryRecord ids that will be replaced with a new record.
+  # enum_chon 
+  # reason
   def RegistryRecord.merge( ids, enum_chron, reason )
     #merge existing reg records
     recs = RegistryRecord.where(:registry_id.in => ids) 
@@ -69,6 +96,9 @@ class RegistryRecord
     return new_rec
   end
 
+  # Collect the SourceRecords based on source_record_ids.
+  # 
+  # todo: Possible to do this with something built into MongoDB or Mongoid?
   def sources
     @sources ||= SourceRecord.where(:source_id.in => self.source_record_ids)
     return @sources

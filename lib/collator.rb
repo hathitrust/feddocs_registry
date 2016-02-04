@@ -9,13 +9,18 @@ require 'viaf'
 class Collator
   attr_accessor :extractor
   attr_accessor :viaf
-  
+ 
+  # Get our Traject::Indexer and Viaf 
   def initialize(traject_config)
     @extractor = Traject::Indexer.new
     @extractor.load_config_file(traject_config)
     @viaf = Viaf.new()
   end
 
+  # Extracts and normalizes fields from SourceRecords using traject config. 
+  # Establishes HT availability.  todo: why are we doing this here?
+  #
+  # sources - Array of SourceRecords. 
   def extract_fields sources
     fields = {}
     fields[:ht_ids_fv] = []
@@ -64,7 +69,7 @@ class Collator
     return fields
   end
 
-  #normalizes 110/260 fields and gets viaf_ids
+  # Normalizes 110/260 fields and tries to find viaf_ids
   def normalize_viaf source
     #what we are building (kind of a dumb structure, but it's going into solr)
     normalized_fields = {'publisher_viaf_ids'=>[], 'publisher_headings'=>[], 'publisher_normalized'=>[],
