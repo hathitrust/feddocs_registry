@@ -8,8 +8,8 @@ before_install:
   - gem install bundler
 before_script:
   - cp 'config/mongoid_sample.yml' 'config/mongoid.yml'
+  - cp 'dotenv_example' '.env'
   - sleep 10
-  - mongo testing
 services:
   - mongodb
 
