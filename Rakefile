@@ -3,5 +3,5 @@ require "bundler/gem_tasks"
 task :default => [:test]
 
 task :test do 
-  rspec
+  sh 'bundle exec rspec'
 end
