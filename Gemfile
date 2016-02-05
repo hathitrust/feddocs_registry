@@ -14,4 +14,6 @@ gem 'celluloid'
 
 gem 'mysql2'
 
+gem 'rake'
+
 gemspec

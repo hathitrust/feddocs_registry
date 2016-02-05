@@ -98,6 +98,7 @@ GEM
     multi_json (1.11.2)
     mysql2 (0.4.2)
     origin (2.2.0)
+    rake (10.4.2)
     rspec (3.4.0)
       rspec-core (~> 3.4.0)
       rspec-expectations (~> 3.4.0)
@@ -138,6 +139,7 @@ DEPENDENCIES
   multi_json
   mysql2
   normalize!
+  rake
   registry!
   rspec
   traject!
