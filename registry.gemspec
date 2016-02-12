@@ -14,7 +14,7 @@ Gem::Specification.new do |spec|
 
   spec.files         = `git ls-files -z`.split("\x0")
 
-  spec.require_paths = ["vendor"]
+  spec.require_paths = ["lib","vendor/viaf"]
 
   spec.add_dependency 'multi_json'
   spec.add_dependency 'mongoid'
