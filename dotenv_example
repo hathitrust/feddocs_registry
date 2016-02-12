@@ -5,7 +5,3 @@ db_user   =
 db_pw     = 
 db_host   = 
 db_name   = 
-
-mongo_host = 127.0.0.1
-mongo_port = 27071
-mongo_db   = htgd

@@ -42,7 +42,7 @@ class SourceRecord
   @@collator = Collator.new(__dir__+'/../config/traject_config.rb')
   @@contrib_001 = {}
   open(__dir__+'/../config/contributors_w_001_oclcs.txt').each{ |l| @@contrib_001[l.chomp] = 1 }
-  @@mc = Mongo::Client.new([ENV['mongo_host']+':'+ENV['mongo_port']], :database => ENV['mongo_db'] )
+  @@mc = Mongo::Client.new([ENV['mongo_host']+':'+ENV['mongo_port']], :database => 'htgd' )
 
   #OCLCPAT taken from traject, except middle o made optional
   OCLCPAT = 
