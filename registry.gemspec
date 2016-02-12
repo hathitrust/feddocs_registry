@@ -20,6 +20,7 @@ Gem::Specification.new do |spec|
   spec.add_dependency 'dotenv'
   spec.add_dependency 'marc'
   spec.add_dependency 'traject'
+  spec.add_dependency 'viaf'
   spec.add_dependency 'library_stdnums', '~> 1.0.2'
   spec.add_dependency 'mysql2'
 
