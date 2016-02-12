@@ -1,0 +1,3 @@
+[submodule "vendor/viaf"]
+	path = vendor/viaf
+	url = git://github.com/HTGovdocs/VIAF.git
