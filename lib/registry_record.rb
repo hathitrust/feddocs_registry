@@ -39,7 +39,13 @@ class RegistryRecord
     self.registry_id ||= SecureRandom.uuid()
     self.enumchron_display = enum_chron
   end   
-    
+
+  # Runs the collation of source records again. 
+  # Typically performed after a source record has been added or updated. 
+  def recollate 
+    @sources = SourceRecord.where(:source_id.in => self.source_record_ids)
+    @@collator.extract_fields(@sources).each_with_index {|(k,v),i| self[k] = v}
+  end
 
   # Splits registry record into two or more successor records.
   # Deprecates self. 
@@ -110,6 +116,40 @@ class RegistryRecord
   end
 
 
+  # Find a RegistryRecord that matches the given source record and enumchron
+  #
+  # s - a SourceRecord
+  # enum_chron - an enumchron string
+  def RegistryRecord.cluster( s, enum_chron )
+    puts "oclc_resolved count: #{s.oclc_resolved.count} #{s.oclc_resolved[0]} #{enum_chron}"
+    # OCLC first
+    if s.oclc_resolved.count > 0 and 
+      rec = RegistryRecord.where(oclcnum_t: s.oclc_resolved, 
+                                 enumchron_display: enum_chron).first
+      rec.source_record_ids << s.source_id
+    # lccn
+    elsif s.lccn_normalized.count > 0 and
+      rec = RegistryRecord.where(lccn_t: s.lccn_normalized,
+                                     enumchron_display:enum_chron).first
+      rec.source_record_ids << s.source_id
+    # isbn
+    elsif s.isbns_normalized.count > 0 and
+      rec = RegistryRecord.where(isbn_t: s.isbns_normalized,
+                                     enumchron_display:enum_chron).first
+      rec.source_record_ids << s.source_id
+    # issn
+    elsif s.issn_normalized.count > 0 and
+      rec = RegistryRecord.where(issn_t: s.issn_normalized,
+                                     enumchron_display:enum_chron).first
+      rec.source_record_ids << s.source_id
+    # sudoc
+    elsif s.sudocs.count > 0 and
+      rec = RegistryRecord.where(sudoc_display: s.sudocs,
+                                     enumchron_display: enum_chron).first
+      rec.source_record_ids << s.source_id
+    end
+    return rec
+  end
 end
 
 

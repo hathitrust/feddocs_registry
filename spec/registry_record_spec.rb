@@ -14,7 +14,7 @@ RSpec.describe RegistryRecord, "#initialize" do
     ec = 'ec A'
     @new_rec = RegistryRecord.new(cluster, ec, 'testing')
     @new_rec.save()
-    puts "tacos !!"+@new_rec.registry_id
+    PP.pp @new_rec
   end
 
   it "creates a new registry record" do
@@ -30,6 +30,25 @@ RSpec.describe RegistryRecord, "#initialize" do
     expect(@new_rec.issn_t).to eq []
   end
 
+end
+
+RSpec.describe RegistryRecord, "#cluster" do
+  before(:all) do 
+    @source_has_oclc = SourceRecord.where(source_id: "7386d49d-2c04-44ea-97aa-fb87b241f56f").first
+    PP.pp @source_has_oclc
+    @source_only_sudoc = SourceRecord.where(source_id: "b4b9ff7c-4132-4676-82f6-5e565569e2df").first
+    @source_only_lccn = SourceRecord.where(source_id: "6cb70aed-e0bd-4d18-83d7-78570195143b").first
+  end
+
+  it "finds a matching cluster for a source record" do
+    expect(RegistryRecord::cluster(@source_has_oclc, "")).to be_instance_of(RegistryRecord)
+    expect(RegistryRecord::cluster(@source_has_oclc, "New Enumchron")).to be_nil
+    expect(RegistryRecord::cluster(@source_only_sudoc, "")).to be_instance_of(RegistryRecord)
+    expect(RegistryRecord::cluster(@source_only_sudoc, "New Enumchron")).to be_nil
+    expect(RegistryRecord::cluster(@source_only_lccn, "")).to be_instance_of(RegistryRecord)
+    expect(RegistryRecord::cluster(@source_only_lccn, "New Enumchron")).to be_nil 
+
+  end
 end
 
 RSpec.describe RegistryRecord, "#save" do
