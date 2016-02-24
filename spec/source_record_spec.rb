@@ -68,4 +68,18 @@ RSpec.describe SourceRecord, "#deprecate" do
   end
 end
 
+RSpec.describe SourceRecord, '#ht_availability' do 
+  before(:all) do
+    @non_ht_rec = SourceRecord.where(:org_code.ne => "miaahdl").first
+    @ht_pd = SourceRecord.where(:org_code => "miaahdl", 
+                                :source_blob => /.r.:.pd./).first
+    @ht_ic = SourceRecord.where(:org_code => "miaahdl", 
+                                :source_blob => /.r.:.ic./).first
+  end
 
+  it "detects correct HT availability" do
+    expect(@non_ht_rec.ht_availability).to eq(nil)
+    expect(@ht_pd.ht_availability).to eq("Full View")
+    expect(@ht_ic.ht_availability).to eq("Limited View")
+  end
+end

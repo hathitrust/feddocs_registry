@@ -14,7 +14,6 @@ RSpec.describe RegistryRecord, "#initialize" do
     ec = 'ec A'
     @new_rec = RegistryRecord.new(cluster, ec, 'testing')
     @new_rec.save()
-    PP.pp @new_rec
   end
 
   it "creates a new registry record" do
@@ -30,24 +29,48 @@ RSpec.describe RegistryRecord, "#initialize" do
     expect(@new_rec.issn_t).to eq []
   end
 
+  it "sets ht_availability to full view" do
+    expect(@new_rec.ht_availability).to eq("Not In HathiTrust") 
+  end
+
+
 end
 
 RSpec.describe RegistryRecord, "#cluster" do
   before(:all) do 
     @source_has_oclc = SourceRecord.where(source_id: "7386d49d-2c04-44ea-97aa-fb87b241f56f").first
-    PP.pp @source_has_oclc
-    @source_only_sudoc = SourceRecord.where(source_id: "b4b9ff7c-4132-4676-82f6-5e565569e2df").first
-    @source_only_lccn = SourceRecord.where(source_id: "6cb70aed-e0bd-4d18-83d7-78570195143b").first
+    @source_only_sudoc = SourceRecord.where(source_id: "31f7bdf5-0d68-4d38-abf2-266be181a07f").first
   end
 
   it "finds a matching cluster for a source record" do
     expect(RegistryRecord::cluster(@source_has_oclc, "")).to be_instance_of(RegistryRecord)
     expect(RegistryRecord::cluster(@source_has_oclc, "New Enumchron")).to be_nil
-    expect(RegistryRecord::cluster(@source_only_sudoc, "")).to be_instance_of(RegistryRecord)
+    expect(RegistryRecord::cluster(@source_only_sudoc, "NO. 11-16")).to be_instance_of(RegistryRecord)
     expect(RegistryRecord::cluster(@source_only_sudoc, "New Enumchron")).to be_nil
-    expect(RegistryRecord::cluster(@source_only_lccn, "")).to be_instance_of(RegistryRecord)
-    expect(RegistryRecord::cluster(@source_only_lccn, "New Enumchron")).to be_nil 
+  end
+end
 
+RSpec.describe RegistryRecord, "add_source" do
+  before(:all) do
+    cluster = [
+              "c6c38adb-2533-4997-85f5-328e91c224a8",
+              "c514673d-f634-4f74-a8de-68cd4b281ced",
+              "55f97400-6497-46ce-9b9f-477dbbf5e78b",    
+               ]
+    ec = 'ec A'
+    @new_rec = RegistryRecord.new(cluster, ec, 'testing')
+    @new_rec.save()
+    @src = SourceRecord.where(source_id: "7386d49d-2c04-44ea-97aa-fb87b241f56f").first
+    @new_rec.add_source @src 
+  end
+
+  it "adds source record to cluster" do
+    expect(@new_rec.source_record_ids).to include(@src.source_id) 
+    expect(@new_rec.oclcnum_t).to include(39)
+  end
+
+  after(:all) do
+    @new_rec.delete
   end
 end
 

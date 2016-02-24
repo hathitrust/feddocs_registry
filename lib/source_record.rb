@@ -212,6 +212,20 @@ class SourceRecord
     return id
   end
 
+  # Determine HT availability. 'Full View', 'Limited View', 'not available'
+  #
+  def ht_availability
+    if self.org_code == 'miaahdl'
+      if self.source_blob =~ /.r.:.pd./
+        return 'Full View'
+      else
+        return 'Limited View'
+      end
+    else
+      return nil
+    end
+  end
+
   def save
     self.last_modified = Time.now.utc
     super

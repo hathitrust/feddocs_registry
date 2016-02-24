@@ -36,9 +36,6 @@ RSpec.describe Collator, "#extract_fields" do
     expect(all_fields.uniq.count).to be < @collected_fields.keys.count
   end
 
-  it "sets ht_availability to full view" do
-    expect(@collected_fields[:ht_availability]).to eq("Full View") 
-  end
       
 end
   

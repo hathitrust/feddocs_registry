@@ -33,12 +33,39 @@ class RegistryRecord
     self.source_record_ids = sid_cluster
     @sources = SourceRecord.where(:source_id.in => sid_cluster)
     @@collator.extract_fields(@sources).each_with_index {|(k,v),i| self[k] = v}
-    
+       
     self.ancestors = ancestors
     self.creation_notes = notes
     self.registry_id ||= SecureRandom.uuid()
     self.enumchron_display = enum_chron
-  end   
+    self.set_ht_availability()
+  end  
+
+  # Sets HT availability based on ht_ids_fv and ht_ids_lv fields
+  def set_ht_availability
+    if self[:ht_ids_fv].count > 0 
+      self[:ht_availability] = 'Full View'
+    elsif self[:ht_ids_lv].count > 0 
+      self[:ht_availability] = 'Limited View'
+    else
+      self[:ht_availability] = 'Not In HathiTrust'
+    end
+  end
+
+
+  # Adds a source record to the cluster. 
+  #
+  # source_record - SourceRecord object
+  #
+  # So we don't have to recollate an entire cluster for the addition of one rec
+  def add_source source_record
+    self.source_record_ids << source_record.source_id
+    @@collator.extract_fields([source_record]).each do | field, value |
+      self[field] << value
+      self[field].flatten!.uniq!
+    end
+    self.set_ht_availability() 
+  end
 
   # Runs the collation of source records again. 
   # Typically performed after a source record has been added or updated. 
@@ -121,7 +148,6 @@ class RegistryRecord
   # s - a SourceRecord
   # enum_chron - an enumchron string
   def RegistryRecord.cluster( s, enum_chron )
-    puts "oclc_resolved count: #{s.oclc_resolved.count} #{s.oclc_resolved[0]} #{enum_chron}"
     # OCLC first
     if s.oclc_resolved.count > 0 and 
       rec = RegistryRecord.where(oclcnum_t: s.oclc_resolved, 

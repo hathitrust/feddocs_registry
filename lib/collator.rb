@@ -18,7 +18,6 @@ class Collator
   end
 
   # Extracts and normalizes fields from SourceRecords using traject config. 
-  # Establishes HT availability.  todo: why are we doing this here?
   #
   # sources - Array of SourceRecords. 
   def extract_fields sources
@@ -32,15 +31,12 @@ class Collator
     fields[:lccn_t] = sources.collect{|s| s.lccn_normalized}.flatten.uniq
 
     sources.each do | rec | 
-      
-      #figure out HT availability 
-      if rec[:org_code] == 'miaahdl'
-        if rec[:source_blob] =~ /.r.:.pd./
-          fields[:ht_ids_fv] << rec[:source][:fields][0]["001"] 
-        else
-          fields[:ht_ids_lv] << rec[:source][:fields][0]["001"]
-        end
-      end
+  
+      if rec.ht_availability == 'Full View'
+        fields[:ht_ids_fv] << rec[:source][:fields][0]["001"]
+      elsif rec.ht_availability == 'Limited View'
+        fields[:ht_ids_lv] << rec[:source][:fields][0]["001"]
+      end      
 
       base_marc = MARC::Record.new_from_hash(rec.source)
       #extract this record's fields into the cluster's fields
@@ -58,14 +54,6 @@ class Collator
       end 
     end
   
-    if fields[:ht_ids_fv].count > 0 
-      fields[:ht_availability] = 'Full View'
-    elsif fields[:ht_ids_lv].count > 0 
-      fields[:ht_availability] = 'Limited View'
-    else
-      fields[:ht_availability] = 'Not In HathiTrust'
-    end
-
     return fields
   end
 
