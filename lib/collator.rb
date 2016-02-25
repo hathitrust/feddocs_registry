@@ -20,7 +20,7 @@ class Collator
   # Extracts and normalizes fields from SourceRecords using traject config. 
   #
   # sources - Array of SourceRecords. 
-  def extract_fields sources
+  def extract_fields sources, run_viaf=false
     fields = {}
     fields[:ht_ids_fv] = []
     fields[:ht_ids_lv] = []
@@ -45,13 +45,15 @@ class Collator
         [v1].flatten | [v2].flatten
       end
 
-      self.normalize_viaf(rec.source).each do | key, nf_array | 
-        if fields.has_key? key
-          fields[key] = fields[key] | nf_array
-        else
-          fields[key] = nf_array
-        end
-      end 
+      if run_viaf
+        self.normalize_viaf(rec.source).each do | key, nf_array | 
+          if fields.has_key? key
+            fields[key] = fields[key] | nf_array
+          else
+            fields[key] = nf_array
+          end
+        end 
+      end
     end
   
     return fields
