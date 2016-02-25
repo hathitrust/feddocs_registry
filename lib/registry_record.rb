@@ -149,30 +149,29 @@ class RegistryRecord
   # enum_chron - an enumchron string
   def RegistryRecord.cluster( s, enum_chron )
     # OCLC first
-    if s.oclc_resolved.count > 0 and 
+    if s.oclc_resolved.count > 0
       rec = RegistryRecord.where(oclcnum_t: s.oclc_resolved, 
                                  enumchron_display: enum_chron).first
-      rec.source_record_ids << s.source_id
+    end
     # lccn
-    elsif s.lccn_normalized.count > 0 and
+    if s.lccn_normalized.count > 0 and !rec
       rec = RegistryRecord.where(lccn_t: s.lccn_normalized,
-                                     enumchron_display:enum_chron).first
-      rec.source_record_ids << s.source_id
+                                 enumchron_display:enum_chron).first
+    end 
     # isbn
-    elsif s.isbns_normalized.count > 0 and
+    if s.isbns_normalized.count > 0 and !rec
       rec = RegistryRecord.where(isbn_t: s.isbns_normalized,
-                                     enumchron_display:enum_chron).first
-      rec.source_record_ids << s.source_id
+                                 enumchron_display:enum_chron).first
+    end
     # issn
-    elsif s.issn_normalized.count > 0 and
+    if s.issn_normalized.count > 0 and !rec
       rec = RegistryRecord.where(issn_t: s.issn_normalized,
-                                     enumchron_display:enum_chron).first
-      rec.source_record_ids << s.source_id
+                                 enumchron_display:enum_chron).first
+    end
     # sudoc
-    elsif s.sudocs.count > 0 and
+    if s.sudocs.count > 0 and !rec
       rec = RegistryRecord.where(sudoc_display: s.sudocs,
-                                     enumchron_display: enum_chron).first
-      rec.source_record_ids << s.source_id
+                                 enumchron_display: enum_chron).first
     end
     return rec
   end
