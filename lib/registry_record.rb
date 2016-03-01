@@ -61,6 +61,7 @@ class RegistryRecord
   def add_source source_record
     self.source_record_ids << source_record.source_id
     @@collator.extract_fields([source_record]).each do | field, value |
+      self[field] ||= []
       self[field] << value
       self[field].flatten!.uniq!
     end
