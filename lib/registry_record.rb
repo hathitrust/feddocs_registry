@@ -17,6 +17,8 @@ class RegistryRecord
   field :creation_notes, type: String
   field :enumchron_display, type: String
   field :suppressed, type: Boolean, default: false
+  field :ht_ids_fv, type: Array
+  field :ht_ids_lv, type: Array
 
   @@collator = Collator.new(__dir__+'/../config/traject_config.rb')
 
