@@ -17,8 +17,8 @@ class RegistryRecord
   field :creation_notes, type: String
   field :enumchron_display, type: String
   field :suppressed, type: Boolean, default: false
-  field :ht_ids_fv, type: Array
-  field :ht_ids_lv, type: Array
+  field :ht_ids_fv
+  field :ht_ids_lv
 
   @@collator = Collator.new(__dir__+'/../config/traject_config.rb')
 
@@ -45,12 +45,12 @@ class RegistryRecord
 
   # Sets HT availability based on ht_ids_fv and ht_ids_lv fields
   def set_ht_availability
-    if self[:ht_ids_fv].count > 0 
-      self[:ht_availability] = 'Full View'
-    elsif self[:ht_ids_lv].count > 0 
-      self[:ht_availability] = 'Limited View'
+    if self.ht_ids_fv.count > 0 
+      self.ht_availability = 'Full View'
+    elsif self.ht_ids_lv.count > 0 
+      self.ht_availability = 'Limited View'
     else
-      self[:ht_availability] = 'Not In HathiTrust'
+      self.ht_availability = 'Not In HathiTrust'
     end
   end
 
@@ -67,6 +67,7 @@ class RegistryRecord
       self[field] << value
       self[field].flatten!.uniq!
     end
+    self.save
     self.set_ht_availability() 
   end
 
