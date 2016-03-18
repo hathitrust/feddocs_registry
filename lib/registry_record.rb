@@ -19,6 +19,7 @@ class RegistryRecord
   field :suppressed, type: Boolean, default: false
   field :ht_ids_fv
   field :ht_ids_lv
+  field :ht_availability
 
   @@collator = Collator.new(__dir__+'/../config/traject_config.rb')
 
