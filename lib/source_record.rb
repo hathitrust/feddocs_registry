@@ -36,6 +36,7 @@ class SourceRecord
   field :author_addl_viaf_ids
   field :author_addl_headings
   field :author_addl_normalized
+  field :enum_chrons
 
   #this stuff is extra ugly
   Dotenv.load
