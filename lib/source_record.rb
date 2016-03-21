@@ -193,7 +193,7 @@ class SourceRecord
     resolved = []
     oclcs.each do | oa |
       @@mc[:oclc_authoritative].find(:duplicates => oa).each do | ores | #1?
-        resolved << ores[:oclc].int
+        resolved << ores[:oclc].to_i
       end
     end
 
