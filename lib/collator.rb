@@ -33,9 +33,9 @@ class Collator
     sources.each do | rec | 
   
       if rec.ht_availability == 'Full View'
-        fields[:ht_ids_fv] << rec[:source][:fields][0]["001"]
+        fields[:ht_ids_fv] << rec[:source]["fields"][0]["001"]
       elsif rec.ht_availability == 'Limited View'
-        fields[:ht_ids_lv] << rec[:source][:fields][0]["001"]
+        fields[:ht_ids_lv] << rec[:source]["fields"][0]["001"]
       end      
 
       base_marc = MARC::Record.new_from_hash(rec.source)

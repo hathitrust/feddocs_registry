@@ -68,6 +68,7 @@ class RegistryRecord
       self[field] << value
       self[field].flatten!.uniq!
     end
+    self.source_record_ids.uniq!
     self.save
     self.set_ht_availability() 
   end
