@@ -83,3 +83,36 @@ RSpec.describe SourceRecord, '#ht_availability' do
     expect(@ht_ic.ht_availability).to eq("Limited View")
   end
 end
+
+RSpec.describe SourceRecord, '#extract_identifiers' do
+  before(:all) do
+    SourceRecord.where(:source.exists => false).delete
+  end
+      
+  it "doesn't change identifiers" do
+    count = 0
+    SourceRecord.all.each do |rec|
+      count += 1
+      if count > 200 #arbitrary
+        break
+      end
+      old_oclc_alleged = rec.oclc_alleged
+      old_lccn = rec.lccn_normalized
+      old_sudocs = rec.sudocs
+      old_issn = rec.issn_normalized
+      old_isbn = rec.isbns_normalized
+      rec.extract_identifiers
+      expect(old_oclc_alleged - rec.oclc_alleged).to eq([])
+      expect(old_lccn - rec.lccn_normalized ).to eq([])
+      #expect(old_sudocs - rec.sudocs ).to eq([])
+      if old_sudocs != rec.sudocs
+        PP.pp rec.source_id
+        PP.pp rec.sudocs
+	PP.pp old_sudocs
+      end
+      expect(old_issn - rec.issn_normalized ).to eq([])
+      expect(old_isbn - rec.isbns_normalized ).to eq([])
+    end
+  end
+end
+
