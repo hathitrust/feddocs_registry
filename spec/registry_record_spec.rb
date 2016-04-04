@@ -124,7 +124,7 @@ end
 
 RSpec.describe RegistryRecord, "#deprecate" do
   before(:each) do
-    @rec = RegistryRecord.where("registry_id" => "d1110c28-fa35-411c-9af9-e573a351378e").first
+    @rec = RegistryRecord.where(:source_record_ids.with_size => 6).first
   end
 
   after(:each) do
@@ -144,11 +144,13 @@ end
 RSpec.describe RegistryRecord, "#split" do
   @new_recs = []
   before(:all) do
-    @rec = RegistryRecord.where(:registry_id => "d1110c28-fa35-411c-9af9-e573a351378e").first
+    #find me a record with at least six source_record_ids
+    @rec = RegistryRecord.where(:source_record_ids.with_size => 6).first
+    expect(@rec.source_record_ids.size).to eq(6)
     @clusters = {
-      ["66966803-1b16-4488-85da-cb469f76ae87", "71f23409-4901-4511-bb7f-bf5b44baf623"] => 'ec A',
-      ["acd0d02a-403e-4fbe-843c-92025c0ddee3", "2543d1b3-9547-45c9-a408-30c34cbe3761"] => 'ec B',
-      ["12d78f03-6ffc-43a2-9c76-129626497625", "dc4bca31-81c7-446d-bcd2-1ee290bbc597"] => 'ec C'
+      @rec.source_record_ids[0..1] => 'ec A',
+      @rec.source_record_ids[2..3] => 'ec B',
+      @rec.source_record_ids[4..5] => 'ec C'
     }
     @new_recs = @rec.split(@clusters, "testing split")
   end

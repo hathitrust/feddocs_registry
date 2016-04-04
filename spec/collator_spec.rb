@@ -23,7 +23,8 @@ end
 
 RSpec.describe Collator, "#extract_fields" do
   before(:all) do
-    @regrec = RegistryRecord.where(:registry_id => "16070960-9e18-48b0-9cbb-582353507087").first
+    #just grab one
+    @regrec = RegistryRecord.where(:source_record_ids.with_size => 6).first
     @collator = Collator.new('config/traject_config.rb')
     @collected_fields = @collator.extract_fields @regrec.sources 
   end
