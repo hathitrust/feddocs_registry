@@ -78,6 +78,67 @@ class SourceRecord
     self.save
   end
 
+  # Extracts and normalizes identifiers from self.source
+  def extract_identifiers
+    self.org_code ||= "" #should be set on ingest. 
+    self.oclc_alleged ||= []
+    self.oclc_resolved ||= []
+    self.lccn_normalized ||= []
+    self.issn_normalized ||= []
+    self.sudocs ||= []
+    self.isbns ||= []
+    self.isbns_normalized ||= []
+  
+    marc = MARC::Record.new_from_hash(self.source)
+    self.extract_oclcs marc 
+    self.extract_sudocs marc
+    self.extract_lccns marc
+    self.extract_issns marc
+    self.extract_isbns marc
+  
+    self.oclc_resolved = self.resolve_oclc(self.oclc_alleged).uniq
+  end #extract_identifiers
+
+  # Hit the oclc_authoritative collection for OCLC resolution. 
+  # Bit of a kludge.
+  def resolve_oclc oclcs
+    resolved = []
+    oclcs.each do | oa |
+      @@mc[:oclc_authoritative].find(:duplicates => oa).each do | ores | #1?
+        resolved << ores[:oclc].to_i
+      end
+    end
+
+    if resolved.count == 0
+      resolved = oclcs
+    end
+    return resolved 
+  end
+
+  # Extract the contributing institutions id for this record. 
+  # Enables update/replacement of source records. 
+  #
+  # Assumes if "001" if no field is provided. 
+  def extract_local_id field = nil
+    field ||= '001'
+    id = self.source["fields"].find{|f| f[field]}[field].gsub(/ /, '')
+    return id
+  end
+
+  # Determine HT availability. 'Full View', 'Limited View', 'not available'
+  #
+  def ht_availability
+    if self.org_code == 'miaahdl'
+      if self.source_blob =~ /.r.:.pd./
+        return 'Full View'
+      else
+        return 'Limited View'
+      end
+    else
+      return nil
+    end
+  end
+
   # Extracts SuDocs
   #
   # marc - ruby-marc representation of source
@@ -182,65 +243,38 @@ class SourceRecord
     return self.isbns_normalized
   end
 
-  # Extracts and normalizes identifiers from self.source
-  def extract_identifiers
-    self.org_code ||= "" #should be set on ingest. 
-    self.oclc_alleged ||= []
-    self.oclc_resolved ||= []
-    self.lccn_normalized ||= []
-    self.issn_normalized ||= []
-    self.sudocs ||= []
-    self.isbns ||= []
-    self.isbns_normalized ||= []
-  
-    marc = MARC::Record.new_from_hash(self.source)
-    self.extract_oclcs marc 
-    self.extract_sudocs marc
-    self.extract_lccns marc
-    self.extract_issns marc
-    self.extract_isbns marc
-  
-    self.oclc_resolved = self.resolve_oclc(self.oclc_alleged).uniq
-  end #extract_identifiers
+  #######
+  # extract_enum_chrons
+  #
+  def extract_enum_chrons(marc=nil, org_code=nil)
+    marc ||= MARC::Record.new_from_hash(self.source)
+    org_code ||= self.org_code
+    
+    enum_chrons = []
 
-  # Hit the oclc_authoritative collection for OCLC resolution. 
-  # Bit of a kludge.
-  def resolve_oclc oclcs
-    resolved = []
-    oclcs.each do | oa |
-      @@mc[:oclc_authoritative].find(:duplicates => oa).each do | ores | #1?
-        resolved << ores[:oclc].to_i
-      end
-    end
-
-    if resolved.count == 0
-      resolved = oclcs
-    end
-    return resolved 
+    return enum_chrons 
   end
 
-  # Extract the contributing institutions id for this record. 
-  # Enables update/replacement of source records. 
+  ########
+  # normalize_enum_chron
   #
-  # Assumes if "001" if no field is provided. 
-  def extract_local_id field = nil
-    field ||= '001'
-    id = self.source["fields"].find{|f| f[field]}[field].gsub(/ /, '')
-    return id
-  end
+  # taken from HTPH::Hathinormalize
+  def normalize_enum_chron enum_chron
+    enum_chron.upcase!
+    enum_chron.gsub!(/ +/, " ")
 
-  # Determine HT availability. 'Full View', 'Limited View', 'not available'
-  #
-  def ht_availability
-    if self.org_code == 'miaahdl'
-      if self.source_blob =~ /.r.:.pd./
-        return 'Full View'
-      else
-        return 'Limited View'
-      end
-    else
-      return nil
-    end
+    # Deal with copies
+    enum_chron.gsub!(/\b(C|COPY?)[ .]*\d+/, "")
+    enum_chron.gsub!(/(\d+(ST|ND|RD|TH)|ANOTHER) COPY/, "")
+
+    enum_chron.gsub!(/VOL(UME)?/, "V")
+    enum_chron.gsub!(/SUPP?(L(EMENT)?)?S?/, "SUP")
+    enum_chron.gsub!(/&/, " AND ")
+    enum_chron.gsub!(/\.(\S)/, ". \\1")
+    enum_chron.gsub!(/\*/, "")
+    enum_chron.strip!
+
+    return enum_chron
   end
 
   def save
