@@ -10,33 +10,35 @@ class SourceRecord
   include Mongoid::Attributes::Dynamic
   store_in collection: "source_records"
 
-  field :source_id, type: String
-  field :file_path, type: String
-  field :line_number, type: Integer
-  field :source
-  field :source_blob, type: String
-  field :deprecated_reason, type: String
-  field :deprecated_timestamp, type: DateTime
-  field :org_code, type: String
-  field :local_id, type: String
-  field :last_modified, type: DateTime
-  field :oclc_alleged
-  field :oclc_resolved
-  field :lccn_normalized
-  field :issn_normalized
-  field :isbns
-  field :isbns_normalized
-  field :sudocs
-  field :publisher_viaf_ids
-  field :publisher_headings
-  field :publisher_normalized
-  field :author_viaf_ids
   field :author_headings
   field :author_normalized
+  field :author_viaf_ids
   field :author_addl_viaf_ids
   field :author_addl_headings
   field :author_addl_normalized
+  field :cataloging_agency
+  field :deprecated_reason, type: String
+  field :deprecated_timestamp, type: DateTime
   field :enum_chrons
+  field :file_path, type: String
+  field :formats, type: Array
+  field :isbns
+  field :isbns_normalized
+  field :issn_normalized
+  field :lccn_normalized
+  field :last_modified, type: DateTime
+  field :line_number, type: Integer
+  field :local_id, type: String
+  field :oclc_alleged
+  field :oclc_resolved
+  field :org_code, type: String
+  field :publisher_headings
+  field :publisher_normalized
+  field :publisher_viaf_ids
+  field :source
+  field :source_blob, type: String
+  field :source_id, type: String
+  field :sudocs
 
   #this stuff is extra ugly
   Dotenv.load
@@ -88,6 +90,7 @@ class SourceRecord
     self.sudocs ||= []
     self.isbns ||= []
     self.isbns_normalized ||= []
+    self.formats ||= []
   
     marc = MARC::Record.new_from_hash(self.source)
     self.extract_oclcs marc 
@@ -95,6 +98,7 @@ class SourceRecord
     self.extract_lccns marc
     self.extract_issns marc
     self.extract_isbns marc
+    self.formats = Traject::Macros::MarcFormatClassifier.new(marc).formats
   
     self.oclc_resolved = self.resolve_oclc(self.oclc_alleged).uniq
   end #extract_identifiers

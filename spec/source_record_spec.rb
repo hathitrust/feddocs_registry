@@ -50,6 +50,12 @@ RSpec.describe SourceRecord do
     expect(sr.extract_local_id).to eq("ocm00000038")
   end
 
+  it "extracts formats" do
+    sr = SourceRecord.new
+    sr.source = @raw_source
+    expect(sr.formats).to eq(["Book","Print"])
+  end
+
 end
 
 RSpec.describe SourceRecord, "#deprecate" do
