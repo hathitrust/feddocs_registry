@@ -193,6 +193,17 @@ class SourceRecord
       end
     end
 
+    #We don't care about different physical forms so
+    #776s are valid too.
+    marc.each_by_tag('776') do | field |
+      subfield_ws = field.find_all {|subfield| subfield.code == 'w'}
+      subfield_ws.each do | sub | 
+        if OCLCPAT.match(sub.value)
+          self.oclc_alleged << $1.to_i
+        end
+      end
+    end
+
     self.oclc_alleged = self.oclc_alleged.flatten.uniq
     return self.oclc_alleged
 
@@ -224,6 +235,16 @@ class SourceRecord
         self.issn_normalized << StdNum::ISSN.normalize(field['a'])
       end
     end
+
+    #We don't care about different physical forms so
+    #776s are valid too.
+    marc.each_by_tag('776') do | field |
+      subfield_xs = field.find_all {|subfield| subfield.code == 'x'}
+      subfield_xs.each do | sub | 
+        self.issn_normalized << StdNum::ISSN.normalize(sub.value)
+      end
+    end
+
     self.issn_normalized.uniq!
     return self.issn_normalized
   end 
@@ -243,6 +264,16 @@ class SourceRecord
         end
       end
     end
+    
+    #We don't care about different physical forms so
+    #776s are valid too.
+    marc.each_by_tag('776') do | field |
+      subfield_zs = field.find_all {|subfield| subfield.code == 'z'}
+      subfield_zs.each do | sub | 
+        self.isbns_normalized << StdNum::ISBN.normalize(sub.value)
+      end
+    end
+
     self.isbns_normalized.uniq!
     return self.isbns_normalized
   end
