@@ -157,27 +157,32 @@ class RegistryRecord
     # OCLC first
     if s.oclc_resolved.count > 0
       rec = RegistryRecord.where(oclcnum_t: s.oclc_resolved, 
-                                 enumchron_display: enum_chron).first
+                                 enumchron_display: enum_chron,
+                                 deprecated_timestamp:{"$exists":0}).first
     end
     # lccn
     if s.lccn_normalized.count > 0 and !rec
       rec = RegistryRecord.where(lccn_t: s.lccn_normalized,
-                                 enumchron_display:enum_chron).first
+                                 enumchron_display:enum_chron,
+                                 deprecated_timestamp:{"$exists":0}).first
     end 
     # isbn
     if s.isbns_normalized.count > 0 and !rec
       rec = RegistryRecord.where(isbn_t: s.isbns_normalized,
-                                 enumchron_display:enum_chron).first
+                                 enumchron_display:enum_chron,
+                                 deprecated_timestamp:{"$exists":0}).first
     end
     # issn
     if s.issn_normalized.count > 0 and !rec
       rec = RegistryRecord.where(issn_t: s.issn_normalized,
-                                 enumchron_display:enum_chron).first
+                                 enumchron_display:enum_chron,
+                                 deprecated_timestamp:{"$exists":0}).first
     end
     # sudoc
     if s.sudocs.count > 0 and !rec
       rec = RegistryRecord.where(sudoc_display: s.sudocs,
-                                 enumchron_display: enum_chron).first
+                                 enumchron_display: enum_chron,
+                                 deprecated_timestamp:{"$exists":0}).first
     end
     return rec
   end
