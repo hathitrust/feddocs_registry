@@ -22,6 +22,7 @@ class SourceRecord
   field :enum_chrons
   field :file_path, type: String
   field :formats, type: Array
+  field :in_registry, type: Boolean, default: false
   field :isbns
   field :isbns_normalized
   field :issn_normalized
