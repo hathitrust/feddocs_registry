@@ -1,8 +1,8 @@
 GIT
   remote: https://github.com/HTGovdocs/normalize.git
-  revision: cca2842fa00d5a36977c5c82bb2a2b8a44f97303
+  revision: 4ac3b555c9546abf5fcf22f8ca376353cc47ec8e
   specs:
-    normalize (0.2)
+    normalize (0.4)
 
 GIT
   remote: https://github.com/HTGovdocs/viaf.git

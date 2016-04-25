@@ -291,28 +291,6 @@ class SourceRecord
     return enum_chrons 
   end
 
-  ########
-  # normalize_enum_chron
-  #
-  # taken from HTPH::Hathinormalize
-  def normalize_enum_chron enum_chron
-    enum_chron.upcase!
-    enum_chron.gsub!(/ +/, " ")
-
-    # Deal with copies
-    enum_chron.gsub!(/\b(C|COPY?)[ .]*\d+/, "")
-    enum_chron.gsub!(/(\d+(ST|ND|RD|TH)|ANOTHER) COPY/, "")
-
-    enum_chron.gsub!(/VOL(UME)?/, "V")
-    enum_chron.gsub!(/SUPP?(L(EMENT)?)?S?/, "SUP")
-    enum_chron.gsub!(/&/, " AND ")
-    enum_chron.gsub!(/\.(\S)/, ". \\1")
-    enum_chron.gsub!(/\*/, "")
-    enum_chron.strip!
-
-    return enum_chron
-  end
-
   def save
     self.last_modified = Time.now.utc
     super
