@@ -4,6 +4,7 @@ require 'traject'
 require 'traject/indexer/settings'
 require 'securerandom'
 require 'viaf'
+require 'normalize'
 
 
 class Collator
@@ -88,7 +89,7 @@ class Collator
         end
         #get_viaf already did this, but didn't return it. oops?
         #normalize the subfields, then normalize the normalized subfields
-        normalized_fields[marc_fields[fnum]+'_normalized'] << normalize_corporate(subfields.map{ |sf| normalize_corporate(sf)}.join(' '), false) 
+        normalized_fields[marc_fields[fnum]+'_normalized'] << Normalize.corporate(subfields.map{ |sf| Normalize.corporate(sf)}.join(' '), false) 
       end #each matching field, e.g. multiple 710s or 260s.  
       normalized_fields[marc_fields[fnum]+'_viaf_ids'].flatten!
       normalized_fields[marc_fields[fnum]+'_headings'].flatten!
