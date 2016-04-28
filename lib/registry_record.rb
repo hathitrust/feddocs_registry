@@ -66,7 +66,7 @@ class RegistryRecord
     @@collator.extract_fields([source_record]).each do | field, value |
       self[field] ||= []
       self[field] << value
-      self[field].flatten!.uniq!
+      self[field] = self[field].flatten.uniq
     end
     self.source_record_ids.uniq!
     self.save
