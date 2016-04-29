@@ -288,6 +288,17 @@ class SourceRecord
     
     enum_chrons = []
 
+    # this is temporary
+    if self.org_code == "dgpo"
+      marc.each_by_tag('930') do | field |
+        subfield_hs = field.find_all { |subfield| subfield.code == 'h'}
+        if subfield_hs.count > 0
+          #take the last one in the 930
+          enum_chrons << Normalize.enum_chron(subfield_hs.pop.value)
+        end
+      end
+    end
+
     return enum_chrons 
   end
 
