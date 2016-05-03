@@ -29,7 +29,7 @@ class SourceRecord
   field :lccn_normalized
   field :last_modified, type: DateTime
   field :line_number, type: Integer
-  field :local_id, type: String
+  field :local_id
   field :oclc_alleged
   field :oclc_resolved
   field :org_code, type: String
