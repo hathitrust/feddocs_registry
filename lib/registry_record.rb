@@ -14,6 +14,7 @@ class RegistryRecord
   field :deprecated_reason, type: String
   field :deprecated_timestamp, type: DateTime
   field :source_record_ids, type: Array
+  field :source_org_codes, type: Array
   field :creation_notes, type: String
   field :enumchron_display, type: String
   field :suppressed, type: Boolean, default: false
@@ -63,12 +64,14 @@ class RegistryRecord
   # So we don't have to recollate an entire cluster for the addition of one rec
   def add_source source_record
     self.source_record_ids << source_record.source_id
+    self.source_org_codes << source_record.org_code
     @@collator.extract_fields([source_record]).each do | field, value |
       self[field] ||= []
       self[field] << value
       self[field] = self[field].flatten.uniq
     end
     self.source_record_ids.uniq!
+    self.source_org_codes.uniq!
     self.save
     self.set_ht_availability() 
   end

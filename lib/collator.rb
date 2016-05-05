@@ -25,6 +25,7 @@ class Collator
     fields = {}
     fields[:ht_ids_fv] = []
     fields[:ht_ids_lv] = []
+    fields[:source_org_codes] = sources.collect{|s| s.org_code}.flatten.uniq
     fields[:sudoc_display] = sources.collect{|s| s.sudocs}.flatten.uniq
     fields[:oclcnum_t] = sources.collect{|s| s.oclc_resolved}.flatten.uniq
     fields[:isbn_t] = sources.collect{|s| s.isbns_normalized}.flatten.uniq

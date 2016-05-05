@@ -29,6 +29,10 @@ RSpec.describe RegistryRecord, "#initialize" do
     expect(@new_rec.issn_t).to eq []
   end
 
+  it "adds org codes" do
+    expect(@new_rec.source_org_codes).to include('txwb')
+  end
+
   it "sets ht_availability to full view" do
     expect(@new_rec.ht_availability).to eq("Not In HathiTrust") 
   end
@@ -67,6 +71,10 @@ RSpec.describe RegistryRecord, "add_source" do
   it "adds source record to cluster" do
     expect(@new_rec.source_record_ids).to include(@src.source_id) 
     expect(@new_rec.oclcnum_t).to include(39)
+  end
+
+  it "adds org code" do
+    expect(@new_rec.source_org_codes).to include(@src.org_code)
   end
 
   after(:all) do
