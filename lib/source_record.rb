@@ -4,6 +4,7 @@ require 'marc'
 require 'pp'
 require 'dotenv'
 require 'collator'
+require 'yaml'
 
 class SourceRecord
   include Mongoid::Document
@@ -46,6 +47,9 @@ class SourceRecord
   @@collator = Collator.new(__dir__+'/../config/traject_config.rb')
   @@contrib_001 = {}
   open(__dir__+'/../config/contributors_w_001_oclcs.txt').each{ |l| @@contrib_001[l.chomp] = 1 }
+
+  @@marc_profiles = {}
+
   @@mc = Mongo::Client.new([ENV['mongo_host']+':'+ENV['mongo_port']], :database => 'htgd' )
 
   #OCLCPAT taken from traject, except middle o made optional
@@ -288,17 +292,14 @@ class SourceRecord
     
     enum_chrons = []
 
-    # this is temporary
-    if self.org_code == "dgpo"
-      marc.each_by_tag('930') do | field |
-        subfield_hs = field.find_all { |subfield| subfield.code == 'h'}
-        if subfield_hs.count > 0
-          #take the last one in the 930
-          enum_chrons << Normalize.enum_chron(subfield_hs.pop.value)
-        end
+    tag, subcode = @@marc_profiles[org_code]['enum_chrons'].split(/ /)
+    marc.each_by_tag(tag) do | field |
+      subfield_codes = field.find_all { |subfield| subfield.code == subcode }
+      if subfield_codes.count > 0
+        #take the last one? this is at least true for gpo. maybe not others
+        enum_chrons << Normalize.enum_chron(subfield_codes.pop.value)
       end
     end
-
     return enum_chrons 
   end
 
@@ -306,6 +307,19 @@ class SourceRecord
     self.last_modified = Time.now.utc
     super
   end
+
+  def self.marc_profiles
+    @@marc_profiles
+  end
+
+  def self.get_marc_profiles
+    Dir.glob(__dir__+'/../config/marc_profiles/*.yml').each do |profile|
+      p = YAML.load_file(profile)
+      @@marc_profiles[p["org_code"]] = p 
+    end
+  end
+  self.get_marc_profiles
+
 end
 
 
