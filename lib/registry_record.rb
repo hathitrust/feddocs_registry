@@ -35,6 +35,7 @@ class RegistryRecord
     super()
     #collate the source records into a coherent whole 
     self.source_record_ids = sid_cluster
+    self.source_org_codes ||= []
     @sources = SourceRecord.where(:source_id.in => sid_cluster)
     @@collator.extract_fields(@sources).each_with_index {|(k,v),i| self[k] = v}
        

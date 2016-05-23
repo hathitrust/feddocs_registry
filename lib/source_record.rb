@@ -109,6 +109,7 @@ class SourceRecord
   end #extract_identifiers
 
   # Hit the oclc_authoritative collection for OCLC resolution. 
+  # oclc_authoritative is a copy of /l1/govdocs/data/x2.all
   # Bit of a kludge.
   def resolve_oclc oclcs
     resolved = []
