@@ -21,6 +21,7 @@ class SourceRecord
   field :deprecated_reason, type: String
   field :deprecated_timestamp, type: DateTime
   field :enum_chrons
+  field :ec
   field :file_path, type: String
   field :formats, type: Array
   field :in_registry, type: Boolean, default: false
@@ -37,6 +38,7 @@ class SourceRecord
   field :publisher_headings
   field :publisher_normalized
   field :publisher_viaf_ids
+  field :series, type: String
   field :source
   field :source_blob, type: String
   field :source_id, type: String
@@ -288,20 +290,40 @@ class SourceRecord
   # extract_enum_chrons
   #
   def extract_enum_chrons(marc=nil, org_code=nil)
+    enum_chrons = {}
     marc ||= MARC::Record.new_from_hash(self.source)
     org_code ||= self.org_code
-    
-    enum_chrons = []
+    ec_strings = []
 
     tag, subcode = @@marc_profiles[org_code]['enum_chrons'].split(/ /)
     marc.each_by_tag(tag) do | field |
       subfield_codes = field.find_all { |subfield| subfield.code == subcode }
       if subfield_codes.count > 0
         #take the last one? this is at least true for gpo. maybe not others
-        enum_chrons << Normalize.enum_chron(subfield_codes.pop.value)
+        ec_strings << Normalize.enum_chron(subfield_codes.pop.value)
       end
     end
-    return enum_chrons 
+
+    #parse out all of their features
+    ec_strings.uniq.each do | ec_string | 
+      parsed_ec = self.class.parse_ec ec_string
+      enum_chrons[ec_string] ||= {}
+      if !parsed_ec.nil?
+        self.class.explode(parsed_ec).keys.each do | canonical | 
+          #possible to have multiple ec_strings be reduced to a single ec_string
+          enum_chrons[canonical].merge( parsed_ec[canonical] )
+        end
+      end
+    end
+    enum_chrons 
+  end
+
+  def self.parse_ec ec
+    nil 
+  end
+
+  def self.explode ec
+    {} 
   end
 
   def save
