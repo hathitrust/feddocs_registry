@@ -13,6 +13,7 @@ class RegistryRecord
   field :ancestors, type: Array
   field :deprecated_reason, type: String
   field :deprecated_timestamp, type: DateTime
+  field :series, type: String
   field :source_record_ids, type: Array
   field :source_org_codes, type: Array
   field :creation_notes, type: String
