@@ -128,16 +128,21 @@ module FederalRegister
     ec  #ec string parsed into hash
   end
 
+
+  #take a parsed enumchron and expand it into its constituent parts
+  # enum_chrons - { <canonical ec string> : {<parsed features>}, }
   def self.explode ec
     enum_chrons = {} 
-    if ec["number"] and ec["volume"]
-      enum_chrons["Volume:#{ec["volume"]}, Number:#{ec["number"]}"] = ec 
+    if ec.nil? 
+      return {}
     end
 
-    #a starting number and potentially ending number
-    if (ec["number_start"] and ec["volume"]) or
+    if ec["number"] and ec["volume"]
+      enum_chrons["Volume:#{ec["volume"]}, Number:#{ec["number"]}"] = ec 
+    elsif (ec["number_start"] and ec["volume"]) or
        (ec.keys.count == 1 and ec["volume"]) or
        (ec.keys.count == 2 and ec["volume"] and ec["year"])
+      #a starting number and potentially ending number
       ec["number_start"] ||= "1"
       ec["number_end"] ||= FederalRegister.nums_per_vol[ec["volume"]]
       for n in (ec["number_start"]..ec["number_end"]) do 

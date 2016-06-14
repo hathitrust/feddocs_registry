@@ -75,7 +75,8 @@ class SourceRecord
     super(s)
     @@collator.normalize_viaf(s).each {|k, v| self.send("#{k}=",v) }
     self.extract_identifiers
-    self.extract_enum_chrons
+    self.ec = self.extract_enum_chrons
+    self.enum_chrons = self.ec.keys
   end
 
   # A source record may be deprecated if it is out of scope. 
@@ -290,6 +291,8 @@ class SourceRecord
   #######
   # extract_enum_chrons
   #
+  # ecs - {<canonical ec string> : {<parsed features>}, }
+  #
   def extract_enum_chrons(marc=nil, org_code=nil)
     ecs = {}
     marc ||= MARC::Record.new_from_hash(self.source)
@@ -301,38 +304,45 @@ class SourceRecord
     end
 
     tag, subcode = @@marc_profiles[org_code]['enum_chrons'].split(/ /)
-    #marc.each_by_tag(tag) do | field |
-    #  subfield_codes = field.find_all { |subfield| subfield.code == subcode }
-    #  if subfield_codes.count > 0
-    #    #take the last one? this is at least true for gpo. maybe not others
-    #    ec_strings << Normalize.enum_chron(subfield_codes.pop.value)
-    #  end
-    #end
-
     marc.each_by_tag(tag) do | field | 
-      if org_code == "dgpo"
-        subfield_codes = field.find_all { |subfield| subfield.code == subcode }
-        if subfield_codes.count > 0
+      subfield_codes = field.find_all { |subfield| subfield.code == subcode }
+      if subfield_codes.count > 0
+        if org_code == "dgpo"
           #take the last one if it's from gpo?
           ec_strings << Normalize.enum_chron(subfield_codes.pop.value)
+        else
+          ec_strings << subfield_codes.map {|sf| Normalize.enum_chron(sf.value) }
         end
-      else
-        ec_strings << f[tag]['subfields'].select {|sf| sf[subcode]}
-                    .collect { |z| Normalize.enum_chron(z[subcode]) }
       end
     end
+    ec_strings.flatten!
 
     #parse out all of their features
     ec_strings.uniq.each do | ec_string | 
-      ecs[ec_string] ||= {}
       
       # Series specific parsing 
-      if !self.series.nil? 
+      if !self.series.nil? and self.series != ''
         parsed_ec = eval(self.series).parse_ec ec_string
-        eval(self.series).explode(parsed_ec).keys.each do | canonical | 
-          #possible to have multiple ec_strings be reduced to a single ec_string
-          ecs[canonical].merge( parsed_ec[canonical] )
+        # able to parse it?
+        if !parsed_ec.nil?
+          exploded = eval(self.series).explode(parsed_ec)
+          # just because we parsed it doesn't mean we can do anything with it
+          if exploded.keys.count() > 0
+            exploded.each do | canonical, features | 
+              #possible to have multiple ec_strings be reduced to a single ec_string
+              ecs[canonical] ||= features 
+              ecs[canonical].merge( features )
+            end
+          else
+            ecs[ec_string] ||= parsed_ec
+            ecs[ec_string].merge( parsed_ec )
+          end
+        else 
+          ecs[ec_string] = {}
         end
+      else
+        #we got nothing, raw string with no features
+        ecs[ec_string] = {}
       end
     end
     ecs 

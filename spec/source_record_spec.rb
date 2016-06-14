@@ -164,5 +164,13 @@ RSpec.describe SourceRecord, '#extract_enum_chrons' do
     src.org_code = 'dgpo'
     expect(src.extract_enum_chrons.keys).to eq(["V. 1", "V. 2"])
   end
+  
+  it "extracts enum chrons from non-GPO records" do
+    sr = SourceRecord.where({oclc_resolved:1768512, org_code:{"$ne":"miaahdl"}, enum_chrons:/V. \d/}).first
+    line = sr.source.to_json
+    sr_new = SourceRecord.new( :org_code=>"miu" )
+    sr_new.source = line
+    expect(sr_new.enum_chrons).to include("Volume:77, Number:67")
+  end
 end
 
