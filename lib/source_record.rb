@@ -34,7 +34,7 @@ class SourceRecord
   field :local_id
   field :oclc_alleged
   field :oclc_resolved
-  field :org_code, type: String
+  field :org_code, type: String, default: "miaahdl"
   field :publisher_headings
   field :publisher_normalized
   field :publisher_viaf_ids
@@ -63,7 +63,7 @@ class SourceRecord
     )(\d+)
     /x
    
-  def initialize
+  def initialize *args
     super
     self.source_id ||= SecureRandom.uuid()
   end
@@ -75,6 +75,7 @@ class SourceRecord
     super(s)
     @@collator.normalize_viaf(s).each {|k, v| self.send("#{k}=",v) }
     self.extract_identifiers
+    self.extract_enum_chrons
   end
 
   # A source record may be deprecated if it is out of scope. 
@@ -290,32 +291,62 @@ class SourceRecord
   # extract_enum_chrons
   #
   def extract_enum_chrons(marc=nil, org_code=nil)
-    enum_chrons = {}
+    ecs = {}
     marc ||= MARC::Record.new_from_hash(self.source)
     org_code ||= self.org_code
-    ec_strings = []
+    ec_strings = [] 
+
+    if org_code == ""
+      raise "No org_code has been set for this record. Needed to extract enum_chrons."
+    end
 
     tag, subcode = @@marc_profiles[org_code]['enum_chrons'].split(/ /)
-    marc.each_by_tag(tag) do | field |
-      subfield_codes = field.find_all { |subfield| subfield.code == subcode }
-      if subfield_codes.count > 0
-        #take the last one? this is at least true for gpo. maybe not others
-        ec_strings << Normalize.enum_chron(subfield_codes.pop.value)
+    #marc.each_by_tag(tag) do | field |
+    #  subfield_codes = field.find_all { |subfield| subfield.code == subcode }
+    #  if subfield_codes.count > 0
+    #    #take the last one? this is at least true for gpo. maybe not others
+    #    ec_strings << Normalize.enum_chron(subfield_codes.pop.value)
+    #  end
+    #end
+
+    marc.each_by_tag(tag) do | field | 
+      if org_code == "dgpo"
+        subfield_codes = field.find_all { |subfield| subfield.code == subcode }
+        if subfield_codes.count > 0
+          #take the last one if it's from gpo?
+          ec_strings << Normalize.enum_chron(subfield_codes.pop.value)
+        end
+      else
+        ec_strings << f[tag]['subfields'].select {|sf| sf[subcode]}
+                    .collect { |z| Normalize.enum_chron(z[subcode]) }
       end
     end
 
     #parse out all of their features
     ec_strings.uniq.each do | ec_string | 
-      parsed_ec = self.class.parse_ec ec_string
-      enum_chrons[ec_string] ||= {}
-      if !parsed_ec.nil?
-        self.class.explode(parsed_ec).keys.each do | canonical | 
+      ecs[ec_string] ||= {}
+      
+      # Series specific parsing 
+      if !self.series.nil? 
+        parsed_ec = eval(self.series).parse_ec ec_string
+        eval(self.series).explode(parsed_ec).keys.each do | canonical | 
           #possible to have multiple ec_strings be reduced to a single ec_string
-          enum_chrons[canonical].merge( parsed_ec[canonical] )
+          ecs[canonical].merge( parsed_ec[canonical] )
         end
       end
     end
-    enum_chrons 
+    ecs 
+  end
+
+  def series
+    if !@series.nil?
+      @series
+    end
+    case
+    when (self.oclc_resolved.map{|o|o.to_i} & FederalRegister.oclcs).count > 0
+      @series = 'FederalRegister'
+    end
+    @series
   end
 
   def self.parse_ec ec
