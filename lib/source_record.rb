@@ -5,6 +5,7 @@ require 'pp'
 require 'dotenv'
 require 'collator'
 require 'yaml'
+require 'digest'
 
 class SourceRecord
   include Mongoid::Document
@@ -76,7 +77,13 @@ class SourceRecord
     @@collator.normalize_viaf(s).each {|k, v| self.send("#{k}=",v) }
     self.extract_identifiers
     self.ec = self.extract_enum_chrons
-    self.enum_chrons = self.ec.keys
+    self.enum_chrons = self.ec.collect do | k,fields |
+      if !fields['canonical'].nil?
+        fields['canonical']
+      else
+        fields['string']
+      end
+    end
   end
 
   # A source record may be deprecated if it is out of scope. 
@@ -311,7 +318,7 @@ class SourceRecord
   #######
   # extract_enum_chrons
   #
-  # ecs - {<canonical ec string> : {<parsed features>}, }
+  # ecs - {<hashed canonical ec string> : {<parsed features>}, }
   #
   def extract_enum_chrons(marc=nil, org_code=nil, ec_strings=nil)
     ecs = {}
@@ -330,29 +337,35 @@ class SourceRecord
         parsed_ec = eval(self.series).parse_ec ec_string
         # able to parse it?
         if !parsed_ec.nil?
+          parsed_ec['string'] = ec_string
           exploded = eval(self.series).explode(parsed_ec)
           # just because we parsed it doesn't mean we can do anything with it
           if exploded.keys.count() > 0
             exploded.each do | canonical, features | 
+              features['string'] = ec_string
+              features['canonical'] = canonical
               #possible to have multiple ec_strings be reduced to a single ec_string
-              ecs[canonical] ||= features 
-              ecs[canonical].merge( features )
+              ecs[Digest::SHA256.hexdigest(canonical)] ||= features 
+              ecs[Digest::SHA256.hexdigest(canonical)].merge( features )
             end
           else
-            ecs[ec_string] ||= parsed_ec
-            ecs[ec_string].merge( parsed_ec )
+            ecs[Digest::SHA256.hexdigest(ec_string)] ||= parsed_ec
+            ecs[Digest::SHA256.hexdigest(ec_string)].merge( parsed_ec )
           end
         else 
-          ecs[ec_string] = {}
+          ecs[Digest::SHA256.hexdigest(ec_string)] = {'string'=>ec_string}
         end
       else
         #we got nothing, raw string with no features
-        ecs[ec_string] = {}
+        ecs[Digest::SHA256.hexdigest(ec_string)] = {'string'=>ec_string}
       end
     end
     ecs 
   end
 
+  # series
+  #
+  # Uses oclc_resolved to identify a series title (and appropriate module)
   def series
     if !@series.nil?
       @series
