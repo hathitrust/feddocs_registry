@@ -288,21 +288,11 @@ class SourceRecord
     return self.isbns_normalized
   end
 
-  #######
-  # extract_enum_chrons
-  #
-  # ecs - {<canonical ec string> : {<parsed features>}, }
-  #
-  def extract_enum_chrons(marc=nil, org_code=nil)
-    ecs = {}
+  #extract_enum_chron_strings
+  #Finds the correct marc field and returns and array of enumchrons
+  def extract_enum_chron_strings marc=nil
+    ec_strings = []
     marc ||= MARC::Record.new_from_hash(self.source)
-    org_code ||= self.org_code
-    ec_strings = [] 
-
-    if org_code == ""
-      raise "No org_code has been set for this record. Needed to extract enum_chrons."
-    end
-
     tag, subcode = @@marc_profiles[org_code]['enum_chrons'].split(/ /)
     marc.each_by_tag(tag) do | field | 
       subfield_codes = field.find_all { |subfield| subfield.code == subcode }
@@ -315,7 +305,22 @@ class SourceRecord
         end
       end
     end
-    ec_strings.flatten!
+    ec_strings.flatten
+  end
+
+  #######
+  # extract_enum_chrons
+  #
+  # ecs - {<canonical ec string> : {<parsed features>}, }
+  #
+  def extract_enum_chrons(marc=nil, org_code=nil, ec_strings=nil)
+    ecs = {}
+    org_code ||= self.org_code
+    
+    if ec_strings.nil?
+      ec_strings = self.extract_enum_chron_strings marc
+    end
+    ec_strings ||= []
 
     #parse out all of their features
     ec_strings.uniq.each do | ec_string | 
