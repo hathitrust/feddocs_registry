@@ -39,7 +39,13 @@ class RegistryRecord
     self.source_org_codes ||= []
     @sources = SourceRecord.where(:source_id.in => sid_cluster)
     @@collator.extract_fields(@sources).each_with_index {|(k,v),i| self[k] = v}
-       
+      
+    @sources.each do |s|
+      if !s.series.nil? and source_record.series != ''
+        self.series = source_record.series
+      end
+    end
+
     self.ancestors = ancestors
     self.creation_notes = notes
     self.registry_id ||= SecureRandom.uuid()
@@ -74,6 +80,9 @@ class RegistryRecord
     end
     self.source_record_ids.uniq!
     self.source_org_codes.uniq!
+    if !source_record.series.nil? and source_record.series != ''
+      self.series = source_record.series
+    end
     self.save
     self.set_ht_availability() 
   end

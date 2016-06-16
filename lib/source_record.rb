@@ -6,6 +6,7 @@ require 'dotenv'
 require 'collator'
 require 'yaml'
 require 'digest'
+require 'federal_register'
 
 class SourceRecord
   include Mongoid::Document
