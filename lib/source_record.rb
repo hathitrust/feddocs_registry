@@ -305,8 +305,10 @@ class SourceRecord
       subfield_codes = field.find_all { |subfield| subfield.code == subcode }
       if subfield_codes.count > 0
         if org_code == "dgpo"
-          #take the last one if it's from gpo?
-          ec_strings << Normalize.enum_chron(subfield_codes.pop.value)
+          #take the second one if it's from gpo?
+          if subfield_codes.count > 1
+            ec_strings << Normalize.enum_chron(subfield_codes[1].value)
+          end
         else
           ec_strings << subfield_codes.map {|sf| Normalize.enum_chron(sf.value) }
         end

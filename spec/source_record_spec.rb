@@ -175,3 +175,16 @@ RSpec.describe SourceRecord, '#extract_enum_chrons' do
   end
 end
 
+RSpec.describe SourceRecord, '#extract_enum_chron_strings' do
+  it 'extracts enum chron strings from MARC records' do
+    sr = SourceRecord.where({sudocs:"II0 aLC 4.7:T 12/v.1-6"}).first
+    expect(sr.extract_enum_chron_strings).to include('V. 6')
+  end
+
+  it 'ignores contributors without enum chrons' do
+    sr = SourceRecord.where({sudocs:"Y 4.P 84/11:AG 8", org_code:"cic"}).first
+    expect(sr.extract_enum_chron_strings).to eq([])
+  end
+
+end
+
