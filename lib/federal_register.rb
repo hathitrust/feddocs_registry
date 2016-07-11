@@ -154,36 +154,16 @@ module FederalRegister
   end
 
   def self.parse_file
-    @ecs = {}
     @no_match = 0
     @match = 0
     input = File.dirname(__FILE__)+'/../data/fr_enumchrons.txt'
     open(input, 'r').each do | line |
-      header = [:volume, :number, :year, :month, :day]
       line.chomp!
 
       ec = FederalRegister.parse_ec(line)
       if ec.nil?
-        @ecs[line] ||= ""
         @no_match += 1
       else 
-        open('vs','a').puts m["volume"]
-        m.explode.each do |ec_s, ec_h|
-          @ecs[ec_s] ||= {} 
-          @ecs[ec_s].merge!(ec_h) do |key, v1, v2| 
-            if v1 == v2
-              v1
-            elsif v1.is_a?(Array) 
-              v1 << v2 
-              v1.uniq!
-            else
-              [v1, v2]
-            end
-          end
-          @ecs[ec_s].flatten.uniq!
-        end
-        #puts header.map { |h| m.instance_variables.include?(h.to_s) ? m[h] : '' }.join("\t")
-        #puts [m[:volume],m[:number],m[:year],m[:month],m[:day]].join("\t")
         @match += 1
       end
 
@@ -191,7 +171,7 @@ module FederalRegister
 
     puts "match: #{@match}"
     puts "no match: #{@no_match}"
-    return @match, @no_match, @ecs
+    return @match, @no_match
   end
 
   def self.load_context 

@@ -105,11 +105,10 @@ describe "explode" do
 end
 
 describe "parse_file" do
-  #it "parses a file of enumchrons" do 
-  #  match, no_match, ecs = FederalRegister.parse_file
-  #  expect(match).to be(8933)
-  #  expect(ecs['volume:75, number:5']['month']).to eq('JAN')
-  #end
+  it "parses a file of enumchrons" do 
+    match, no_match = FederalRegister.parse_file
+    expect(match).to be(8933)
+  end
 end
 
 describe "load_context" do
