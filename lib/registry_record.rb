@@ -22,6 +22,7 @@ class RegistryRecord
   field :ht_ids_fv
   field :ht_ids_lv
   field :ht_availability
+  field :subject_t
 
   @@collator = Collator.new(__dir__+'/../config/traject_config.rb')
 
