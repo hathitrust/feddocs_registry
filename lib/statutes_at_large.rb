@@ -22,7 +22,7 @@ module StatutesAtLarge
   def self.parse_ec ec_string
     #sometimes has junk in the front
     ec_string.gsub!(/^KF50 \. U5 /, '')
-
+    ec_string.gsub!(/^[A-Z] V\./, 'V.')
     # 'V. 96:PT. 1 (1984)' /* 517 */
     # V. 114:PART 1 (2000) 
     m ||= /^V\. (?<volume>\d+)[ ,:]P(AR)?T\.? (?<part>\d{1,2}) \(?(?<year>\d{4})\)?$/.match(ec_string)
@@ -52,6 +52,9 @@ module StatutesAtLarge
 
     # V. V. 32:1 1901-03 /* 7 */
     m ||= /^V\. V\. (?<volume>\d{1,2}):(?<part>\d) (?<start_year>\d{4})-(?<end_year>\d{2,4})$/.match(ec_string)
+
+    # V. V. 2 1848 /* 1 */
+    m ||= /^V\. V\. (?<volume>\d{1,2}) (?<year>\d{4})$/.match(ec_string)
 
     # 'V. V. 36 PT1 1909-12  /* 21 */
     # V. V. 36 PT2 1909-1911
@@ -134,8 +137,13 @@ module StatutesAtLarge
     end
 
     if ec['volume'] and ec['part']
-     enum_chrons["Volume:#{ec['volume']}, Part:#{ec['part']}"] = ec
+      key = "Volume:#{ec['volume']}, Part:#{ec['part']}"
+      if ec['start_page']
+        key << ", Pages:#{ec['start_page']}-#{ec['end_page']}"
+      end
+      enum_chrons[key] = ec
     end
+
     enum_chrons
   end
 
@@ -149,8 +157,9 @@ module StatutesAtLarge
       ec = self.parse_ec(line)
       if ec.nil?
         @no_match += 1
-        #puts line
+        #puts "no match: "+line
       else 
+        #puts "match: "+self.explode(ec).to_s
         @match += 1
       end
 

@@ -376,6 +376,8 @@ class SourceRecord
     case
     when (self.oclc_resolved.map{|o|o.to_i} & FederalRegister.oclcs).count > 0
       @series = 'FederalRegister'
+    when (self.oclc_resolved.map{|o|o.to_i} & StatutesAtLarge.oclcs).count > 0
+      @series = 'StatutesAtLarge'
     end
     @series
   end

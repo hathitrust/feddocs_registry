@@ -13,6 +13,16 @@ RSpec.describe SourceRecord do
     sr.series = 'FederalRegister'
     #expect(sr.enum_chrons).to include('Volume: 77, Number: 96')
   end
+
+  it "parses the enumchron if it has a series" do
+    sr = SourceRecord.where({oclc_resolved:1768474}).first
+    new_sr = SourceRecord.new
+    new_sr.org_code = sr.org_code
+    new_sr.source = sr.source.to_json
+    expect(new_sr.series).to eq('StatutesAtLarge')
+    expect(new_sr.enum_chrons).to include('Volume:123, Part:1')
+    puts new_sr.ec
+  end
 end
 
 
