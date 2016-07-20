@@ -42,8 +42,8 @@ class RegistryRecord
     @@collator.extract_fields(@sources).each_with_index {|(k,v),i| self[k] = v}
       
     @sources.each do |s|
-      if !s.series.nil? and source_record.series != ''
-        self.series = source_record.series
+      if !s.series.nil? and s.series != ''
+        self.series = s.series
       end
     end
 
