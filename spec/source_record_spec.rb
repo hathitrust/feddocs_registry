@@ -21,7 +21,7 @@ RSpec.describe SourceRecord do
     new_sr.source = sr.source.to_json
     expect(new_sr.series).to eq('StatutesAtLarge')
     expect(new_sr.enum_chrons).to include('Volume:123, Part:1')
-    puts new_sr.ec
+    #puts new_sr.ec
   end
 end
 

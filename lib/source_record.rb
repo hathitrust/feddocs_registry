@@ -7,6 +7,7 @@ require 'collator'
 require 'yaml'
 require 'digest'
 require 'federal_register'
+require 'statutes_at_large'
 
 class SourceRecord
   include Mongoid::Document
