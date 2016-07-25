@@ -180,7 +180,7 @@ class SourceRecord
   end
 
   def extract_oclcs marc=nil
-    marc ||= MARC.Record.new_from_hash(self.source)
+    marc ||= MARC::Record.new_from_hash(self.source)
     self.oclc_alleged = []
     #035a and 035z
     marc.each_by_tag('035') do | field |
@@ -224,8 +224,9 @@ class SourceRecord
     end
 
     self.oclc_alleged = self.oclc_alleged.flatten.uniq
-    return self.oclc_alleged
-
+    #if it's bigger than 8 bytes, definitely not valid. 
+    # (and can't be saved to Mongo anyway)
+    self.oclc_alleged.delete_if {|x| x.size > 8 }
   end
 
   #######

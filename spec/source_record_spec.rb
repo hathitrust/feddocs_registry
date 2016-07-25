@@ -125,6 +125,18 @@ RSpec.describe SourceRecord, '#ht_availability' do
   end
 end
 
+RSpec.describe SourceRecord, 'extract_oclcs' do
+  before(:all) do
+    rec = File.read(File.expand_path(File.dirname(__FILE__))+'/data/bogus_oclc.json').chomp
+    @marc = MARC::Record.new_from_hash(JSON.parse(rec))
+    @s = SourceRecord.new
+  end
+
+  it "ignores out of range OCLCs" do
+    expect(@s.extract_oclcs(@marc)).not_to include(155503032044020955233)
+  end
+end
+  
 RSpec.describe SourceRecord, '#extract_identifiers' do
   before(:all) do
     SourceRecord.where(:source.exists => false).delete
