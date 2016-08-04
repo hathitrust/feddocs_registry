@@ -46,6 +46,8 @@ class SourceRecord
   field :source_blob, type: String
   field :source_id, type: String
   field :sudocs
+  field :invalid_sudocs
+  field :non_sudocs
 
   #this stuff is extra ugly
   Dotenv.load
@@ -106,6 +108,8 @@ class SourceRecord
     self.lccn_normalized ||= []
     self.issn_normalized ||= []
     self.sudocs ||= []
+    self.invalid_sudocs ||= []
+    self.non_sudocs ||= []
     self.isbns ||= []
     self.isbns_normalized ||= []
     self.formats ||= []
@@ -162,21 +166,58 @@ class SourceRecord
     end
   end
 
+  # Determine if this is a govdoc based on 008 and 086
+  # marc - ruby-marc repesentation of source
+  def is_govdoc marc=nil
+    marc ||= MARC::Record.new_from_hash(self.source)
+   
+    #008
+    fields = marc['fields'].find {|f| f['008'] }
+    
+    #if fields.nil? #rare but happens let rescue handle it
+
+    field_008 = fields['008']
+    field_008 =~ /^.{17}u.{10}f/ or self.sudocs.count > 0 or self.extract_sudocs(marc).count > 0
+  rescue
+    false
+  end
+
   # Extracts SuDocs
   #
   # marc - ruby-marc representation of source
   def extract_sudocs marc=nil
     marc ||= MARC::Record.new_from_hash(self.source)
     self.sudocs = []
+    self.invalid_sudocs = [] #curiosity
+    self.non_sudocs = [] 
 
     marc.each_by_tag('086') do | field |
       # Supposed to be in 086/ind1=0, but some records are dumb. 
-      if field['a'] and (field.indicator1 == '0' or field['a'] =~ /:/)
-        self.sudocs << field['a'].chomp
+      if field['a'] 
+        if field.indicator1 == '0' 
+          self.sudocs << field['a'].chomp
+        elsif field['a'] =~ /:/ and field['2'] =~ /^sudoc/
+          self.sudocs << field['a'].chomp
+        #bad MARC but too many to ignore
+        elsif field.indicator1.strip == '' and 
+              field['2'].nil? and 
+              field['a'] =~ /:/ 
+          self.sudocs << field['a'].chomp
+          self.invalid_sudocs << field['a'].chomp
+        #bad MARC and probably not a sudoc
+        elsif field.indicator1.strip == '' and field['2'].nil?
+          self.invalid_sudocs << field['a'].chomp
+        #legit 086 but not a sudoc. 
+        elsif field.indicator1.strip == '' and !field['2'].nil?
+          self.non_sudocs << field['a'].chomp
+        end
       end
     end
+    self.non_sudocs.uniq!
+    self.invalid_sudocs.uniq!
     self.sudocs.uniq!
-    return self.sudocs
+    self.sudocs = self.sudocs - self.non_sudocs
+    self.sudocs
   end
 
   def extract_oclcs marc=nil

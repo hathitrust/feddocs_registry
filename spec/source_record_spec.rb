@@ -136,6 +136,40 @@ RSpec.describe SourceRecord, 'extract_oclcs' do
     expect(@s.extract_oclcs(@marc)).not_to include(155503032044020955233)
   end
 end
+
+RSpec.describe SourceRecord, 'extract_sudocs' do
+  before(:all) do
+    bogus = File.read(File.expand_path(File.dirname(__FILE__))+'/data/bogus_sudoc.json').chomp
+    @marc_bogus = MARC::Record.new_from_hash(JSON.parse(bogus))
+    legit = File.read(File.expand_path(File.dirname(__FILE__))+'/data/legit_sudoc.json').chomp
+    @marc_legit = MARC::Record.new_from_hash(JSON.parse(legit))
+    non = File.read(File.expand_path(File.dirname(__FILE__))+'/data/non_sudoc.json').chomp
+    @marc_non = MARC::Record.new_from_hash(JSON.parse(non))
+  end
+
+  #not much we can do about it
+  it "accepts bogus SuDocs" do
+    s = SourceRecord.new 
+    expect(s.extract_sudocs(@marc_bogus)).to eq(["XCPM 2.2:P 51 C 55/D/990"])
+  end
+
+  it "extracts good ones" do
+    s = SourceRecord.new
+    expect(s.extract_sudocs(@marc_legit)).to eq(["L 37.22/2:97-B"])
+  end
+
+  it "ignores non-SuDocs, uses non-SuDocs to filter out bogus" do
+    s = SourceRecord.new
+    s.extract_sudocs(@marc_non)
+    #has identified the bogus ones
+    expect(s.non_sudocs).to include('XCPM 2.2:P 51 C 55/D/990')
+    #uses non-Sudocs to filter out bogus
+    expect(s.sudocs).to eq([])
+    expect(s.invalid_sudocs).to include('XCPM 2.2:P 51 C 55/D/990')
+  end
+
+end
+
   
 RSpec.describe SourceRecord, '#extract_identifiers' do
   before(:all) do
