@@ -194,22 +194,31 @@ class SourceRecord
     marc.each_by_tag('086') do | field |
       # Supposed to be in 086/ind1=0, but some records are dumb. 
       if field['a'] 
-        if field.indicator1 == '0' 
+        # $2 says its not a sudoc
+        if !field['2'].nil? and field['2'] !~ /^sudoc/i
+          self.non_sudocs << field['a'].chomp
+          # if ind1 == 0 then it is also bad MARC
+          if field.indicator1 == '0' 
+            self.invalid_sudocs << field['a'].chomp
+          end
+
+        # ind1 says it is
+        elsif field.indicator1 == '0' #and no subfield $2 or $2 is sudoc
           self.sudocs << field['a'].chomp
-        elsif field['a'] =~ /:/ and field['2'] =~ /^sudoc/
+
+        #sudoc in $2 and it looks like one
+        elsif field['a'] =~ /:/ and field['2'] =~ /^sudoc/i
           self.sudocs << field['a'].chomp
+          
+        #it looks like one and it isn't telling us it isn't
         #bad MARC but too many to ignore
-        elsif field.indicator1.strip == '' and 
-              field['2'].nil? and 
-              field['a'] =~ /:/ 
+        elsif field.indicator1.strip == '' and field['a'] =~ /:/ and field['2'].nil? 
           self.sudocs << field['a'].chomp
           self.invalid_sudocs << field['a'].chomp
+
         #bad MARC and probably not a sudoc
         elsif field.indicator1.strip == '' and field['2'].nil?
           self.invalid_sudocs << field['a'].chomp
-        #legit 086 but not a sudoc. 
-        elsif field.indicator1.strip == '' and !field['2'].nil?
-          self.non_sudocs << field['a'].chomp
         end
       end
     end
