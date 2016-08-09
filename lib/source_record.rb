@@ -46,7 +46,7 @@ class SourceRecord
   field :source_blob, type: String
   field :source_id, type: String
   field :sudocs
-  field :invalid_sudocs
+  field :invalid_sudocs # bad MARC, not necessarily bad SuDoc
   field :non_sudocs
 
   #this stuff is extra ugly
@@ -195,7 +195,9 @@ class SourceRecord
       # Supposed to be in 086/ind1=0, but some records are dumb. 
       if field['a'] 
         # $2 says its not a sudoc
-        if !field['2'].nil? and field['2'] !~ /^sudoc/i
+        # except sometimes $2 is describing subfield z and 
+        # subfield a is in fact a SuDoc... seriously
+        if !field['2'].nil? and field['2'] !~ /^sudoc/i and field['z'].nil?
           self.non_sudocs << field['a'].chomp
           # if ind1 == 0 then it is also bad MARC
           if field.indicator1 == '0' 
