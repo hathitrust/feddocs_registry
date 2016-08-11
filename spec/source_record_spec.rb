@@ -182,6 +182,9 @@ RSpec.describe SourceRecord, 'is_govdoc' do
     #this file has both a Fed SuDoc and a state okdoc
     @fed_state = File.read(File.expand_path(File.dirname(__FILE__))+'/data/fed_state_sudoc.json').chomp
     @marc = MARC::Record.new_from_hash(JSON.parse(@fed_state))
+    @innd = File.read(File.expand_path(File.dirname(__FILE__))+'/data/innd_record.json').chomp
+    @innd_marc = MARC::Record.new_from_hash(JSON.parse(@innd))
+
   end
 
   it "detects govdociness" do
@@ -189,6 +192,11 @@ RSpec.describe SourceRecord, 'is_govdoc' do
     s.source = @fed_state
     expect(s.extract_sudocs(@marc).count).to be(1)
     expect(s.is_govdoc(@marc)).to be_truthy
+
+    s = SourceRecord.new
+    s.source = @innd
+    expect(s.is_govdoc).to be_truthy
+    expect(s.is_govdoc(@innd_marc)).to be_truthy
   end
 end
 
