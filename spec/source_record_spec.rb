@@ -145,6 +145,8 @@ RSpec.describe SourceRecord, 'extract_sudocs' do
     @marc_legit = MARC::Record.new_from_hash(JSON.parse(legit))
     non = File.read(File.expand_path(File.dirname(__FILE__))+'/data/non_sudoc.json').chomp
     @marc_non = MARC::Record.new_from_hash(JSON.parse(non))
+    fed_state = File.read(File.expand_path(File.dirname(__FILE__))+'/data/fed_state_sudoc.json').chomp
+    @marc_fs = MARC::Record.new_from_hash(JSON.parse(fed_state))
   end
 
   #not much we can do about it
@@ -156,6 +158,7 @@ RSpec.describe SourceRecord, 'extract_sudocs' do
   it "extracts good ones" do
     s = SourceRecord.new
     expect(s.extract_sudocs(@marc_legit)).to eq(["L 37.22/2:97-B"])
+    expect(s.extract_sudocs(@marc_fs)).to eq(["I 19.79:EC 7/OK/2005"])
   end
 
   it "ignores non-SuDocs, uses non-SuDocs to filter out bogus" do
@@ -166,8 +169,27 @@ RSpec.describe SourceRecord, 'extract_sudocs' do
     #uses non-Sudocs to filter out bogus
     expect(s.sudocs).to eq([])
     expect(s.invalid_sudocs).to include('XCPM 2.2:P 51 C 55/D/990')
+
+    s.extract_sudocs(@marc_fs)
+    expect(s.non_sudocs).to include('W 1700.9 E 19 2005')
+    expect(s.invalid_sudocs).to include('W 1700.9 E 19 2005')
   end
 
+end
+
+RSpec.describe SourceRecord, 'is_govdoc' do
+  before(:all) do
+    #this file has both a Fed SuDoc and a state okdoc
+    @fed_state = File.read(File.expand_path(File.dirname(__FILE__))+'/data/fed_state_sudoc.json').chomp
+    @marc = MARC::Record.new_from_hash(JSON.parse(@fed_state))
+  end
+
+  it "detects govdociness" do
+    s = SourceRecord.new
+    s.source = @fed_state
+    expect(s.extract_sudocs(@marc).count).to be(1)
+    expect(s.is_govdoc(@marc)).to be_truthy
+  end
 end
 
   

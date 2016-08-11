@@ -171,12 +171,9 @@ class SourceRecord
   def is_govdoc marc=nil
     marc ||= MARC::Record.new_from_hash(self.source)
    
-    #008
-    fields = marc['fields'].find {|f| f['008'] }
-    
     #if fields.nil? #rare but happens let rescue handle it
-
-    field_008 = fields['008']
+    field_008 = marc['008'] 
+    field_008 ||= ''
     field_008 =~ /^.{17}u.{10}f/ or self.sudocs.count > 0 or self.extract_sudocs(marc).count > 0
   rescue
     false
