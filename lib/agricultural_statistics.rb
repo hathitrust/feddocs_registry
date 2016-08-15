@@ -17,6 +17,7 @@ module AgriculturalStatistics
     #some junk in the front
     ec_string.gsub!(/^HD1751 . A43 /, '')
     ec_string.gsub!(/^V\. /, '')
+    ec_string.gsub(/ *C\. 1 */, '')
     #these are insignificant
     ec_string.gsub!(/[()]/, '')
     #some junk at the end
