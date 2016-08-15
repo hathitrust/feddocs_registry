@@ -8,6 +8,7 @@ require 'yaml'
 require 'digest'
 require 'federal_register'
 require 'statutes_at_large'
+require 'agricultural_statistics'
 
 class SourceRecord
   include Mongoid::Document
@@ -404,14 +405,14 @@ class SourceRecord
               ecs[Digest::SHA256.hexdigest(canonical)] ||= features 
               ecs[Digest::SHA256.hexdigest(canonical)].merge( features )
             end
-          else
+          else #parsed not explodeable
             ecs[Digest::SHA256.hexdigest(ec_string)] ||= parsed_ec
             ecs[Digest::SHA256.hexdigest(ec_string)].merge( parsed_ec )
           end
-        else 
+        else  #not parseable
           ecs[Digest::SHA256.hexdigest(ec_string)] = {'string'=>ec_string}
         end
-      else
+      else #unknown series, do nothing. todo: default enumchron processing?
         #we got nothing, raw string with no features
         ecs[Digest::SHA256.hexdigest(ec_string)] = {'string'=>ec_string}
       end
@@ -431,6 +432,8 @@ class SourceRecord
       @series = 'FederalRegister'
     when (self.oclc_resolved.map{|o|o.to_i} & StatutesAtLarge.oclcs).count > 0
       @series = 'StatutesAtLarge'
+    when (self.oclc_resolved.map{|o|o.to_i} & AgriculturalStatistics.oclcs).count > 0
+      @series = 'AgriculturalStatistics'
     end
     @series
   end

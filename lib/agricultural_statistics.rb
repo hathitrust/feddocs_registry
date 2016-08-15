@@ -14,24 +14,44 @@ module AgriculturalStatistics
   end
   
   def self.parse_ec ec_string
-    #fix the three digit years
-    if ec_string =~ /^9\d\d[^0-9]*/
-      ec_string = '1' + ec_string
-    end
     #some junk in the front
     ec_string.gsub!(/^HD1751 . A43 /, '')
     ec_string.gsub!(/^V\. /, '')
     #these are insignificant
     ec_string.gsub!(/[()]/, '')
+    #some junk at the end
+    ec_string.gsub!(/ P77-\d+$/, '')
+    #we don't care if it's a cd
+    #2011/CD
+    ec_string.gsub!(/\/CD$/,'')
+    #2002 1 CD WITH CASE IN BINDER.
+    #2009 1 CD + 1 CASE NO PAPER INSERT
+    ec_string.gsub!(/ 1 CD .*$/,'')
+    #995-96 CD
+    ec_string.gsub!(/ CD$/, '')
+
+
+    #fix the three digit years
+    if ec_string =~ /^9\d\d[^0-9]*/
+      ec_string = '1' + ec_string
+    end
 
     #simple year
     #2008 /* 264 */
     m ||= /^(?<year>\d{4})$/.match(ec_string)
 
-    #year range /* 70 */
+    #year range /* 79 */
     # 989-990
     # 1961-1963
     m ||= /^(?<start_year>\d{4})[-\/](?<end_year>\d{2,4})$/.match(ec_string)
+
+    # multiple years
+    # 1946, 1948
+    # 1995/1996-1997
+    # we'll leave this for explode ?
+    # basically we know what they are but it doesn't make sense to handle them here
+    m ||= /^(?<multi_year_comma>\d{4}(, \d{4})+)$/.match(ec_string)
+    m ||= /^(?<multi_year_ec>\d{4}\/\d{4}-\d{4})$/.match(ec_string)
 
     if !m.nil?
       ec = Hash[ m.names.zip( m.captures ) ]
@@ -46,6 +66,7 @@ module AgriculturalStatistics
 
 
   # take a parsed enumchron and expand it into its constituent parts
+  # real simple for this series
   # enum_chrons - { <canonical ec string> : {<parsed features>}, }
   #
   def self.explode ec
@@ -54,14 +75,26 @@ module AgriculturalStatistics
       return {}
     end
 
-    #if ec['volume'] and ec['part']
-    #  key = "Volume:#{ec['volume']}, Part:#{ec['part']}"
-    #  if ec['start_page']
-    #    key << ", Pages:#{ec['start_page']}-#{ec['end_page']}"
-    #  end
-    #  enum_chrons[key] = ec
-    #end
-
+    if ec['year']
+      enum_chrons[ec['year']] = ec
+    elsif ec['start_year'] and ec['end_year']
+      #special stupidity
+      if ec['start_year'] == '1995' and ec['end_year'] == '1996'
+        enum_chrons['1995-1996'] = ec
+      else
+        for year in ec['start_year']..ec['end_year']
+          enum_chrons[year] = ec
+        end
+      end
+    elsif ec['multi_year_comma']
+      ec['multi_year_comma'].split(/, */).each do |year|
+        enum_chrons[year] = ec
+      end
+    elsif ec['multi_year_ec'] == '1995/1996-1997' #so dumb
+      enum_chrons['1995-1996'] = ec
+      enum_chrons['1997'] = ec
+    end
+    
     enum_chrons
   end
 
