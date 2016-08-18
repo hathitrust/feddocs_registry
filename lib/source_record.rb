@@ -437,7 +437,7 @@ class SourceRecord
     marc.each_by_tag('974') do |field|
       z = field['z']
       z ||= ''
-      ec_string = Normalize.enum_chron(field['z'])
+      ec_string = Normalize.enum_chron(z)
 
       #possible to parse/explode one enumchron into many for select series
       ecs = []
