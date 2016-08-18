@@ -461,13 +461,16 @@ class SourceRecord
 
       ecs.each do |ec|
         # add to holdings field
-        self.holdings[ec] ||= [] #array of holdings for this enumchron
-        self.holdings[ec] << {c:field['c'], 
-                              z:field['z'],
-                              y:field['y'],
-                              r:field['r'],
-                              s:field['s'],
-                              u:field['u']}
+        # we can't use a raw string because Mongo doesn't like '.' in fields
+        ec_digest = Digest::SHA256.hexdigest(ec)
+        self.holdings[ec_digest] ||= [] #array of holdings for this enumchron
+        self.holdings[ec_digest] << { ec:ec,
+                                      c:field['c'], 
+                                      z:field['z'],
+                                      y:field['y'],
+                                      r:field['r'],
+                                      s:field['s'],
+                                      u:field['u']}
       end
     end #each 974
   end

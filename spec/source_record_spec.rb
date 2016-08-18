@@ -280,8 +280,10 @@ RSpec.describe SourceRecord, '#extract_holdings' do
   end
   
   it 'transforms 974s into a holdings field' do
-    expect(@src.holdings.keys).to include('V. 4')
-    expect(@src.holdings['V. 5'].count).to be(1)
-    expect(@src.holdings['V. 5'][0][:u]).to eq('mdp.39015034759749')
+    v4_dig = Digest::SHA256.hexdigest('V. 4')
+    v5_dig = Digest::SHA256.hexdigest('V. 5')
+    expect(@src.holdings.keys).to include(v4_dig)
+    expect(@src.holdings[v5_dig].count).to be(1)
+    expect(@src.holdings[v5_dig][0][:u]).to eq('mdp.39015034759749')
   end
 end
