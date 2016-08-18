@@ -271,6 +271,17 @@ RSpec.describe SourceRecord, '#extract_enum_chron_strings' do
     sr = SourceRecord.where({sudocs:"Y 4.P 84/11:AG 8", org_code:"cic"}).first
     expect(sr.extract_enum_chron_strings).to eq([])
   end
-
 end
 
+RSpec.describe SourceRecord, '#extract_holdings' do
+  before(:all) do
+    @src = SourceRecord.where(org_code:"miaahdl").first
+    @src.extract_holdings
+  end
+  
+  it 'transforms 974s into a holdings field' do
+    expect(@src.holdings.keys).to include('V. 4')
+    expect(@src.holdings['V. 5'].count).to be(1)
+    expect(@src.holdings['V. 5'][0][:u]).to eq('mdp.39015034759749')
+  end
+end

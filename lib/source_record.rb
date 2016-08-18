@@ -28,6 +28,7 @@ class SourceRecord
   field :ec
   field :file_path, type: String
   field :formats, type: Array
+  field :holdings
   field :in_registry, type: Boolean, default: false
   field :isbns
   field :isbns_normalized
@@ -88,6 +89,9 @@ class SourceRecord
       else
         fields['string']
       end
+    end
+    if self.org_code == 'miaahdl'
+      self.extract_holdings
     end
   end
 
@@ -419,6 +423,53 @@ class SourceRecord
     end
     ecs 
   end
+
+  # extract_holdings 
+  #
+  # Currently designed for HT records that have individual holding info in 974.
+  # Transform those into a coherent holdings field grouped by normalized/parsed
+  # enum_chrons.
+  # holdings = {<ec_string> :[<each holding>]
+  # todo: refactor with extract_enum_chrons. A lot of duplicate code/work being done
+  def extract_holdings marc=nil
+    self.holdings = {}
+    marc ||= MARC::Record.new_from_hash(self.source)
+    marc.each_by_tag('974') do |field|
+      ec_string = Normalize.enum_chron(field['z'])
+
+      #possible to parse/explode one enumchron into many for select series
+      ecs = []
+      if self.series.nil? or self.series == ''
+        ecs << ec_string
+      else
+        parsed_ec = eval(self.series).parse_ec ec_string
+        if !parsed_ec.nil?
+          exploded = eval(self.series).explode(parsed_ec)
+          if exploded.keys.count() > 0
+            exploded.each do | canonical, features |
+              ecs << canonical
+            end
+          else #parseable not explodeable
+            ecs << ec_string
+          end
+        else #not parseable
+          ecs << ec_string
+        end
+      end
+
+      ecs.each do |ec|
+        # add to holdings field
+        self.holdings[ec] ||= [] #array of holdings for this enumchron
+        self.holdings[ec] << {c:field['c'], 
+                              z:field['z'],
+                              y:field['y'],
+                              r:field['r'],
+                              s:field['s'],
+                              u:field['u']}
+      end
+    end #each 974
+  end
+    
 
   # series
   #
