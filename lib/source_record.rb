@@ -81,8 +81,9 @@ class SourceRecord
     s = JSON.parse(value)
     super(s)
     @@collator.normalize_viaf(s).each {|k, v| self.send("#{k}=",v) }
-    self.extract_identifiers
-    self.ec = self.extract_enum_chrons
+    marc = MARC::Record.new_from_hash(self.source)
+    self.extract_identifiers marc
+    self.ec = self.extract_enum_chrons marc
     self.enum_chrons = self.ec.collect do | k,fields |
       if !fields['canonical'].nil?
         fields['canonical']
@@ -91,7 +92,7 @@ class SourceRecord
       end
     end
     if self.org_code == 'miaahdl'
-      self.extract_holdings
+      self.extract_holdings marc
     end
   end
 
@@ -106,7 +107,7 @@ class SourceRecord
   end
 
   # Extracts and normalizes identifiers from self.source
-  def extract_identifiers
+  def extract_identifiers marc=nil
     self.org_code ||= "" #should be set on ingest. 
     self.oclc_alleged ||= []
     self.oclc_resolved ||= []
@@ -119,7 +120,7 @@ class SourceRecord
     self.isbns_normalized ||= []
     self.formats ||= []
   
-    marc = MARC::Record.new_from_hash(self.source)
+    marc ||= MARC::Record.new_from_hash(self.source)
     self.extract_oclcs marc 
     self.extract_sudocs marc
     self.extract_lccns marc
