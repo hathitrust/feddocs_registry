@@ -23,6 +23,19 @@ RSpec.describe SourceRecord do
     expect(new_sr.enum_chrons).to include('Volume:123, Part:1')
     #puts new_sr.ec
   end
+
+  it "chokes when there is '$' in MARC subfield names" do
+    #Mongo doesn't like $ in field names. Occasionally, these show up when
+    #MARC subfields get messed up. (GPO). This should throw an error.
+    rec = File.read(File.expand_path(File.dirname(__FILE__))+'/data/dollarsign.json').chomp
+    marc = MARC::Record.new_from_hash(JSON.parse(rec))
+    sr = SourceRecord.new
+    sr.org_code = "dgpo"
+    sr.source = rec
+    sr.source_blob = rec
+    #expect(sr.source['fields'].select {|f| f.keys[0] == '040'}[0]['040']['subfields'].select {|sf| sf.keys[0] == 'dollarsign'}.count).to be > 0 
+    expect{sr.save}.to raise_error(BSON::String::IllegalKey)
+  end
 end
 
 
@@ -258,6 +271,7 @@ RSpec.describe SourceRecord, '#extract_enum_chrons' do
     sr_new.series = 'FederalRegister'
     sr_new.source = line
     expect(sr_new.enum_chrons).to include("Volume:77, Number:67")
+    expect(sr_new.org_code).to eq("miu")
   end
 end
 
