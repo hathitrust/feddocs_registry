@@ -491,6 +491,8 @@ class SourceRecord
       @series = 'StatutesAtLarge'
     when (self.oclc_resolved.map{|o|o.to_i} & AgriculturalStatistics.oclcs).count > 0
       @series = 'AgriculturalStatistics'
+    when (self.oclc_resolved.map{|o|o.to_i} & StatisticalAbstract.oclcs).count > 0
+      @series = 'StatisticalAbstract'
     end
     @series
   end
