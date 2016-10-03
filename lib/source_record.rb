@@ -9,6 +9,7 @@ require 'digest'
 require 'federal_register'
 require 'statutes_at_large'
 require 'agricultural_statistics'
+require 'statistical_abstract'
 
 class SourceRecord
   include Mongoid::Document
