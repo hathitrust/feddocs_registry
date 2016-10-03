@@ -43,7 +43,7 @@ class RegistryRecord
       
     @sources.each do |s|
       if !s.series.nil? and s.series != ''
-        self.series = s.series
+        self.series = s.series.gsub(/([A-Z])/, ' \1').strip
       end
     end
 

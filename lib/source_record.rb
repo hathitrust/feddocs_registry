@@ -10,6 +10,12 @@ require 'federal_register'
 require 'statutes_at_large'
 require 'agricultural_statistics'
 require 'statistical_abstract'
+require 'united_states_reports'
+require 'congressional_record'
+require 'economic_report_of_the_president'
+require 'foreign_relations'
+require 'congressional_serial_set'
+require 'civil_rights_commission'
 
 class SourceRecord
   include Mongoid::Document
@@ -494,6 +500,18 @@ class SourceRecord
       @series = 'AgriculturalStatistics'
     when (self.oclc_resolved.map{|o|o.to_i} & StatisticalAbstract.oclcs).count > 0
       @series = 'StatisticalAbstract'
+    when (self.oclc_resolved.map{|o|o.to_i} & UnitedStatesReports.oclcs).count > 0
+      @series = 'UnitedStatesReports'
+    when self.sudocs.grep(/^#{Regexp.escape(CongressionalRecord.sudoc_stem)}/).count > 0
+      @series = 'CongressionalRecord'
+    when self.sudocs.grep(/^#{Regexp.escape(ForeignRelations.sudoc_stem)}/).count > 0
+      @series = 'ForeignRelations'
+    when self.sudocs.grep(/^#{Regexp.escape(CongressionalSerialSet.sudoc_stem)}/).count > 0
+      @series = 'CongressionalSerialSet'
+    when self.sudocs.grep(/^#{Regexp.escape(EconomicReportOfThePresident.sudoc_stem)}/).count > 0
+      @series = 'EconomicReportOfThePresident'
+    when self.sudocs.grep(/^#{Regexp.escape(CivilRightsCommission.sudoc_stem)}/).count > 0
+      @series = 'CivilRightsCommission'
     end
     @series
   end
