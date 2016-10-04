@@ -500,7 +500,8 @@ class SourceRecord
       @series = 'AgriculturalStatistics'
     when (self.oclc_resolved.map{|o|o.to_i} & StatisticalAbstract.oclcs).count > 0
       @series = 'StatisticalAbstract'
-    when (self.oclc_resolved.map{|o|o.to_i} & UnitedStatesReports.oclcs).count > 0
+    when ((self.oclc_resolved.map{|o|o.to_i} & UnitedStatesReports.oclcs).count > 0 or
+      self.sudocs.grep(/^#{Regexp.escape(UnitedStatesReports.sudoc_stem)}/).count > 0)
       @series = 'UnitedStatesReports'
     when self.sudocs.grep(/^#{Regexp.escape(CongressionalRecord.sudoc_stem)}/).count > 0
       @series = 'CongressionalRecord'
@@ -508,7 +509,8 @@ class SourceRecord
       @series = 'ForeignRelations'
     when self.sudocs.grep(/^#{Regexp.escape(CongressionalSerialSet.sudoc_stem)}/).count > 0
       @series = 'CongressionalSerialSet'
-    when self.sudocs.grep(/^#{Regexp.escape(EconomicReportOfThePresident.sudoc_stem)}/).count > 0
+    when (self.sudocs.grep(/^#{Regexp.escape(EconomicReportOfThePresident.sudoc_stem)}/).count > 0 or
+      (self.oclc_resolved.map{|o|o.to_i} & EconomicReportOfThePresident.oclcs).count > 0)
       @series = 'EconomicReportOfThePresident'
     when self.sudocs.grep(/^#{Regexp.escape(CivilRightsCommission.sudoc_stem)}/).count > 0
       @series = 'CivilRightsCommission'

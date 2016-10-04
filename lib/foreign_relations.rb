@@ -18,8 +18,21 @@ module ForeignRelations
   end
   
   def self.parse_ec ec_string
-=begin
+    #some junk in the back
+    ec_string.gsub!(/ COPY$/, '')
     #some junk in the front
+    ec_string.gsub!(/^KZ233 . U55 /, '')
+
+    #fix the three digit years
+    if ec_string =~ /^[89]\d\d[^0-9]*/
+      ec_string = '1' + ec_string
+    end
+    #seriously 
+    if ec_string =~ /^0\d\d[^0-9]*/
+      ec_string = '2' + ec_string
+    end
+
+=begin
     ec_string.gsub!(/REEL \d+.* P77-/, '')
     ec_string.gsub!(/^A V\./, 'V.')
     ec_string.gsub!(/^: /, '')
@@ -33,156 +46,68 @@ module ForeignRelations
     #remove unnecessary crap
     ec_string.gsub!(/ ?= ?[0-9]+.*/, '')
 
-    #remove useless 'copy' information
-    ec_string.gsub!(/ C(OP)?\. \d$/, '')
-
-    #we don't care about withdrawn status for enumchron parsing
-    ec_string.gsub!(/ - WD/, '')
-
-    #fix the three digit years
-    if ec_string =~ /^[89]\d\d[^0-9]*/
-      ec_string = '1' + ec_string
-    end
-    #seriously 
-    if ec_string =~ /^0\d\d[^0-9]*/
-      ec_string = '2' + ec_string
-    end
-
     #sometimes years get duplicated
     ec_string.gsub!(/(?<y>\d{4}) \k<y>/, '\k<y>')
+=end
 
     #simple year
-    #2008 /* 257 */
+    #2008 /* 68 */
     #(2008)
     m ||= /^\(?(?<year>\d{4})\)?$/.match(ec_string)
 
-    #edition prefix /* 316 */
-    #101ST 1980
-    #101ST (1980)
-    #101ST ED. 1980
-    #101ST ED. (1980)
-    m ||= /^(?<edition>\d{1,3})(TH|ST|ND|RD)? (ED\.)? ?\(?(?<year>\d{4})\)?$/.match(ec_string)
+    # V. 4 1939 /* 154 */
+    m ||= /^V\. (?<volume>\d{1,3}) (?<year>\d{4})$/.match(ec_string)
 
-    # edition/volume prefix then year /* 177 */
-    # V. 2007
-    # V. 81 1960
-    # V. 81 (1960)
-    # V. 81 (960)
-    m ||= /^V\. ?(NO\.? )?(?<edition>\d{1,3})? \(?(?<year>\d{3,4})\)?$/.match(ec_string)
+    # V. 1969-76:9 /* 140 */
+    # V. 1969-76/V. 1 
+    m ||= /^V\. (?<start_year>\d{4})-(?<end_year>\d{2})[:\/](V\. )?(?<volume>\d{1,2})$/.match(ec_string)
 
-    # just edition/volume /* 55 */
-    m ||= /^(V\.? ? )?(?<edition>\d{1,3})$/.match(ec_string)
+    # V. 1950/V. 3 /* 149 */
+    m ||= /^V\. (?<year>\d{4})\/V\. (?<volume>\d{1,2})$/.match(ec_string)
 
-    #1971 (92ND ED. ) /* 83 */
-    #1971 92ND ED.
-    m ||= /^(?<year>\d{4}) \(?(?<edition>\d{1,3})(TH|ST|ND|RD) ED\. ?\)?$/.match(ec_string)
+    # V. 3(1928) /* 370 */
+    m ||= /^V\. (?<volume>\d{1,2})\((?<year>\d{4})\)$/.match(ec_string)
 
-    #1930 (NO. 52) /* 54 */
-    m ||= /^(?<year>\d{4}) \(NO\. (?<edition>\d{1,3})\)$/.match(ec_string)
+    # V. 2 1958-1960 /* 98 */
+    m ||= /^V\. (?<volume>\d{1,2}) (?<start_year>\d{4})-(?<end_year>\d{2,4})$/.match(ec_string)
 
-    # edition year /* 66 */
-    # 92 1971
-    m ||= /^(?<edition>\d{1,3})D? (?<year>\d{4})$/.match(ec_string)
+    # wut?
+    # V. 1914  /* 41 */
+    m ||= /^V\. (?<year>\d{4})$/.match(ec_string)
 
-    # 94TH,1973 /* 100 */
-    m ||= /^(?<edition>\d{1,3})(TH|ST|ND|RD)?, ?(?<year>\d{4})$/.match(ec_string)
+    # V. 1951/V. 7/PT. 2 /* 7 */
+    m ||= /^V\. (?<year>\d{4})\/V\. (?<volume>\d{1,2})\/PT\. (?<part>\d{1,2})$/.match(ec_string)
 
-    # 43RD(1920)
-    m ||= /^(?<edition>\d{1,3})(TH|ST|ND|RD)\((?<year>\d{4})\)$/.match(ec_string)
+    # V. 1952-54/V. 11/PT. 1 /* 31 */
+    m ||= /^V\. (?<start_year>\d{4})-(?<end_year>\d{2,4})\/V\. (?<volume>\d{1,2})\/PT\. (?<part>\d{1,2})$/.match(ec_string)
 
-    # 54TH NO. 1932 /* 54 */
-    m ||= /^(?<edition>\d{1,3})(TH|ST|ND|RD) NO\. (?<year>\d{4})$/.match(ec_string)
+    # 1934, V. 5 /* 743 */
+    # 1934,V. 5
+    # 1934: V. 5
+    # 1934:V. 5
+    # 1919/V. 2
+    m ||= /^(?<year>\d{4})[,:\/]? ?V\. (?<volume>\d{1,2})$/.match(ec_string)
 
-    # 110TH /* */
-    # 110TH ED.
-    m ||= /^(?<edition>\d{1,3})(TH|ST|ND|RD)( ED\.)?$/.match(ec_string)
+    # 1969-76:V. 14 /* 890 */
+    m ||= /^(?<start_year>\d{4})-(?<end_year>\d{2,4})[,:\/]? ?V\. (?<volume>\d{1,2})$/.match(ec_string)
+   
+    # 952-954/V. 11:PT. 1 /* 25 */ 
+    m ||= /^(?<start_year>\d{4})-(?<end_year>\d{2,4})\/V\. (?<volume>\d{1,2}):PT\. (?<part>\d{1,2})$/.match(ec_string)
+    # 948/V. 1:PT. 1
+    m ||= /^(?<year>\d{4})\/V\. (?<volume>\d{1,2}):PT\. (?<part>\d{1,2})$/.match(ec_string)
 
-    # V. 2010 129 ED /* 13 */
-    # V. 2010 ED 129
-    m ||= /^V\. (?<year>\d{4}) (ED\.? )?(?<edition>\d{1,3})( ED\.?)?$/.match(ec_string)
+    # V. 7 PT. 1 1949
+    # V. 6, PT. 2 1952-1954
+    m ||= /^V\. (?<volume>\d{1,2}),? PT\. (?<part>\d{1,2}) (?<year>\d{4})$/.match(ec_string)
+    m ||= /^V\. (?<volume>\d{1,2}),? PT\. (?<part>\d{1,2}) (?<start_year>\d{4})-(?<end_year>\d{2,4})$/.match(ec_string)
 
+    # PARIS V. 10 1919 /* 13 */
+    m ||= /^(?<paris>PARIS) V\. (?<volume>\d{1,2}) (?<year>\d{4})$/.match(ec_string)
 
-    #year range /* */
-    # 989-990
-    # 1961-1963
-    # V. 2004-2005 124
-    m ||= /^(V\. )?(?<start_year>\d{4})[-\/](?<end_year>\d{2,4})( (?<edition>\d{1,3}))?$/.match(ec_string)
+    # 1969/76:V. 14 /* 214 */
+    # 1969/1976:V. 14
+    m ||= /^(?<start_year>\d{4})\/(?<end_year>\d{2,4}):V\. (?<volume>\d{1,2})$/.match(ec_string)
 
-
-    #122ND ED. (2002/2003)
-    #103RD (1982-1983)
-    #122ND EDITION 2002
-    #122ND ED. (2002/2003)
-    #122ND EDITION 2002
-    # 103RD ED. (1982-1983)
-    m ||= /^(?<edition>\d{1,3})(TH|ST|ND|RD)( ED\.| EDITION)? \(?((?<year>\d{4})|(?<start_year>\d{4})[\/-](?<end_year>\d{2,4}))\)?$/.match(ec_string)
-
-    # ED. 127 2008
-    # V. 103 1982-83
-    # V. 103 1982/83
-    m ||= /^(ED\.|V\.) (?<edition>\d{1,3}) ((?<year>\d{4})|(?<start_year>\d{4})[-\/](?<end_year>\d{2,4}))$/.match(ec_string)
-
-    # 26-27 (903-904)
-    m ||= /^(?<start_edition>\d{1,2})-(?<end_edition>\d{1,2}) \((?<start_year>\d{3,4})-(?<end_year>\d{3,4})\)$/.match(ec_string)
-
-    # 1973-1974 P83-1687
-    m ||= /^(?<start_year>\d{4})-(?<end_year>\d{2,4}) P83.*/.match(ec_string)
-
-    # 1878-82 (NO. 1-5)
-    # 1883-87 (NO. 6-10)
-    # 1944-45 (NO. 66)
-    m ||= /^(?<start_year>\d{4})-(?<end_year>\d{2,4}) \(NO\. ((?<start_edition>\d{1,3})-(?<end_edition>\d{1,3})|(?<edition>\d{1,3}))\)$/.match(ec_string)
-
-    # 101(1980)
-    # 103 1982-83
-    # 103D 1982-83
-    # 103RD,1982/83
-    m ||= /^(?<edition>\d{1,3})(TH|ST|ND|RD|D)?[\( ,]\(?((?<start_year>\d{4})[-\/](?<end_year>\d{2,4})|(?<year>\d{4}))\)?$/.match(ec_string)
-
-    # V. 16-17 1893-94
-    # V. 7-8 1884-85
-    # V. 9-11 1887-1889
-    m ||= /^V\. (?<start_edition>\d{1,3})-(?<end_edition>\d{1,3}) (?<start_year>\d{4})-(?<end_year>\d{2,4})$/.match(ec_string)
-
-    # (2004-2005)
-    m ||= /^\((?<start_year>\d{4})-(?<end_year>\d{2,4})\)$/.match(ec_string)
-
-    # 11 (888)
-    # 49 (926 )
-    # NO. 20(1897)
-    m ||= /^(NO\. )?(?<edition>\d{1,3}) ?\((?<year>\d{3,4}) ?\)$/.match(ec_string)
-    
-
-    # 130H ED. (2011)
-    # 130TH ED. ,2011
-    # 131ST ED. ,2012
-    m ||= /^(?<edition>\d{1,3})(H|TH|ST|ND|RD|D)? ED[\.,] [\(,]?(?<year>\d{4})\)?$/.match(ec_string)
-
-    # 12TH-13TH,1889-90
-    # 12TH-13TH NO. 1889-1890
-    # 14TH-15TH,1891-92
-    # 16TH-17TH,1893-94
-    # 1ST-4TH NO. 1878-1881
-    # 10TH-11TH NO. 1887-1888
-    m ||= /^(?<start_edition>\d{1,3})(TH|ST|ND|RD)-(?<end_edition>\d{1,3})(TH|ST|ND|RD)(,| NO\. )(?<start_year>\d{4})-(?<end_year>\d{2,4})$/.match(ec_string)
-
-    # 1982-83 (103RD ED.)
-    # 1982/83 (103RD ED.)
-    m ||= /^(?<start_year>\d{4})[-\/](?<end_year>\d{2,4}) \(?(?<edition>\d{1,3})(TH|ST|ND|RD) ED\.\)?$/.match(ec_string)
-
-    # broader than it should be, but run close to last it should be okay
-    # 1988 (108TH EDITION)
-    # 2006, 125TH ED.
-    m ||= /^(V\. )?(?<year>\d{4})[, ]\D+(?<edition>\d{1,3})(\D+|$)/.match(ec_string)
-
-    # hypothetical
-    # 7TH-9TH
-    m ||= /^(?<start_edition>\d{1,3})(TH|ST|ND|RD)-(?<end_edition>\d{1,3})(TH|ST|ND|RD)$/.match(ec_string)
-    
-    # 129TH ED. 2010 129 ED.
-    # 129 2010 ED. 129
-    m ||= /^(?<edition>\d{1,3})(TH|ST|ND|RD| )\D*(?<year>\d{4})(\D|$)/.match(ec_string)
-=end
     if !m.nil?
       ec = Hash[ m.names.zip( m.captures ) ]
       #remove nils
@@ -223,52 +148,21 @@ module ForeignRelations
 
 
   # Take a parsed enumchron and expand it into its constituent parts
-  # Real simple for this series because we have the complete list and can
-  # perform a lookup using edition or year. 
   # enum_chrons - { <canonical ec string> : {<parsed features>}, }
   #
-  # Canonical string format: <edition number>, <year>-<year>
   def self.explode ec
     enum_chrons = {} 
     if ec.nil?
       return {}
     end
-=begin
-    #we will trust edition more than year so start there
-    if ec['edition']
-      canon = StatisticalAbstract.editions[ec['edition']]
-      if canon
-        enum_chrons[canon] = ec
-      end
-    elsif ec['start_edition'] and ec['end_edition']
-      #might end up with duplicates for the combined years. Won't matter
-      for ed in ec['start_edition']..ec['end_edition']
-        canon = StatisticalAbstract.editions[ed]
-        if canon
-          enum_chrons[canon] = ec
-        end
-      end
-    elsif ec['year'] 
-      canon = StatisticalAbstract.years[ec['year']]
-      if canon
-        enum_chrons[canon] = ec
-      end
-    elsif ec['start_year'] and ec['end_year']
-      for y in ec['start_year']..ec['end_year']
-        canon = StatisticalAbstract.years[y]
-        if canon
-          enum_chrons[canon] = ec
-        end
-      end
-    end #else enum_chrons still equals {}
-=end 
+
     enum_chrons
   end
 
   def self.parse_file
     @no_match = 0
     @match = 0
-    input = File.dirname(__FILE__)+'/../data/usreports_enumchrons.txt'
+    input = File.dirname(__FILE__)+'/../data/foreign_relations_enumchrons.txt'
     open(input, 'r').each do | line |
       line.chomp!
 
@@ -283,8 +177,8 @@ module ForeignRelations
 
     end
 
-    puts "US Reports match: #{@match}"
-    puts "US Reports no match: #{@no_match}"
+    puts "Foreign Relations match: #{@match}"
+    puts "Foreign Relations no match: #{@no_match}"
     return @match, @no_match
   end
 

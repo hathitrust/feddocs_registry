@@ -24,6 +24,6 @@ end
 
 describe "oclcs" do
   it "has an oclcs field" do
-    #expect(UnitedStatesReports.oclcs).to include(10648533)
+    expect(EconomicReportOfThePresident.oclcs).to eq([3160302, 8762269, 8762232])
   end
 end

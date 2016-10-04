@@ -1,6 +1,7 @@
 require 'pp'
 require 'source_record'
 =begin
+  Yearly, in multiple parts. We need to look at pub_date for monographs. 
 =end
 
 module EconomicReportOfThePresident
@@ -10,11 +11,11 @@ module EconomicReportOfThePresident
   @editions = {}
 
   def self.sudoc_stem
-           'Y 4.EC 7:EC 7/2/'
+    'Y 4.EC 7:EC 7/2/'
   end
 
   def self.oclcs 
-    #[10648533, 1768670]
+    [3160302, 8762269, 8762232]
   end
   
   def self.parse_ec ec_string

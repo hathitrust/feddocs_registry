@@ -9,6 +9,10 @@ module UnitedStatesReports
   @years = {}
   @editions = {}
 
+  def self.sudoc_stem
+    'JU 6.8'
+  end
+
   def self.oclcs 
     [10648533, 1768670]
   end
