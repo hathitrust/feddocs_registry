@@ -15,7 +15,6 @@ require 'congressional_record'
 require 'economic_report_of_the_president'
 require 'foreign_relations'
 require 'congressional_serial_set'
-require 'civil_rights_commission'
 
 class SourceRecord
   include Mongoid::Document
@@ -47,6 +46,7 @@ class SourceRecord
   field :oclc_alleged
   field :oclc_resolved
   field :org_code, type: String, default: "miaahdl"
+  field :pub_date
   field :publisher_headings
   field :publisher_normalized
   field :publisher_viaf_ids
@@ -61,6 +61,9 @@ class SourceRecord
   #this stuff is extra ugly
   Dotenv.load
   @@collator = Collator.new(__dir__+'/../config/traject_config.rb')
+  @@extractor = Traject::Indexer.new
+  @@extractor.load_config_file(__dir__+'/../config/traject_config.rb')
+
   @@contrib_001 = {}
   open(__dir__+'/../config/contributors_w_001_oclcs.txt').each{ |l| @@contrib_001[l.chomp] = 1 }
 
@@ -89,6 +92,7 @@ class SourceRecord
     super(s)
     @@collator.normalize_viaf(s).each {|k, v| self.send("#{k}=",v) }
     marc = MARC::Record.new_from_hash(self.source)
+    self.pub_date = @@extractor.map_record(marc)['pub_date']
     self.extract_identifiers marc
     self.ec = self.extract_enum_chrons marc
     self.enum_chrons = self.ec.collect do | k,fields |
@@ -512,8 +516,6 @@ class SourceRecord
     when (self.sudocs.grep(/^#{Regexp.escape(EconomicReportOfThePresident.sudoc_stem)}/).count > 0 or
       (self.oclc_resolved.map{|o|o.to_i} & EconomicReportOfThePresident.oclcs).count > 0)
       @series = 'EconomicReportOfThePresident'
-    when self.sudocs.grep(/^#{Regexp.escape(CivilRightsCommission.sudoc_stem)}/).count > 0
-      @series = 'CivilRightsCommission'
     end
     @series
   end

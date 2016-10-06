@@ -50,6 +50,12 @@ RSpec.describe SourceRecord do
     expect(sr.source_id.length).to eq(36)
   end
 
+  it "sets the publication date" do
+    sr = SourceRecord.new
+    sr.source = @raw_source
+    expect(sr.pub_date).to eq([1965])
+  end
+
   it "timestamps on save" do
     sr = SourceRecord.new
     sr.save 
