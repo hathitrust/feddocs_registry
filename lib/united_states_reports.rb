@@ -181,8 +181,8 @@ module UnitedStatesReports
     
     # 129TH ED. 2010 129 ED.
     # 129 2010 ED. 129
-    m ||= /^(?<edition>\d{1,3})(TH|ST|ND|RD| )\D*(?<year>\d{4})(\D|$)/.match(ec_string)
 =end
+    m ||= /^(?<edition>\d{1,3})(TH|ST|ND|RD| )\D*(?<year>\d{4})(\D|$)/.match(ec_string)
     if !m.nil?
       ec = Hash[ m.names.zip( m.captures ) ]
       #remove nils

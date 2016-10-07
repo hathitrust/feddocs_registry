@@ -51,12 +51,12 @@ module EconomicReportOfThePresident
 
     #sometimes years get duplicated
     ec_string.gsub!(/(?<y>\d{4}) \k<y>/, '\k<y>')
-
+=end
     #simple year
     #2008 /* 257 */
     #(2008)
     m ||= /^\(?(?<year>\d{4})\)?$/.match(ec_string)
-
+=begin
     #edition prefix /* 316 */
     #101ST 1980
     #101ST (1980)
@@ -269,7 +269,7 @@ module EconomicReportOfThePresident
   def self.parse_file
     @no_match = 0
     @match = 0
-    input = File.dirname(__FILE__)+'/../data/usreports_enumchrons.txt'
+    input = File.dirname(__FILE__)+'/../data/econreport_enumchrons.txt'
     open(input, 'r').each do | line |
       line.chomp!
 
