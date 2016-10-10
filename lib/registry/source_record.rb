@@ -12,6 +12,7 @@ module Registry
   class SourceRecord
     include Mongoid::Document
     include Mongoid::Attributes::Dynamic
+    include Registry::Series
     store_in collection: "source_records"
 
     field :author_headings
