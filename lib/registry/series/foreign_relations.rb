@@ -151,7 +151,7 @@ module Registry
       # Take a parsed enumchron and expand it into its constituent parts
       # enum_chrons - { <canonical ec string> : {<parsed features>}, }
       #
-      def self.explode ec
+      def self.explode( ec, src=nil )
         enum_chrons = {} 
         if ec.nil?
           return {}

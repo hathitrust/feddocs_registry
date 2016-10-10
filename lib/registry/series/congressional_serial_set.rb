@@ -228,7 +228,7 @@ module Registry
       # enum_chrons - { <canonical ec string> : {<parsed features>}, }
       #
       # Canonical string format: <edition number>, <year>-<year>
-      def self.explode ec
+      def self.explode( ec, src=nil )
         enum_chrons = {} 
         if ec.nil?
           return {}

@@ -72,7 +72,7 @@ module Registry
       # real simple for this series
       # enum_chrons - { <canonical ec string> : {<parsed features>}, }
       #
-      def self.explode ec
+      def self.explode( ec, src=nil )
         enum_chrons = {} 
         if ec.nil? 
           return {}

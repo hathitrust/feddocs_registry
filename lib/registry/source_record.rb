@@ -401,11 +401,18 @@ module Registry
         
         # Series specific parsing 
         if !self.series.nil? and self.series != ''
-          parsed_ec = eval(self.series).parse_ec ec_string
+          parsed_ec = eval(self.series).parse_ec ec_string 
           # able to parse it?
           if !parsed_ec.nil?
+            #this needs to be moved elsewhere todo
+            if self.series == 'EconomicReportOfThePresident' and ec_string !~ /\d{4}/ 
+              if self.pub_date.count > 0  and self.pub_date[0] =~ /^\d{4}$/
+                parse_ec['year'] = self.pub_date[0] 
+              end
+            end
+
             parsed_ec['string'] = ec_string
-            exploded = eval(self.series).explode(parsed_ec)
+            exploded = eval(self.series).explode(parsed_ec, self)
             # just because we parsed it doesn't mean we can do anything with it
             if exploded.keys.count() > 0
               exploded.each do | canonical, features | 
@@ -452,7 +459,7 @@ module Registry
         else
           parsed_ec = eval(self.series).parse_ec ec_string
           if !parsed_ec.nil?
-            exploded = eval(self.series).explode(parsed_ec)
+            exploded = eval(self.series).explode(parsed_ec, self)
             if exploded.keys.count() > 0
               exploded.each do | canonical, features |
                 ecs << canonical
