@@ -1,5 +1,6 @@
-require 'agricultural_statistics'
+require 'registry/series/agricultural_statistics'
 require 'json'
+AgriculturalStatistics = Registry::Series::AgriculturalStatistics
 
 describe "parse_ec" do
   it "parses '2002 1 CD WITH CASE IN BINDER.'" do

@@ -1,5 +1,5 @@
-require 'federal_register'
 require 'json'
+FederalRegister = Registry::Series::FederalRegister
 
 describe "parse_ec" do
   it "parses 'V. 48:NO. 4 (1983:JAN. 6)'" do

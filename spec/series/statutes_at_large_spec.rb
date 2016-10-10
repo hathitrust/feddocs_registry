@@ -1,5 +1,5 @@
-require 'statutes_at_large'
 require 'json'
+StatutesAtLarge = Registry::Series::StatutesAtLarge
 
 describe "parse_ec" do
   it "parses 'V. 96:PT. 1 (1984)'" do

@@ -1,5 +1,6 @@
-require 'united_states_reports'
 require 'json'
+
+CSS = Registry::Series::CongressionalSerialSet
 
 describe "parse_ec" do
 
@@ -16,14 +17,14 @@ describe "parse_file" do
   end
 end
 
-describe "sudoc_stem" do
-  it "has an sudoc_stem field" do
-    expect(UnitedStatesReports.sudoc_stem).to eq('JU 6.8')
+describe "sudoc_stem" do 
+  it "has a sudoc_stem field" do 
+    expect(CSS.sudoc_stem).to eq('Y 1.1/2:')
   end
 end
 
 describe "oclcs" do
   it "has an oclcs field" do
-    expect(UnitedStatesReports.oclcs).to include(10648533)
+    #expect(UnitedStatesReports.oclcs).to include(10648533)
   end
 end

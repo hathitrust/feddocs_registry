@@ -1,10 +1,12 @@
-require 'registry_record'
+require 'registry/registry_record'
 require 'dotenv'
 
 Dotenv.load
 Mongoid.load!("config/mongoid.yml")
 
-RSpec.describe RegistryRecord, "#initialize" do
+RR = Registry::RegistryRecord
+
+RSpec.describe RR, "#initialize" do
   before(:all) do
     cluster = [
               "c6c38adb-2533-4997-85f5-328e91c224a8",
@@ -12,12 +14,12 @@ RSpec.describe RegistryRecord, "#initialize" do
               "55f97400-6497-46ce-9b9f-477dbbf5e78b",    
                ]
     ec = 'ec A'
-    @new_rec = RegistryRecord.new(cluster, ec, 'testing')
+    @new_rec = RR.new(cluster, ec, 'testing')
     @new_rec.save()
   end
 
   it "creates a new registry record" do
-    expect(@new_rec).to be_instance_of(RegistryRecord)
+    expect(@new_rec).to be_instance_of(RR)
   end
 
   it "collates the source records" do 
@@ -40,21 +42,21 @@ RSpec.describe RegistryRecord, "#initialize" do
 
 end
 
-RSpec.describe RegistryRecord, "#cluster" do
+RSpec.describe RR, "#cluster" do
   before(:all) do 
-    @source_has_oclc = SourceRecord.where(source_id: "7386d49d-2c04-44ea-97aa-fb87b241f56f").first
-    @source_only_sudoc = SourceRecord.where(source_id: "31f7bdf5-0d68-4d38-abf2-266be181a07f").first
+    @source_has_oclc = Registry::SourceRecord.where(source_id: "7386d49d-2c04-44ea-97aa-fb87b241f56f").first
+    @source_only_sudoc = Registry::SourceRecord.where(source_id: "31f7bdf5-0d68-4d38-abf2-266be181a07f").first
   end
 
   it "finds a matching cluster for a source record" do
-    expect(RegistryRecord::cluster(@source_has_oclc, "")).to be_instance_of(RegistryRecord)
-    expect(RegistryRecord::cluster(@source_has_oclc, "New Enumchron")).to be_nil
-    expect(RegistryRecord::cluster(@source_only_sudoc, "NO. 11-16")).to be_instance_of(RegistryRecord)
-    expect(RegistryRecord::cluster(@source_only_sudoc, "New Enumchron")).to be_nil
+    expect(RR::cluster(@source_has_oclc, "")).to be_instance_of(RR)
+    expect(RR::cluster(@source_has_oclc, "New Enumchron")).to be_nil
+    expect(RR::cluster(@source_only_sudoc, "NO. 11-16")).to be_instance_of(RR)
+    expect(RR::cluster(@source_only_sudoc, "New Enumchron")).to be_nil
   end
 end
 
-RSpec.describe RegistryRecord, "add_source" do
+RSpec.describe RR, "add_source" do
   before(:all) do
     cluster = [
               "c6c38adb-2533-4997-85f5-328e91c224a8",
@@ -62,9 +64,9 @@ RSpec.describe RegistryRecord, "add_source" do
               "55f97400-6497-46ce-9b9f-477dbbf5e78b",    
                ]
     ec = 'ec A'
-    @new_rec = RegistryRecord.new(cluster, ec, 'testing')
+    @new_rec = RR.new(cluster, ec, 'testing')
     @new_rec.save()
-    @src = SourceRecord.where(source_id: "7386d49d-2c04-44ea-97aa-fb87b241f56f").first
+    @src = Registry::SourceRecord.where(source_id: "7386d49d-2c04-44ea-97aa-fb87b241f56f").first
     @new_rec.add_source @src 
   end
 
@@ -82,29 +84,29 @@ RSpec.describe RegistryRecord, "add_source" do
   end
 end
 
-RSpec.describe RegistryRecord, "#save" do
+RSpec.describe RR, "#save" do
   it "changes last_modified before saving" do
-    rec = RegistryRecord.first
+    rec = RR.first
     now = Time.now.utc
     rec.save
-    samerec = RegistryRecord.where(:last_modified.gte => now).first
+    samerec = RR.where(:last_modified.gte => now).first
     expect(rec.registry_id).to eq samerec.registry_id
   end
 end
 
-RSpec.describe RegistryRecord, "#merge" do
+RSpec.describe RR, "#merge" do
   before(:all) do 
     @old_ids = [
                 "d1110c28-fa35-411c-9af9-e573a351378e",
                 "c728b935-6606-460a-bd8d-3a03385eab45",
                 "4e64308f-a07b-453e-b647-29ebffae5a6d"
                ]
-    @res = RegistryRecord::merge( @old_ids, "new enumchron", "testing the merge" )
+    @res = RR::merge( @old_ids, "new enumchron", "testing the merge" )
   end
   
   after(:all) do
     @res.deprecate("undoing an rspec test")
-    @old_recs = RegistryRecord.where(:registry_id.in => @old_ids)
+    @old_recs = RR.where(:registry_id.in => @old_ids)
     @old_recs.each do | r |
       #not a good idea elsewhere
       r.unset(:deprecated_reason)
@@ -115,13 +117,13 @@ RSpec.describe RegistryRecord, "#merge" do
   end
 
   it "returns a new rec with links to deprecated" do
-    expect(@res).to be_instance_of(RegistryRecord)
+    expect(@res).to be_instance_of(RR)
     expect(@res.ancestors).to eq(@old_ids)
     expect(@res.creation_notes).to eq("testing the merge")
   end
 
   it "deletes the old recs" do
-    @old_recs = RegistryRecord.where(:registry_id.in => @old_ids)
+    @old_recs = RR.where(:registry_id.in => @old_ids)
     @old_recs.each do | r |
       expect(r.deprecated_reason).to eq("testing the merge")
       expect(r.successors).to eq([@res.registry_id])
@@ -130,9 +132,9 @@ RSpec.describe RegistryRecord, "#merge" do
 
 end
 
-RSpec.describe RegistryRecord, "#deprecate" do
+RSpec.describe RR, "#deprecate" do
   before(:each) do
-    @rec = RegistryRecord.where(:source_record_ids.with_size => 6).first
+    @rec = RR.where(:source_record_ids.with_size => 6).first
   end
 
   after(:each) do
@@ -149,11 +151,11 @@ RSpec.describe RegistryRecord, "#deprecate" do
   end
 end
 
-RSpec.describe RegistryRecord, "#split" do
+RSpec.describe RR, "#split" do
   @new_recs = []
   before(:all) do
     #find me a record with at least six source_record_ids
-    @rec = RegistryRecord.where(:source_record_ids.with_size => 6).first
+    @rec = RR.where(:source_record_ids.with_size => 6).first
     expect(@rec.source_record_ids.size).to eq(6)
     @clusters = {
       @rec.source_record_ids[0..1] => 'ec A',

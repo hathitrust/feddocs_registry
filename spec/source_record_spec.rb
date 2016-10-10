@@ -1,9 +1,10 @@
-require 'source_record'
+#require 'registry/source_record'
 require 'dotenv'
 require 'pp'
 
 Dotenv.load
 Mongoid.load!("config/mongoid.yml")
+SourceRecord = Registry::SourceRecord
 
 RSpec.describe SourceRecord do
   it "detects series" do
@@ -39,7 +40,7 @@ RSpec.describe SourceRecord do
 end
 
 
-RSpec.describe SourceRecord do
+RSpec.describe Registry::SourceRecord do
   before(:each) do
     @raw_source = "{\"leader\":\"00878cam a2200241   4500\",\"fields\":[{\"001\":\"ocm00000038 \"},{\"003\":\"OCoLC\"},{\"005\":\"20080408033517.8\"},{\"008\":\"690605s1965    dcu           000 0 eng  \"},{\"010\":{\"ind1\":\" \",\"ind2\":\" \",\"subfields\":[{\"a\":\"   65062399 \"}]}},{\"035\":{\"ind1\":\" \",\"ind2\":\" \",\"subfields\":[{\"a\":\"(OCoLC)38\"}]}},{\"040\":{\"ind1\":\" \",\"ind2\":\" \",\"subfields\":[{\"a\":\"DLC\"},{\"c\":\"DLC\"},{\"d\":\"IUL\"},{\"d\":\"BTCTA\"}]}},{\"029\":{\"ind1\":\"1\",\"ind2\":\" \",\"subfields\":[{\"a\":\"AU@\"},{\"b\":\"000024867271\"}]}},{\"050\":{\"ind1\":\"0\",\"ind2\":\"0\",\"subfields\":[{\"a\":\"KF26\"},{\"b\":\".R885 1965\"}]}},{\"082\":{\"ind1\":\"0\",\"ind2\":\"0\",\"subfields\":[{\"a\":\"507/.4/0153\"}]}},{\"086\":{\"ind1\":\"0\",\"ind2\":\" \",\"subfields\":[{\"a\":\"Y 4.R 86/2:SM 6/965\"}]}},{\"110\":{\"ind1\":\"1\",\"ind2\":\" \",\"subfields\":[{\"a\":\"United States.\"},{\"b\":\"Congress.\"},{\"b\":\"Senate.\"},{\"b\":\"Committee on Rules and Administration.\"},{\"b\":\"Subcommittee on the Smithsonian Institution.\"}]}},{\"245\":{\"ind1\":\"1\",\"ind2\":\"0\",\"subfields\":[{\"a\":\"Smithsonian Institution (National Museum act of 1965)\"},{\"b\":\"Hearing, Eighty-ninth Congress, first session, on S. 1310 and H.R. 7315 ... June 24, 1965.\"}]}},{\"260\":{\"ind1\":\" \",\"ind2\":\" \",\"subfields\":[{\"a\":\"Washington,\"},{\"b\":\"U.S. Govt. Print. Off.,\"},{\"c\":\"1965.\"}]}},{\"300\":{\"ind1\":\" \",\"ind2\":\" \",\"subfields\":[{\"a\":\"iii, 67 p.\"},{\"c\":\"23 cm.\"}]}},{\"610\":{\"ind1\":\"2\",\"ind2\":\"0\",\"subfields\":[{\"a\":\"Smithsonian Institution.\"}]}},{\"776\":{\"ind1\":\"0\",\"ind2\":\"8\",\"subfields\":[{\"i\":\"Print version:\"},{\"a\":\"United States. Congress. Senate. Committee on the Judiciary.\"},{\"t\":\"Oversight of the U.S. Department of Homeland Security\"},{\"w\":\"(OCoLC)812424058.\"}]}},{\"938\":{\"ind1\":\" \",\"ind2\":\" \",\"subfields\":[{\"a\":\"Baker and Taylor\"},{\"b\":\"BTCP\"},{\"n\":\"65062399\"}]}},{\"945\":{\"ind1\":\" \",\"ind2\":\" \",\"subfields\":[{\"a\":\"IUL\"}]}}]}"
   end
@@ -112,7 +113,7 @@ RSpec.describe SourceRecord do
 
 end
 
-RSpec.describe SourceRecord, "#deprecate" do
+RSpec.describe Registry::SourceRecord, "#deprecate" do
   before(:each) do
     @rec = SourceRecord.first
   end
@@ -128,7 +129,7 @@ RSpec.describe SourceRecord, "#deprecate" do
   end
 end
 
-RSpec.describe SourceRecord, '#ht_availability' do 
+RSpec.describe Registry::SourceRecord, '#ht_availability' do 
   before(:all) do
     @non_ht_rec = SourceRecord.where(:org_code.ne => "miaahdl").first
     @ht_pd = SourceRecord.where(:org_code => "miaahdl", 
@@ -144,7 +145,7 @@ RSpec.describe SourceRecord, '#ht_availability' do
   end
 end
 
-RSpec.describe SourceRecord, 'extract_oclcs' do
+RSpec.describe Registry::SourceRecord, 'extract_oclcs' do
   before(:all) do
     rec = File.read(File.expand_path(File.dirname(__FILE__))+'/data/bogus_oclc.json').chomp
     @marc = MARC::Record.new_from_hash(JSON.parse(rec))
@@ -156,7 +157,7 @@ RSpec.describe SourceRecord, 'extract_oclcs' do
   end
 end
 
-RSpec.describe SourceRecord, 'extract_sudocs' do
+RSpec.describe Registry::SourceRecord, 'extract_sudocs' do
   before(:all) do
     bogus = File.read(File.expand_path(File.dirname(__FILE__))+'/data/bogus_sudoc.json').chomp
     @marc_bogus = MARC::Record.new_from_hash(JSON.parse(bogus))
@@ -196,7 +197,7 @@ RSpec.describe SourceRecord, 'extract_sudocs' do
 
 end
 
-RSpec.describe SourceRecord, 'is_govdoc' do
+RSpec.describe Registry::SourceRecord, 'is_govdoc' do
   before(:all) do
     #this file has both a Fed SuDoc and a state okdoc
     @fed_state = File.read(File.expand_path(File.dirname(__FILE__))+'/data/fed_state_sudoc.json').chomp
@@ -220,7 +221,7 @@ RSpec.describe SourceRecord, 'is_govdoc' do
 end
 
   
-RSpec.describe SourceRecord, '#extract_identifiers' do
+RSpec.describe Registry::SourceRecord, '#extract_identifiers' do
   before(:all) do
     SourceRecord.where(:source.exists => false).delete
   end
@@ -252,7 +253,7 @@ RSpec.describe SourceRecord, '#extract_identifiers' do
   end
 end
 
-RSpec.describe SourceRecord, '#marc_profiles' do
+RSpec.describe Registry::SourceRecord, '#marc_profiles' do
   it "loads marc profiles" do
     expect(SourceRecord.marc_profiles['dgpo']).to be_truthy
     expect(SourceRecord.marc_profiles['dgpo']['enum_chrons']).to eq('930 h')
@@ -260,7 +261,7 @@ RSpec.describe SourceRecord, '#marc_profiles' do
 end
 
 
-RSpec.describe SourceRecord, '#extract_enum_chrons' do
+RSpec.describe Registry::SourceRecord, '#extract_enum_chrons' do
   it "extracts enum chrons from GPO records" do
     line = '{"leader":"01656cam  2200373 i 4500","fields":[{"001":"000001290"},{"003":"CaOONL"},{"005":"20041121202944.0"},{"008":"760308s1975    dcu          f000 0 eng d"},{"010":{"ind1":" ","ind2":" ","subfields":[{"a":"75603638"}]}},{"020":{"ind1":" ","ind2":" ","subfields":[{"b":"pbk. :"},{"c":"$0.95"}]}},{"035":{"ind1":"9","ind2":" ","subfields":[{"a":"gp^76001290"}]}},{"035":{"ind1":" ","ind2":" ","subfields":[{"a":"(OCoLC)2036279"}]}},{"040":{"ind1":" ","ind2":" ","subfields":[{"a":"GPO"},{"c":"GPO"}]}},{"086":{"ind1":" ","ind2":" ","subfields":[{"a":"Y 4.Sci 2:94-1/M/v.1"}]}},{"099":{"ind1":" ","ind2":" ","subfields":[{"a":"Y 4.Sci 2:94-1/M/v.1"}]}},{"110":{"ind1":"1","ind2":" ","subfields":[{"a":"United States."},{"b":"Congress."},{"b":"House."},{"b":"Committee on Science and Technology."},{"b":"Subcommittee on Space Science and Applications."}]}},{"245":{"ind1":"1","ind2":"0","subfields":[{"a":"Future space programs 1975 :"},{"b":"report of the Subcommittee on Space Science and Applications prepared for the Committee on Science and Technology, U.S. House of Representatives, Ninety-fourth Congress, first session, September 1975."}]}},{"260":{"ind1":" ","ind2":" ","subfields":[{"a":"Washington :"},{"b":"U.S Govt. Print. Off.,"},{"c":"1975."}]}},{"300":{"ind1":" ","ind2":" ","subfields":[{"a":"v. ;"},{"c":"24 cm."}]}},{"490":{"ind1":"1","ind2":" ","subfields":[{"a":"Serial no. 94-M"}]}},{"500":{"ind1":" ","ind2":" ","subfields":[{"a":"Item 1025-A"}]}},{"500":{"ind1":" ","ind2":" ","subfields":[{"a":"S/N 052-070-02890-4"}]}},{"505":{"ind1":"0","ind2":" ","subfields":[{"a":"v. 1."}]}},{"590":{"ind1":" ","ind2":" ","subfields":[{"a":"[18 cds/"}]}},{"650":{"ind1":" ","ind2":"0","subfields":[{"a":"Space flight."}]}},{"710":{"ind1":"1","ind2":" ","subfields":[{"a":"United States."},{"b":"National Aeronautics and Space Administration."}]}},{"810":{"ind1":"1","ind2":" ","subfields":[{"a":"United States."},{"b":"Congress."},{"b":"House."},{"b":"Committee on Science and Technology."},{"t":"[Committee publication] serial, 94th Congress ;"},{"v":"no. 94-M."}]}},{"956":{"ind1":" ","ind2":" ","subfields":[{"a":"CONV"},{"b":"20"},{"c":"20050210"},{"l":"GPO01"},{"h":"1741"}]}},{"956":{"ind1":" ","ind2":" ","subfields":[{"c":"20060112"},{"l":"GPO01"},{"h":"1700"}]}},{"956":{"ind1":" ","ind2":" ","subfields":[{"c":"20060224"},{"l":"GPO01"},{"h":"1343"}]}},{"956":{"ind1":" ","ind2":" ","subfields":[{"c":"20150504"},{"l":"GPO01"},{"h":"2007"}]}},{"930":{"ind1":"-","ind2":"1","subfields":[{"l":"GPO01"},{"L":"GPO01"},{"m":"BOOK"},{"1":"NABIB"},{"A":"National Bibliography"},{"h":"Y 4.SCI 2:94-1/M/"},{"5":"1290-10"},{"8":"20101112"},{"f":"01"},{"F":"For Distribution"},{"h":"V.1"}]}},{"930":{"ind1":"-","ind2":"1","subfields":[{"l":"GPO01"},{"L":"GPO01"},{"m":"BOOK"},{"1":"NABIB"},{"A":"National Bibliography"},{"h":"Y 4.SCI 2:94-1/M/"},{"5":"1290-20"},{"8":"20101112"},{"f":"02"},{"F":"Not Distributed"},{"h":"V.2"}]}}]}'
 
@@ -281,7 +282,7 @@ RSpec.describe SourceRecord, '#extract_enum_chrons' do
   end
 end
 
-RSpec.describe SourceRecord, '#extract_enum_chron_strings' do
+RSpec.describe Registry::SourceRecord, '#extract_enum_chron_strings' do
   it 'extracts enum chron strings from MARC records' do
     sr = SourceRecord.where({sudocs:"II0 aLC 4.7:T 12/v.1-6"}).first
     expect(sr.extract_enum_chron_strings).to include('V. 6')
@@ -293,7 +294,7 @@ RSpec.describe SourceRecord, '#extract_enum_chron_strings' do
   end
 end
 
-RSpec.describe SourceRecord, '#extract_holdings' do
+RSpec.describe Registry::SourceRecord, '#extract_holdings' do
   before(:all) do
     @src = SourceRecord.where(org_code:"miaahdl").first
     @src.extract_holdings

@@ -1,14 +1,17 @@
-require 'collator'
+require 'registry/collator'
 require 'dotenv'
 require 'mongoid'
 require 'pp'
+require 'spec_helper'
 
 Dotenv.load
 Mongoid.load!("config/mongoid.yml")
 
-RSpec.describe Collator, "#initialize" do
+RC = Registry::Collator
+
+RSpec.describe RC, "#initialize" do
   before(:all) do 
-    @collator = Collator.new('config/traject_config.rb')
+    @collator = RC.new('config/traject_config.rb')
   end
 
   it "loads an extractor" do 
@@ -21,11 +24,11 @@ RSpec.describe Collator, "#initialize" do
 
 end
 
-RSpec.describe Collator, "#extract_fields" do
+RSpec.describe RC, "#extract_fields" do
   before(:all) do
     #just grab one
-    @regrec = RegistryRecord.where(:source_record_ids.with_size => 6).first
-    @collator = Collator.new('config/traject_config.rb')
+    @regrec = Registry::RegistryRecord.where(:source_record_ids.with_size => 6).first
+    @collator = RC.new('config/traject_config.rb')
     @collected_fields = @collator.extract_fields @regrec.sources 
   end
 

@@ -1,5 +1,6 @@
-require 'statistical_abstract'
 require 'json'
+
+StatisticalAbstract = Registry::Series::StatisticalAbstract
 
 describe "parse_ec" do
   it "can handle a single year" do

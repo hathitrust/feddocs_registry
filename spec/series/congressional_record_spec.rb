@@ -1,5 +1,6 @@
-require 'congressional_record'
 require 'json'
+
+CongressionalRecord = Registry::Series::CongressionalRecord
 
 describe "parse_ec" do
 
