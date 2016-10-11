@@ -19,7 +19,27 @@ module Registry
       end
       
       def self.parse_ec ec_string
+        #C. 1 crap from beginning and end
+        ec_string.sub!(/ ?C\. 1 ?/, '')
 
+        #occassionally a '-' at the end. not much we can do with that
+        ec_string.sub!(/-$/, '')
+
+        #own canonical format
+        m ||= /^Year: (?<year>\d{4})(, Part: (?<part>\d{1}))?/.match(ec_string)
+
+        #simple sudoc
+        m ||= /^Y ?4\.? EC ?7:EC ?7\/2\/(?<year>\d{3,4})$/.match(ec_string)
+
+        #stupid sudoc
+        #Y 4. EC 7:EC 7/2/993/PT. 1-
+        m ||= /^Y ?4\.? EC ?7:EC ?7\/2\/(?<year>\d{3,4}) ?\/PT. (?<part>\d{1})(\D|$)/.match(ec_string)
+
+        # 1972/PT. 1
+        m ||= /^(?<year>\d{3,4})\/PT. (?<part>\d{1})$/.match(ec_string)
+        #1972/PT. 1-5
+        m ||= /^(?<year>\d{3,4})\/PT. (?<start_part>\d{1})-(?<end_part>\d{1})$/.match(ec_string)
+        
         #simple year
         #2008  /* 28 */
         #(2008)
@@ -166,7 +186,7 @@ module Registry
 
           if ec.nil? or ec.length == 0
             @no_match += 1
-            #puts "no match: "+line
+            puts "no match: "+line
           else 
             #puts "match: "+self.explode(ec).to_s
             self.explode(ec, {})

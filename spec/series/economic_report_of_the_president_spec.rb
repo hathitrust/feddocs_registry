@@ -18,6 +18,19 @@ describe "parse_ec" do
   it "parses multi-years" do
     expect(ER.parse_ec('1961-1962')['end_year']).to eq('1962')
   end
+
+  it "eliminates 'C 1' junk" do
+    expect(ER.parse_ec('C. 1 1988')['year']).to eq('1988')
+  end
+  
+  it "can parse it's own canonical version" do
+    expect(ER.parse_ec('Year: 1972, Part: 4')['year']).to eq('1972')
+  end
+
+  it "parses the simple sudoc" do
+    expect(ER.parse_ec('Y 4. EC 7:EC 7/2/2002')['year']).to eq('2002')
+  end
+
 end
 
 describe "explode" do
@@ -45,13 +58,13 @@ end
 describe "parse_file" do
   it "parses a file of enumchrons" do 
     match, no_match = ER.parse_file
-    expect(match).to eq(74) #actual number in test file is 89
+    expect(match).to eq(206) #actual number in test file is 206
   end
 end
 
 describe "load_context" do
   it "has a hash of years => parts" do
-    expect(ER.parts['1975']).to include('3')
+    expect(ER.parts['1975']).to include('2')
   end
 end
   
