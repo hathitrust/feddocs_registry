@@ -87,6 +87,7 @@ module Registry
       @@collator.normalize_viaf(s).each {|k, v| self.send("#{k}=",v) }
       marc = MARC::Record.new_from_hash(self.source)
       self.pub_date = @@extractor.map_record(marc)['pub_date']
+      self.local_id = self.extract_local_id
       self.extract_identifiers marc
       self.ec = self.extract_enum_chrons marc
       self.enum_chrons = self.ec.collect do | k,fields |
@@ -156,7 +157,7 @@ module Registry
     # Extract the contributing institutions id for this record. 
     # Enables update/replacement of source records. 
     #
-    # Assumes if "001" if no field is provided. 
+    # Assumes "001" if no field is provided. 
     def extract_local_id field = nil
       field ||= '001'
       id = self.source["fields"].find{|f| f[field]}[field].gsub(/ /, '')
