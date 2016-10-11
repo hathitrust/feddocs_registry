@@ -104,7 +104,7 @@ module Registry
         if ec['year'] and !ec['part'].nil?
           canon = "Year: #{ec['year']}, Part: #{ec['part']}"
           enum_chrons[canon] = ec
-          puts "canon: #{canon}"
+          #puts "canon: #{canon}"
           @parts[ec['year']] << ec['part']
           @parts[ec['year']].uniq!
         elsif ec['year'] and ec['start_part']
