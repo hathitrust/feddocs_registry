@@ -114,27 +114,28 @@ module Registry
             @parts[ec['year']] << pt 
           end
           @parts[ec['year']].uniq!
-        elsif ec['year'] #but no parts. assume all of them
-          if @parts[ec['year']].count > 0 
-            for pt in @parts[ec['year']]
-              canon = "Year: #{ec['year']}, Part: #{pt}"
-              enum_chrons[canon] = ec
-            end
-          else
+        elsif ec['year'] #but no parts. 
+          # we can't assume all of them, horrible marc
+          #if @parts[ec['year']].count > 0 
+          #  for pt in @parts[ec['year']]
+          #    canon = "Year: #{ec['year']}, Part: #{pt}"
+          #    enum_chrons[canon] = ec
+          #  end
+          #else
             canon = "Year: #{ec['year']}"
             enum_chrons[canon] = ec
-          end
+          #end
         elsif ec['start_year']
           for y in ec['start_year']..ec['end_year']
-            if @parts[y].count > 0
-              for pt in @parts[y]
-                canon = "Year: #{y}, Part: #{pt}"
-                enum_chrons[canon] = ec
-              end
-            else
+            #if @parts[y].count > 0
+            #  for pt in @parts[y]
+            #    canon = "Year: #{y}, Part: #{pt}"
+            #    enum_chrons[canon] = ec
+            #  end
+            #else
               canon = "Year: #{y}"
               enum_chrons[canon] = ec
-            end
+            #end
           end
         end
 
