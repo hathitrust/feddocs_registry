@@ -86,6 +86,8 @@ module Registry
       #
       # Canonical string format: Year:<year>, Part:<part>
       def self.explode( ec, src)
+        ec ||= {}
+
         #some of these are monographs with the year info in pub_date
         if !src[:pub_date].nil?
           if ec['year'].nil? and ec['start_year'].nil? and src[:pub_date].count == 1
@@ -94,7 +96,7 @@ module Registry
         end
 
         enum_chrons = {} 
-        if ec.nil?
+        if ec.keys.count == 0
           return {}
         end
 

@@ -365,7 +365,7 @@ module Registry
     def extract_enum_chron_strings marc=nil
       ec_strings = []
       marc ||= MARC::Record.new_from_hash(self.source)
-      tag, subcode = @@marc_profiles[org_code]['enum_chrons'].split(/ /)
+      tag, subcode = @@marc_profiles[self.org_code]['enum_chrons'].split(/ /)
       marc.each_by_tag(tag) do | field | 
         subfield_codes = field.find_all { |subfield| subfield.code == subcode }
         if subfield_codes.count > 0
