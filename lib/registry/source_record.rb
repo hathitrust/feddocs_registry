@@ -160,7 +160,12 @@ module Registry
     # Assumes "001" if no field is provided. 
     def extract_local_id field = nil
       field ||= '001'
-      id = self.source["fields"].find{|f| f[field]}[field].gsub(/ /, '')
+      begin
+        id = self.source["fields"].find{|f| f[field]}[field].gsub(/ /, '')
+      rescue
+        #the field doesn't exist
+        id = ''
+      end
       return id
     end
 
