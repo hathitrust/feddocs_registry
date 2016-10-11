@@ -33,7 +33,7 @@ describe "explode" do
     expect(ER.explode(ER.parse_ec('1949-1952'), {})).to have_key('Year: 1951')
   end
 
-  it "uses pub_date to create a better enum_chron" do
+  it "uses pub_date/sudocs to create a better enum_chron" do
     # this records enum_Chron is 'PT. 2' but has a pub_Date of 1975
     sr = SourceRecord.new
     sr.org_code = "miaahdl"

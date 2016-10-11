@@ -88,9 +88,20 @@ module Registry
       def self.explode( ec, src)
         ec ||= {}
 
-        #some of these are monographs with the year info in pub_date
-        if !src[:pub_date].nil?
-          if ec['year'].nil? and ec['start_year'].nil? and src[:pub_date].count == 1
+        #some of these are monographs with the year info in pub_date or sudocs
+        if ec['year'].nil? and ec['start_year'].nil?
+          #try sudocs first
+          if !src[:sudocs].nil? and !src[:sudocs].select { | s | s =~ /Y 4\.EC 7:EC 7\/2\/\d{3}/ }[0].nil?
+            sudoc = src[:sudocs].select { | s | s =~ /Y 4\.EC 7:EC 7\/2\/\d{3}/ }[0]
+            if !sudoc.nil?
+              m = /EC 7\/2\/(?<year>\d{3,4})[\/$]/.match(sudoc)
+              if !m.nil? and m[:year][0] == '9'
+                ec['year'] = '1'+m[:year]
+              elsif !m.nil? 
+                ec['year'] = m[:year]
+              end
+           end
+          elsif !src[:pub_date].nil? and src[:pub_date].count == 1
             ec['year'] = src[:pub_date][0]
           end
         end
