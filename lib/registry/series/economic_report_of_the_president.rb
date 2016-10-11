@@ -1,6 +1,6 @@
 require 'pp'
 =begin
-  Yearly, in multiple parts. We need to look at pub_date for monographs. 
+  Yearly, sometimes in multiple parts. We need to look at pub_date for monographs. 
 =end
 
 module Registry
