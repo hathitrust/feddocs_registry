@@ -53,7 +53,9 @@ describe "parse_ec" do
     expect(StatisticalAbstract.parse_ec('1988-1993')['end_year']).to eq('1993')
   end
 
-
+  it "removes copy information" do
+    expect(StatisticalAbstract.parse_ec("C. 2 V. 86 1965")['year']).to eq('1965')
+  end
 
 end
 
@@ -74,8 +76,8 @@ end
 
 describe "parse_file" do
   it "parses a file of enumchrons" do 
-    #match, no_match = StatisticalAbstract.parse_file
-    #expect(match).to eq(1566) #actual number in test file is 1566
+    match, no_match = StatisticalAbstract.parse_file
+    expect(match).to eq(1566) #actual number in test file is 1566
   end
 end
 

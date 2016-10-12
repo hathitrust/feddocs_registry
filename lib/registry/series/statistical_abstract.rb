@@ -22,6 +22,7 @@ module Registry
         ec_string.gsub!(/REEL \d+.* P77-/, '')
         ec_string.gsub!(/^A V\./, 'V.')
         ec_string.gsub!(/^: /, '')
+        ec_string.gsub!(/^C\. \d+ V/, 'V')
 
         #space before trailing ) is always a typo
         ec_string.gsub!(/ \)/, ')')
@@ -274,7 +275,7 @@ module Registry
           ec = self.parse_ec(line)
           if ec.nil? or ec.length == 0
             @no_match += 1
-            puts "no match: "+line
+            #puts "no match: "+line
           else 
             #puts "match: "+self.explode(ec).to_s
             @match += 1
