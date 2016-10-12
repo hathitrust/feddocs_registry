@@ -407,14 +407,18 @@ module Registry
         
         # Series specific parsing 
         if !self.series.nil? and self.series != ''
-          parsed_ec = eval(self.series).parse_ec ec_string 
+          parsed_ec = eval(self.series).parse_ec ec_string
           # able to parse it?
           if !parsed_ec.nil?
             parsed_ec['string'] = ec_string
             exploded = eval(self.series).explode(parsed_ec, self)
+
             # just because we parsed it doesn't mean we can do anything with it
             if exploded.keys.count() > 0
               exploded.each do | canonical, features | 
+                #series may return exploded items all referencing the same feature set.
+                #since we are changing it we need multiple copies
+                features = features.clone
                 features['string'] = ec_string
                 features['canonical'] = canonical
                 #possible to have multiple ec_strings be reduced to a single ec_string

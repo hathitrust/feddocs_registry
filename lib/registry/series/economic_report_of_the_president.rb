@@ -26,7 +26,7 @@ module Registry
         ec_string.sub!(/-$/, '')
 
         #own canonical format
-        m ||= /^Year: (?<year>\d{4})(, Part: (?<part>\d{1}))?/.match(ec_string)
+        m ||= /^Year:(?<year>\d{4})(, Part:(?<part>\d{1}))?/.match(ec_string)
 
         #simple sudoc
         m ||= /^Y ?4\.? EC ?7:EC ?7\/2\/(?<year>\d{3,4})$/.match(ec_string)
@@ -133,15 +133,14 @@ module Registry
 
         canon = ''
         if ec['year'] and !ec['part'].nil?
-          canon = "Year: #{ec['year']}, Part: #{ec['part']}"
-          enum_chrons[canon] = ec
-          #puts "canon: #{canon}"
+          canon = "Year:#{ec['year']}, Part:#{ec['part']}"
+          enum_chrons[canon] = ec.clone
           @parts[ec['year']] << ec['part']
           @parts[ec['year']].uniq!
         elsif ec['year'] and ec['start_part']
           for pt in ec['start_part']..ec['end_part']
-            canon = "Year: #{ec['year']}, Part: #{pt}"
-            enum_chrons[canon] = ec
+            canon = "Year:#{ec['year']}, Part:#{pt}"
+            enum_chrons[canon] = ec.clone
             @parts[ec['year']] << pt 
           end
           @parts[ec['year']].uniq!
@@ -153,8 +152,8 @@ module Registry
           #    enum_chrons[canon] = ec
           #  end
           #else
-            canon = "Year: #{ec['year']}"
-            enum_chrons[canon] = ec
+            canon = "Year:#{ec['year']}"
+            enum_chrons[canon] = ec.clone
           #end
         elsif ec['start_year']
           for y in ec['start_year']..ec['end_year']
@@ -164,8 +163,8 @@ module Registry
             #    enum_chrons[canon] = ec
             #  end
             #else
-              canon = "Year: #{y}"
-              enum_chrons[canon] = ec
+              canon = "Year:#{y}"
+              enum_chrons[canon] = ec.clone
             #end
           end
         end

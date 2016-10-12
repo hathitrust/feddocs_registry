@@ -280,6 +280,21 @@ RSpec.describe Registry::SourceRecord, '#extract_enum_chrons' do
     expect(sr_new.enum_chrons).to include("Volume:77, Number:67")
     expect(sr_new.org_code).to eq("miu")
   end
+
+  it 'properly extracts enumchrons for series' do
+    sr = SourceRecord.new
+    sr.org_code = "miaahdl"
+    sr.source = open(File.dirname(__FILE__)+'/series/data/econreport.json').read
+    expect(sr.series).to eq('EconomicReportOfThePresident')
+    expect(sr.enum_chrons).to include('Year:1966, Part:3')
+  end
+
+  it 'doesnt clobber enumchron features' do
+    sr = SourceRecord.new
+    sr.org_code = "miaahdl"
+    sr.source = open(File.dirname(__FILE__)+'/series/data/statabstract_multiple_ecs.json').read
+    expect(sr.enum_chrons).to include('Edition:1, Year:1878')
+  end
 end
 
 RSpec.describe Registry::SourceRecord, '#extract_enum_chron_strings' do
@@ -291,6 +306,13 @@ RSpec.describe Registry::SourceRecord, '#extract_enum_chron_strings' do
   it 'ignores contributors without enum chrons' do
     sr = SourceRecord.where({sudocs:"Y 4.P 84/11:AG 8", org_code:"cic"}).first
     expect(sr.extract_enum_chron_strings).to eq([])
+  end
+
+  it 'properly extracts enumchron strings for series' do
+    sr = SourceRecord.new
+    sr.org_code = "miaahdl"
+    sr.source = open(File.dirname(__FILE__)+'/series/data/econreport.json').read
+    expect(sr.extract_enum_chron_strings).to include('PT. 1-4')
   end
 end
 

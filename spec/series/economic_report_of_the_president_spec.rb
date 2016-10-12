@@ -24,7 +24,7 @@ describe "parse_ec" do
   end
   
   it "can parse it's own canonical version" do
-    expect(ER.parse_ec('Year: 1972, Part: 4')['year']).to eq('1972')
+    expect(ER.parse_ec('Year:1972, Part:4')['year']).to eq('1972')
   end
 
   it "parses the simple sudoc" do
@@ -35,15 +35,15 @@ end
 
 describe "explode" do
   it "handles a simple year" do 
-    expect(ER.explode(ER.parse_ec('1960'), {})).to have_key('Year: 1960')
+    expect(ER.explode(ER.parse_ec('1960'), {})).to have_key('Year:1960')
   end
 
   it "explodes parts" do
-    expect(ER.explode(ER.parse_ec('1966 PT. 1-4'), {})).to have_key('Year: 1966, Part: 3')
+    expect(ER.explode(ER.parse_ec('1966 PT. 1-4'), {})).to have_key('Year:1966, Part:3')
   end
 
   it "explodes years" do
-    expect(ER.explode(ER.parse_ec('1949-1952'), {})).to have_key('Year: 1951')
+    expect(ER.explode(ER.parse_ec('1949-1952'), {})).to have_key('Year:1951')
   end
 
   it "uses pub_date/sudocs to create a better enum_chron" do
@@ -51,8 +51,15 @@ describe "explode" do
     sr = SourceRecord.new
     sr.org_code = "miaahdl"
     sr.source = open(File.dirname(__FILE__)+'/data/econreport_src_pub_date.json').read
-    expect(sr.enum_chrons).to include('Year: 1975, Part: 2')
+    expect(sr.enum_chrons).to include('Year:1975, Part:2')
   end
+
+  it "returns nultiple sets of features" do
+    exploded = ER.explode(ER.parse_ec('1966 PT. 1-4'), {})
+    expect(exploded['Year:1966, Part:2']).to_not be(exploded['Year:1966, Part:3'])
+  end
+    
+
 end
 
 describe "parse_file" do
