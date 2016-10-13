@@ -34,15 +34,24 @@ module Registry
       end
       
       def self.parse_ec ec_string
+        ec_string.sub!(/^C. 1 /, '')
+
         #canonical
         m ||= /^Volume:(?<volume>\d+), Number:(?<number>\d+)$/.match(ec_string)
+
 
         # V. 48:NO. 4 (1983:JAN. 6) /* 4,791 */
         # V. 78:NO. 193(2013:OCT. 4)
         # V. 72:NO. 235 ( 2007: DEC. 7) /* 6 more for optional spaces */
         # V. 68:NO. 225 2003:NOV. 21 /* 4 more for optional () */
         # V. 61:NO. 93 (1996:MAY13) /* 62 */
-        m ||= /^V\.? ?(?<volume>\d+)(:| )NO\.? (?<number>\d+) ?\(? ?(?<year>\d{4}): ?(?<month>\p{Alpha}{3,})\.? ?(?<day>\d{1,2})\)?$/.match(ec_string)
+        # V. 65:NO. 220(2000:NOV. 14):BK. 1
+        m ||= /^V\.? ?(?<volume>\d+)(:| )NO\.? (?<number>\d+) ?\(? ?(?<year>\d{4}): ?(?<month>\p{Alpha}{3,})\.? ?(?<day>\d{1,2})\)?(:BK.*)?$/.match(ec_string)
+
+        # V. 75:NO. 226(2010) PART A
+        # V. 75:NO. 226(2010) PART B
+        # don't care about the parts
+        m ||= /^V\.? ?(?<volume>\d+)(:| )NO\.? (?<number>\d+)\((?<year>\d{4})\)( P(AR)?T .)?$/.match(ec_string)
 
         # V. 75:NO. 149(2010) /* 659 */
         m ||= /^V\. ?(?<volume>\d+):NO\. (?<number>\d+)\((?<year>\d{4})\)$/.match(ec_string)
@@ -59,6 +68,7 @@ module Registry
         # crap /* 152 */
         ##m ||= /^V\. (?<volume>04\d) PT.*\d[A-Z]$/.match(ec_string)
 
+        
         # 74,121 /* 196 */
         m ||= /^(?<volume>\d+),(?<number>\d+)$/.match(ec_string)
 
@@ -96,7 +106,6 @@ module Registry
         m ||= /^V\. (?<volume>\d+) \((?<year>\d{4}):(?<month>\p{Alpha}{3,})\.? (?<day_start>\d{1,2})-(?<day_end>\d{1,2})\)$/.match(ec_string)
 
 
-
         # V. 78:NO. 164-173(2013:AUG. 23-SEPT. 6) /* 10 */
         # V. 78:NO. 147-158(2013:JULY31-AUG. 15) /* 3 more by making the spaces optional */
         m ||= /^V\. (?<volume>\d+):NO\. (?<number_start>\d+)-(?<number_end>\d+)\((?<year>\d{4}):(?<month_start>\p{Alpha}{3,})\.? ?(?<day_start>\d{1,2})-(?<month_end>\p{Alpha}{3,})\.? ?(?<day_end>\d{1,2})\)$/.match(ec_string)
@@ -121,6 +130,14 @@ module Registry
 
         # V. 47 JUN29-JUL1 1982 PP. 28067-28894 /* 12 */
         m ||= /^V\. (?<volume>\d+) (?<month_start>\p{Alpha}{3})(?<day_start>\d{1,2})-(?<month_end>\p{Alpha}{3})(?<day_end>\d{1,2}) (?<year>\d{4}) PP\. (?<page_start>\d+)-(?<page_end>\d+)$/.match(ec_string)
+
+        # V. 63 NO 62-74 (APR 1-17 1998) (1 RLLE)
+        m ||= /^V\. (?<volume>\d+)[ :]NO\. (?<number_start>\d+)-(?<number_end>\d+) \(/.match(ec_string)
+
+        #  V. 70:NO. 222(2005:222) #Volume and Number is enough
+        # V. 13:NO. 192-213(1948:OCT. )
+        m ||= /^V\. (?<volume>\d+)[:,\/ ]NO\. (?<number>\d+) ?\(?/.match(ec_string)
+        m ||= /^V\.? ?(?<volume>\d+)(:| )NO\.? ?(?<number_start>\d+)-(?<number_end>\d+)[^\d]/.match(ec_string)
 
         if !m.nil?
           ec = Hash[ m.names.zip( m.captures ) ]
@@ -166,6 +183,7 @@ module Registry
           ec = FederalRegister.parse_ec(line)
           if ec.nil?
             @no_match += 1
+            puts "no match: "+line
           else 
             @match += 1
           end

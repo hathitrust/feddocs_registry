@@ -107,7 +107,7 @@ end
 describe "parse_file" do
   it "parses a file of enumchrons" do 
     match, no_match = FederalRegister.parse_file
-    expect(match).to be(8933)
+    expect(match).to eq(27082) #actual in file: 27082
   end
 end
 
