@@ -24,16 +24,30 @@ module Registry
         #sometimes has junk in the front
         ec_string.gsub!(/^KF50 \. U5 /, '')
         ec_string.gsub!(/^[A-Z] V\./, 'V.')
+        ec_string.sub!(/ ?C\. \d+ ?/, '')
         # 'V. 96:PT. 1 (1984)' /* 517 */
         # V. 114:PART 1 (2000) 
-        m ||= /^V\. (?<volume>\d+)[ ,:]P(AR)?T\.? (?<part>\d{1,2}) \(?(?<year>\d{4})\)?$/.match(ec_string)
+        m ||= /^V\. (?<volume>\d+)[ ,:]P(AR)?T\.? (?<part>\d{1}) ?\(?(?<year>\d{4})\)?$/.match(ec_string)
 
 
+        #canonical
+        m ||= /^Volume:(?<volume>\d+), Part:(?<part>\d{1,2})$/.match(ec_string)
+        m ||= /^Volume:(?<volume>\d+), Part:(?<part>\d{1,2}), Pages:(?<start_page>\d{1,4})-(?<end_page>\d{1,4})$/.match(ec_string)
+
+        #  V. 112:PP. 2787-3823 (1998) PT. 5
+        m ||= /^V\. (?<volume>\d+)[\/:,]PP\. (?<start_page>\d{1,4})-(?<end_page>\d{4}) \((?<year>\d{4})\) P(AR)?T\.? (?<part>\d{1,2})$/.match(ec_string)
+
+        # V. 32 PT. 1 1901/02-1902/03
+        m ||= /^V\. (?<volume>\d+)[\/:, ]P(AR)?T\.? (?<part>\d{1,2}) (?<start_year>\d{4})\/\d\d-(?<end_year>\d{4})\/\d\d$/.match(ec_string)
 
         # 'V. 99:PT. 1' /* 231 */
         # V. 57/PT. 1
-        m ||= /^V\. (?<volume>\d+)[\/:]PT\. (?<part>\d{1,2})$/.match(ec_string)
-     
+        # V. 61,PT. 2
+        m ||= /^V\. (?<volume>\d+)[\/:,]P(AR)?T\.? (?<part>\d{1,2})$/.match(ec_string)
+
+        # V. 64/PT. 3 (1950-1951)
+        m ||= /^V\. (?<volume>\d+)[\/:,]P(AR)?T\.? (?<part>\d{1,2}) ?\(?(?<start_year>\d{4})-(?<end_year>\d{4})\)?$/.match(ec_string)
+
         # KF50 . U5 V. 94 PT. 2  /* 72 */
         # KF50 . U5 V. 78
         #m ||= /^KF50 . U5 V\. (?<volume>\d+)( PT\. (?<part>\d{1,2}))?$/.match(ec_string)  
@@ -43,7 +57,11 @@ module Registry
                                         
         # V. 124:PT. 1:1/1128(2010) /* 5 */
         m ||= /^V\. (?<volume>\d+):PT\. (?<part>\d{1}):(?<start_page>\d{1,4})\/(?<end_page>\d{4})\((?<year>\d{4})\)$/.match(ec_string)
-        
+
+        # V. 45:PT. 2:BOOK 2 (1929)       
+        m ||= /^V\. (?<volume>\d+):PT\. (?<part>\d{1}):BOOK \d \((?<year>\d{4})\)$/.match(ec_string)
+       
+
         #V. 124, PT. 2 /* 4 */ 
         m ||= /^V\. (?<volume>\d+), PT\. (?<part>\d{1})$/.match(ec_string)
 
@@ -64,16 +82,20 @@ module Registry
 
         # 102: PT. 3 /* 375 */
         # 102/PT. 3
+        # 104/ PT. 5
         # 103: PT. 1989 <- bad
         # 108:PT. 1
         # 113 PT. 2
-        m ||= /^(?<volume>\d{2,3})(:| |: |\/)PT\. (?<part>\d)$/.match(ec_string)
+        m ||= /^(?<volume>\d{2,3})(:| |: |\/) ?PT\. (?<part>\d)$/.match(ec_string)
      
         # V. 100 PT. 5 /* 370 */
         # V. 100;PT. 5
         # V. 101 1987 PT. 1
         # V. 101:1987:PT. 1
-        m ||= /^V\. (?<volume>\d+)[ :;](?<year>\d{4})?[ :;]?PT\. (?<part>\d{1,2})$/.match(ec_string)
+        m ||= /^V\. (?<volume>\d+)[ :;\/](?<year>\d{4})?[ :;]?PT\. (?<part>\d{1,2})$/.match(ec_string)
+       
+        # V. 33:2 1903-1905
+        m ||= /^V\. ?(?<volume>\d+)[:;\/](?<part>\d) (?<start_year>\d{4})-(?<end_year>\d{2,4})$/.match(ec_string)
 
         # V. 93  /* 164 */
         # V. 93 1979
@@ -86,9 +108,14 @@ module Registry
         #V. 112:PT. 1,PP. 1/912 (1998) /* 8 */
         m ||= /^V\. (?<volume>\d+):P(ART|T\.) (?<part>\d{1})[,:]PP\. (?<start_page>\d+)[\/-](?<end_page>\d+) \((?<year>\d{4})\)$/.match(ec_string)
 
+        # V. 44 PT. 1 BK. 1
+        # V. 33:PT. 1:BK. 1 (1903-1905)
+        m ||= /^V\. (?<volume>\d+) PT\. (?<part>\d{1}) BK\. \d{1}( \((?<start_year>\d{4})-(?<end_year>\d{4})\))?/.match(ec_string)
+
         # V. 84:PT. 1 (1970/71) /* 279 */ 
         # V. 84 PT. 2 1970/71
         # V. 84:PT. 2 (1970-71)
+
         # V. 10 1851-1855
         # V. 10 1851/1855
         # V. 10 (1851/55)
@@ -102,7 +129,8 @@ module Registry
         m ||= /^V. (?<start_volume>\d{2})-(?<end_volume>\d{2})( (?<start_year>\d{4})-(?<end_year>\d{4}))?$/.match(ec_string)
 
         #V. 118:PT. 1(2004) /* 28 */
-        m ||=/^V. (?<volume>\d{1,3}):PT. (?<part>\d).(?<year>\d{4}).?$/.match(ec_string)
+        #V. 119/PT. 1 (2005)
+        m ||=/^V. (?<volume>\d{1,3})[:\/,]PT. (?<part>\d) ?\((?<year>\d{4})\)?$/.match(ec_string)
 
         #V. 110:PP. 1755-2870 (1996) /* 9 */
         m ||= /^V. (?<volume>\d+)[,:]PP\. (?<start_page>\d+)[\/-](?<end_page>\d+) \((?<year>\d{4})\)$/.match(ec_string)
@@ -111,6 +139,12 @@ module Registry
         #V. 119:PT. 1:PP. 1/1143(2005) PUBLIC LAWS
         #V. 116:PT. 4,PP. 2457/3357(2002)PRIVATE LAWS
         m ||= /^V. (?<volume>\d{1,3}):PT. (?<part>\d).PP. (?<start_page>\d{1,4})\/(?<end_page>\d{4}).(?<year>\d{4})/.match(ec_string) 
+
+        # V. 34:PT. 3(1905:DEC. -1907:MAR. )
+        # V. 118/PT. 1 (108TH. CONG. -2ND SESS. )
+        # V. 116/PT. 3 (107TH. CONG. -2ND SESS. )
+        #  V. 119/PT. 3 (109TH. CONG. -1ST SESS. 
+        m ||= /^(V\. )?(?<volume>\d+)[ \/:]PT\. (?<part>\d{1}) ?\(.*[A-Z]{3}\..*\)?$/.match(ec_string) 
 
         # 2005 /* 7 */
         m ||= /^(?<year>\d{4})\.?$/.match(ec_string)
@@ -158,7 +192,7 @@ module Registry
           ec = self.parse_ec(line)
           if ec.nil?
             @no_match += 1
-            #puts "no match: "+line
+            puts "no match: "+line
           else 
             #puts "match: "+self.explode(ec).to_s
             @match += 1
