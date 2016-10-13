@@ -34,6 +34,9 @@ module Registry
       end
       
       def self.parse_ec ec_string
+        #canonical
+        m ||= /^Volume:(?<volume>\d+), Number:(?<number>\d+)$/.match(ec_string)
+
         # V. 48:NO. 4 (1983:JAN. 6) /* 4,791 */
         # V. 78:NO. 193(2013:OCT. 4)
         # V. 72:NO. 235 ( 2007: DEC. 7) /* 6 more for optional spaces */
