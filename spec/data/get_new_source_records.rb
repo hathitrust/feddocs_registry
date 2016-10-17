@@ -4,9 +4,9 @@ require 'dotenv'
 
 Dotenv.load!
 
-fin = open('source_records.json')
-sout = open('new_sources.json', 'w')
-rout = open('new_regrecs.json', 'w')
+fin = open(File.dirname(__FILE__)+'/source_records.json')
+sout = open(File.dirname(__FILE__)+'/new_sources.json', 'w')
+rout = open(File.dirname(__FILE__)+'/new_regrecs.json', 'w')
 mongo_uri = ENV['mongo_host']+':'+ENV['mongo_port']
 Mongo::Logger.logger.level = ::Logger::FATAL
 mc = Mongo::Client.new([mongo_uri], :database => ENV['mongo_db'])

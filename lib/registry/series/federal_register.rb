@@ -183,15 +183,15 @@ module Registry
           ec = FederalRegister.parse_ec(line)
           if ec.nil?
             @no_match += 1
-            puts "no match: "+line
+            #puts "no match: "+line
           else 
             @match += 1
           end
 
         end
 
-        puts "match: #{@match}"
-        puts "no match: #{@no_match}"
+        puts "Fed Reg match: #{@match}"
+        puts "Fed Reg no match: #{@no_match}"
         return @match, @no_match
       end
 

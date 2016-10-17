@@ -6,3 +6,5 @@ config/mongoid.yml
 
 spec/data/source_records.json
 spec/data/registry_records.json
+spec/data/new_sources.json
+spec/data/new_regrecs.json

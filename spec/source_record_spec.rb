@@ -295,6 +295,34 @@ RSpec.describe Registry::SourceRecord, '#extract_enum_chrons' do
     sr.source = open(File.dirname(__FILE__)+'/series/data/statabstract_multiple_ecs.json').read
     expect(sr.enum_chrons).to include('Edition:1, Year:1878')
   end
+
+  it 'returns an empty set for records without enum_chrons, with series' do
+    sr = SourceRecord.new
+    sr.org_code = "miaahdl"
+    sr.source = open(File.dirname(__FILE__)+'/series/data/econreport_no_enums.json').read
+    expect(sr.enum_chrons.count).to eq(0)
+  end
+
+  it 'returns an empty set for records without enum_chrons, without series' do
+    sr = SourceRecord.new
+    sr.org_code = "miaahdl"
+    sr.source = open(File.dirname(__FILE__)+'/data/no_enums_no_series_src.json').read
+    expect(sr.enum_chrons.count).to eq(0)
+  end
+
+=begin
+  it "hasn't changed since last extraction" do
+    SourceRecord.where(deprecated_timestamp:{"$exists":0}).no_timeout.each do |src|
+      if src.enum_chrons.include? 'INDEX:V. 58-59 YR. 1993-1994'
+        src.source = src.source.to_json
+        src.save
+      end
+      old_enum_chrons = src.enum_chrons
+      src.source = src.source.to_json
+      expect(old_enum_chrons).to eq(src.enum_chrons)
+    end
+  end
+=end
 end
 
 RSpec.describe Registry::SourceRecord, '#extract_enum_chron_strings' do

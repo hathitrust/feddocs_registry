@@ -114,13 +114,13 @@ module Registry
           if !src[:sudocs].nil? and !src[:sudocs].select { | s | s =~ /Y 4\.EC 7:EC 7\/2\/\d{3}/ }[0].nil?
             sudoc = src[:sudocs].select { | s | s =~ /Y 4\.EC 7:EC 7\/2\/\d{3}/ }[0]
             if !sudoc.nil?
-              m = /EC 7\/2\/(?<year>\d{3,4})[\/$]/.match(sudoc)
+              m = /EC 7\/2\/(?<year>\d{3,4})(\/.*)?$/.match(sudoc)
               if !m.nil? and m[:year][0] == '9'
                 ec['year'] = '1'+m[:year]
               elsif !m.nil? 
                 ec['year'] = m[:year]
               end
-           end
+            end
           elsif !src[:pub_date].nil? and src[:pub_date].count == 1
             ec['year'] = src[:pub_date][0]
           end

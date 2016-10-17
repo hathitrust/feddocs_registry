@@ -400,41 +400,50 @@ module Registry
       if ec_strings.nil?
         ec_strings = self.extract_enum_chron_strings marc
       end
-      ec_strings ||= []
+      if ec_strings == []
+        ec_strings = ['']
+      end
 
       #parse out all of their features
       ec_strings.uniq.each do | ec_string | 
-        
+          
         # Series specific parsing 
         if !self.series.nil? and self.series != ''
           parsed_ec = eval(self.series).parse_ec ec_string
-          # able to parse it?
-          if !parsed_ec.nil?
-            parsed_ec['string'] = ec_string
-            exploded = eval(self.series).explode(parsed_ec, self)
+          if parsed_ec.nil?
+            parsed_ec = {}
+          end
 
-            # just because we parsed it doesn't mean we can do anything with it
-            if exploded.keys.count() > 0
-              exploded.each do | canonical, features | 
-                #series may return exploded items all referencing the same feature set.
-                #since we are changing it we need multiple copies
-                features = features.clone
-                features['string'] = ec_string
-                features['canonical'] = canonical
-                #possible to have multiple ec_strings be reduced to a single ec_string
-                ecs[Digest::SHA256.hexdigest(canonical)] ||= features 
-                ecs[Digest::SHA256.hexdigest(canonical)].merge( features )
-              end
-            else #parsed not explodeable
-              ecs[Digest::SHA256.hexdigest(ec_string)] ||= parsed_ec
-              ecs[Digest::SHA256.hexdigest(ec_string)].merge( parsed_ec )
+          parsed_ec['string'] = ec_string
+          exploded = eval(self.series).explode(parsed_ec, self)
+
+          # anything we can do with it? 
+          # .explode might be able to use ec_string == '' if there is a relevant
+          # pub_date/sudoc in the MARC
+          if exploded.keys.count() > 0
+            exploded.each do | canonical, features | 
+              #series may return exploded items all referencing the same feature set.
+              #since we are changing it we need multiple copies
+              features = features.clone
+              features['string'] = ec_string
+              features['canonical'] = canonical
+              #possible to have multiple ec_strings be reduced to a single ec_string
+              ecs[Digest::SHA256.hexdigest(canonical)] ||= features 
+              ecs[Digest::SHA256.hexdigest(canonical)].merge( features )
             end
-          else  #not parseable
-            ecs[Digest::SHA256.hexdigest(ec_string)] = {'string'=>ec_string}
+          elsif parsed_ec.keys.count == 1 and parsed_ec['string'] == ''
+            #our enumchron was '' and explode couldn't find anything elsewhere in the 
+            #MARC, so don't bother with it.
+            next
+          else #we couldn't explode it. 
+            ecs[Digest::SHA256.hexdigest(ec_string)] ||= parsed_ec
+            ecs[Digest::SHA256.hexdigest(ec_string)].merge( parsed_ec )
           end
         else #unknown series, do nothing. todo: default enumchron processing?
           #we got nothing, raw string with no features
-          ecs[Digest::SHA256.hexdigest(ec_string)] = {'string'=>ec_string}
+          if ec_string != '' #we don't need to track an empty string. 
+            ecs[Digest::SHA256.hexdigest(ec_string)] = {'string'=>ec_string}
+          end
         end
       end
       ecs 
