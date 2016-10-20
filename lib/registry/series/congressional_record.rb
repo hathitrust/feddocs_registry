@@ -269,7 +269,7 @@ module Registry
       def self.parse_file
         @no_match = 0
         @match = 0
-        input = File.dirname(__FILE__)+'/data/usreports_enumchrons.txt'
+        input = File.dirname(__FILE__)+'/data/congressional_record_enumchrons.txt'
         open(input, 'r').each do | line |
           line.chomp!
 
@@ -284,8 +284,8 @@ module Registry
 
         end
 
-        puts "US Reports match: #{@match}"
-        puts "US Reports no match: #{@no_match}"
+        puts "Congressional Record match: #{@match}"
+        puts "Congressional Record no match: #{@no_match}"
         return @match, @no_match
       end
 
