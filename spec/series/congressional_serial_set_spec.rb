@@ -8,12 +8,16 @@ describe "parse_ec" do
 end
 
 describe "explode" do
+  it "returns the serial number if given only a serial number" do
+    expect(CSS.explode(CSS.parse_ec("12345")).keys[0]).to eq("Serial Number:12345")
+  end
 end
 
 describe "parse_file" do
   it "parses a file of enumchrons" do 
     match, no_match = CSS.parse_file
-    expect(match).to eq(1566) #actual number in test file is 1566
+    expect(match).to be > 46950
+    expect(match).to eq(62963) #actual number in test file is 62963
   end
 end
 
