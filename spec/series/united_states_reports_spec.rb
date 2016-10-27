@@ -13,6 +13,7 @@ end
 describe "parse_file" do
   it "parses a file of enumchrons" do 
     match, no_match = USR.parse_file
+    expect(match).to be > 1500
     #expect(match).to eq(1566) #actual number in test file is 1566
   end
 end
