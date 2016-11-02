@@ -520,7 +520,7 @@ module Registry
       when ((self.oclc_resolved.map{|o|o.to_i} & Series::UnitedStatesReports.oclcs).count > 0 or
         self.sudocs.grep(/^#{Regexp.escape(Series::UnitedStatesReports.sudoc_stem)}/).count > 0)
         @series = 'UnitedStatesReports'
-      when self.sudocs.grep(/^#{Regexp.escape(Series::CongressionalRecord.sudoc_stem)}/).count > 0
+      when (self.oclc_resolved.map{|o|o.to_i} & Series::CongressionalRecord.oclcs).count > 0
         @series = 'CongressionalRecord'
       when self.sudocs.grep(/^#{Regexp.escape(Series::ForeignRelations.sudoc_stem)}/).count > 0
         @series = 'ForeignRelations'
