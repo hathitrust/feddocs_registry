@@ -276,7 +276,7 @@ module Registry
           ec = self.parse_ec(line)
           if ec.nil? or ec.length == 0
             @no_match += 1
-            puts "no match: "+line
+            #puts "no match: "+line
           else 
             #puts "match: "+self.explode(ec).to_s
             @match += 1
