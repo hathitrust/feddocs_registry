@@ -29,6 +29,7 @@ module Registry
     field :file_path, type: String
     field :formats, type: Array
     field :holdings
+    field :ht_item_ids
     field :in_registry, type: Boolean, default: false
     field :isbns
     field :isbns_normalized
@@ -455,11 +456,14 @@ module Registry
     # Transform those into a coherent holdings field grouped by normalized/parsed
     # enum_chrons.
     # holdings = {<ec_string> :[<each holding>]
+    # ht_item_ids = [<holding id>]
     # todo: refactor with extract_enum_chrons. A lot of duplicate code/work being done
     def extract_holdings marc=nil
       self.holdings = {}
+      self.ht_item_ids = [] 
       marc ||= MARC::Record.new_from_hash(self.source)
       marc.each_by_tag('974') do |field|
+        self.ht_item_ids << field['u']
         z = field['z']
         z ||= ''
         ec_string = Normalize.enum_chron(z)
@@ -498,6 +502,7 @@ module Registry
                                         u:field['u']}
         end
       end #each 974
+      self.ht_item_ids.uniq!
     end
       
 

@@ -16,7 +16,7 @@ end
 describe "parse_file" do
   it "parses a file of enumchrons" do 
     match, no_match = CSS.parse_file
-    expect(match).to be > 50001
+    expect(match).to be > 50000
     #expect(match).to eq(62963) #actual number in test file is 62963
   end
 end
