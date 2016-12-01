@@ -85,6 +85,7 @@ module Registry
     def source=(value)
       s = JSON.parse(value)
       super(s)
+      self.source_blob = value
       @@collator.normalize_viaf(s).each {|k, v| self.send("#{k}=",v) }
       marc = MARC::Record.new_from_hash(self.source)
       self.pub_date = @@extractor.map_record(marc)['pub_date']
@@ -174,7 +175,7 @@ module Registry
     #
     def ht_availability
       if self.org_code == 'miaahdl'
-        if self.source_blob =~ /.r.:.pd./
+        if self.source_blob =~ /"r" ?: ?"pd"/
           return 'Full View'
         else
           return 'Limited View'

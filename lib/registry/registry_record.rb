@@ -73,20 +73,26 @@ module Registry
     #
     # So we don't have to recollate an entire cluster for the addition of one rec
     def add_source source_record
-      self.source_record_ids << source_record.source_id
-      self.source_org_codes << source_record.org_code
-      @@collator.extract_fields([source_record]).each do | field, value |
-        self[field] ||= []
-        self[field] << value
-        self[field] = self[field].flatten.uniq
+      # if it's already in this record then we have to recollate.
+      # otherwise we have no way of removing old data extractions
+      if self.source_record_ids.include? source_record.source_id
+        self.recollate
+      else
+        self.source_record_ids << source_record.source_id
+        self.source_org_codes << source_record.org_code
+        @@collator.extract_fields([source_record]).each do | field, value |
+          self[field] ||= []
+          self[field] << value
+          self[field] = self[field].flatten.uniq
+        end
+        self.source_record_ids.uniq!
+        self.source_org_codes.uniq!
+        if !source_record.series.nil? and source_record.series != ''
+          self.series = source_record.series
+        end
       end
-      self.source_record_ids.uniq!
-      self.source_org_codes.uniq!
-      if !source_record.series.nil? and source_record.series != ''
-        self.series = source_record.series
-      end
-      self.save
       self.set_ht_availability() 
+      self.save
     end
 
     # Runs the collation of source records again. 

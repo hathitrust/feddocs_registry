@@ -68,6 +68,19 @@ RSpec.describe RR, "add_source" do
     @new_rec.save()
     @src = Registry::SourceRecord.where(source_id: "7386d49d-2c04-44ea-97aa-fb87b241f56f").first
     @new_rec.add_source @src 
+    @ic_sr = SourceRecord.new
+    @ic_sr.org_code = "miaahdl"
+    ic_line = open(File.dirname(__FILE__)+'/data/ht_ic_record.json').read
+    @ic_sr.source = ic_line
+    @ic_sr.source_blob = ic_line
+    @ic_sr.save
+    @pd_sr = SourceRecord.new
+    @pd_sr.org_code = "miaahdl"
+    pd_line = open(File.dirname(__FILE__)+'/data/ht_pd_record.json').read
+    @pd_sr.source = pd_line
+    @pd_sr.source_blob = pd_line
+    @pd_sr.save
+    @orig = RR.new([], '', '')
   end
 
   it "adds source record to cluster" do
@@ -75,12 +88,40 @@ RSpec.describe RR, "add_source" do
     expect(@new_rec.oclcnum_t).to include(39)
   end
 
+
   it "adds org code" do
     expect(@new_rec.source_org_codes).to include(@src.org_code)
   end
 
+  it "updates HT availability" do
+    expect(@ic_sr.ht_availability).to eq('Limited View')
+    @ic_reg = RR.new([@ic_sr.source_id], '', 'testing')
+    expect(@ic_reg.ht_availability).to eq('Limited View')
+    @ic_reg.add_source(@pd_sr) # should change it to Full View
+    expect(@ic_reg.ht_availability).to eq('Full View')
+    @pd_reg = RR.where(registry_id:@ic_reg.registry_id).first
+    expect(@pd_reg.ht_availability).to eq('Full View')
+    @ic_reg.delete
+    @pd_reg.delete
+  end
+
+  it "recollates if adding existing record" do
+    @orig = RR.new([@pd_sr.source_id], '', 'testing')
+    @orig.save
+    expect(@orig.ht_availability).to eq('Full View')
+    # "Full View" over writes "Limited" so if it remains 
+    # Full View after changing the source to limited and adding
+    # then it's not recollating 
+    @pd_sr.source = @pd_sr.source_blob.gsub(/"r":"pd"/,'"r":"ic"')
+    @pd_sr.save
+    @orig.add_source(@pd_sr)
+    expect(@orig.ht_availability).to eq('Limited View')
+  end 
+
   after(:all) do
     @new_rec.delete
+    @pd_sr.delete
+    @ic_sr.delete
   end
 end
 
