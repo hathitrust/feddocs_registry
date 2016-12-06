@@ -96,9 +96,6 @@ module Registry
           if ec['reporter']
             canon += ", #{ec['reporter']} #{ec['number']}"
           end
-          if ec['october']
-            canon += ", October Term"
-          end
         end
         canon
       end
