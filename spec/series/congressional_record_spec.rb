@@ -6,6 +6,8 @@ describe "parse_ec" do
   it "can parse them all" do 
     matches = 0
     misses = 0
+    can_canon = 0
+    cant_canon = 0
     input = File.dirname(__FILE__)+'/data/congressional_record_enumchrons.txt'
     open(input, 'r').each do |line|
       line.chomp!
@@ -15,16 +17,32 @@ describe "parse_ec" do
         puts "no match: "+line
       else 
         matches += 1
+        if CR.canonicalize(ec)
+          can_canon += 1
+        else
+          puts "can't canon: "+line
+          cant_canon += 1
+        end
       end
     end
 
     puts "Congressional Record match: #{matches}"
     puts "Congressional Record no match: #{misses}"
+    puts "Congressional Record can canonicalize: #{can_canon}"
+    puts "Congressional Record can't canonicalize: #{cant_canon}"
     expect(matches).to eq(matches+misses)
   end
   
   it "parses it's canonical version" do
     expect(CR.parse_ec('Volume:105, Part:20')['volume']).to eq('105')
+  end
+
+  it "parses 'V. 43 INDEX 1908-09'" do
+    expect(CR.parse_ec('V. 43 INDEX 1908-09')['volume']).to eq('43')
+  end
+
+  it "parses 'V. 5 1877 INDEX'" do
+    expect(CR.parse_ec('V. 5 1877 INDEX')['volume']).to eq('5')
   end
   
   it "parses 'V. 105 PT. 35'" do
@@ -35,6 +53,10 @@ describe "parse_ec" do
     expect(CR.parse_ec('V. 98,PT. 5 1952')['part']).to eq('5')
   end
 
+  it "parses 'V. 137:PT. 16 (1991:SEPT. 10/23)'" do
+    expect(CR.parse_ec('V. 137:PT. 16 (1991:SEPT. 10/23)')['part']).to eq('16')
+  end
+      
   it "parses 'V. 97:15 (1951)'" do
     expect(CR.parse_ec('V. 97:15 (1951)')['part']).to eq('15')
   end
@@ -67,19 +89,60 @@ describe "parse_ec" do
     expect(CR.parse_ec('101/1:129/PT. 15')['volume']).to eq('129')
   end
 
+  it "parses 'V. 99:PT. 2 1953:FEB. 26-APR. 8'" do
+    expect(CR.parse_ec('V. 99:PT. 2 1953:FEB. 26-APR. 8')['part']).to eq('2')
+  end
+
+  it "parses '51ST:1ST:V. 21:PT. 7 (1890:JUNE 13/JULY 9)'" do
+    expect(CR.parse_ec('51ST:1ST:V. 21:PT. 7 (1890:JUNE 13/JULY 9)')['part']).to eq('7')
+  end
+
+  it "parses '102/2:V. 138:PT. 25'" do
+    expect(CR.parse_ec('102/2:V. 138:PT. 25')['part']).to eq('25')
+  end
+
+  it "parses '102ND CONG. , 1ST SES. V. 137 PT. 25 INDEX L-Z'" do
+    expect(CR.parse_ec('102ND CONG. , 1ST SES. V. 137 PT. 25 INDEX L-Z')['part']).to eq('25')
+  end
+  
+  it "parses 'V. 84. PT. 10 1939'" do
+    expect(CR.parse_ec('V. 84. PT. 10 1939')['part']).to eq('10')
+  end
+
+=begin
+  # We're going to assume Volume. Might as well decide on something.
   it "can NOT parse '108/PT. 17'" do
     expect(CR.parse_ec('108/PT. 17')).to be_nil
+  end
+=end
+  it "can parse '108/PT. 17'" do
+    expect(CR.parse_ec('108/PT. 17')['part']).to eq('17')
+  end
+
+  it "handles indexes" do 
+    expect(CR.parse_ec('102/1-138/PT. 24/INDEX L-Z')['index']).to eq('L-Z')
   end
 
 end
 
 describe "explode" do
+  it "returns a canonical form" do
+    expect(CR.explode(CR.parse_ec('V. 97:15 (1951)'), {})).to have_key('Volume:97, Part:15')
+  end
+
+  it "handles indexes" do 
+    expect(CR.explode(CR.parse_ec('102/1-138/PT. 24/INDEX L-Z'), {})).to have_key('Volume:138, Part:24, Index:L-Z')
+  end
+
 end
 
-describe "parse_file" do
-  it "parses a file of enumchrons" do 
-    #match, no_match = CR.parse_file
-    #expect(match).to eq(1566) #actual number in test file is 1566
+describe "canonicalize" do
+  it "returns a canonical form" do
+    expect(CR.canonicalize(CR.parse_ec('V. 97:15 (1951)'))).to eq('Volume:97, Part:15')
+  end
+
+  it "returns nil if can't canonicalize" do
+    expect(CR.canonicalize(CR.parse_ec('gibberish'))).to be_nil
   end
 end
 
