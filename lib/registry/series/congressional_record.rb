@@ -137,6 +137,14 @@ module Registry
           ([\s\/:,](#{index}|(?<index>INDEX)))?$
         }x,
 
+        # 65/1: 55/ PT. 1 (1917, PP. 1-1070)
+        %r{
+          \d+\/\d:\s
+          (?<volume>\d+)\/\s
+          PT\.\s(?<part>\d+)\s
+          \(\d{4}
+        }x,
+
         # V. 107 1961 APPX. PT. 7
         %r{
           #{v}#{y}
@@ -265,8 +273,10 @@ module Registry
 
       def self.canonicalize ec
         if !ec.nil? and ec['volume']
+          ec['volume'].sub!(/^0+/,'')
           canon = "Volume:#{ec['volume']}"
           if ec['part']
+            ec['part'].sub!(/^0+/,'')
             canon += ", Part:#{ec['part']}"
           end
           if ec['index']
