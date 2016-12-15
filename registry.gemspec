@@ -22,6 +22,7 @@ Gem::Specification.new do |spec|
   spec.add_dependency 'traject'
   spec.add_dependency 'library_stdnums', '~> 1.0.2'
   spec.add_dependency 'mysql2'
-  spec.add_dependency 'blacklist'
+  spec.add_dependency 'blacklist', :git => 'https://github.com/HTGovdocs/blacklist.git'
+
 
 end
