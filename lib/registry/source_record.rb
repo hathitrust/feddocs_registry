@@ -6,6 +6,8 @@ require 'dotenv'
 require 'registry/collator'
 require 'yaml'
 require 'digest'
+require 'blacklist'
+
 Dir[File.dirname(__FILE__) + "/series/*.rb"].each {|file| require file}
 
 module Registry
@@ -186,6 +188,7 @@ module Registry
     end
 
     # Determine if this is a govdoc based on 008 and 086
+    # and OCLC blacklist
     # marc - ruby-marc repesentation of source
     def is_govdoc marc=nil
       marc ||= MARC::Record.new_from_hash(self.source)
@@ -196,6 +199,13 @@ module Registry
         f008 = ''
       else
         f008 = field_008.value
+      end
+      self.extract_identifiers( marc )
+      #check the blacklist
+      self.oclc_resolved.each do |o|
+        if Blacklist.oclcs.include? o
+          return false
+        end
       end
       f008 =~ /^.{17}u.{10}f/ or self.sudocs.count > 0 or self.extract_sudocs(marc).count > 0
     end

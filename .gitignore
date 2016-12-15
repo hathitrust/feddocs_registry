@@ -4,6 +4,9 @@ config/mongoid.yml
 .bundle
 *.tmp
 
+.client_secret.json
+.credentials
+
 spec/data/source_records.json
 spec/data/registry_records.json
 spec/data/new_sources.json

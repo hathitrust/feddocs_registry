@@ -218,6 +218,13 @@ RSpec.describe Registry::SourceRecord, 'is_govdoc' do
     expect(s.is_govdoc).to be_truthy
     expect(s.is_govdoc(@innd_marc)).to be_truthy
   end
+
+  it "leverages OCLC blacklist" do
+    bad_oclc = File.read(File.expand_path(File.dirname(__FILE__))+'/data/blacklisted_oclc.json').chomp
+    s = SourceRecord.new
+    s.source = bad_oclc
+    expect(s.is_govdoc).to be false
+  end
 end
 
   
@@ -343,6 +350,7 @@ RSpec.describe Registry::SourceRecord, '#extract_enum_chron_strings' do
     expect(sr.extract_enum_chron_strings).to include('PT. 1-4')
   end
 end
+
 
 RSpec.describe Registry::SourceRecord, '#extract_holdings' do
   before(:all) do
