@@ -1,6 +1,6 @@
 GIT
   remote: https://github.com/HTGovdocs/blacklist.git
-  revision: b022405c8c727438846176a78e76197f320f0a28
+  revision: 47ccc95f1f389c06585b068bcfc1d464dc97f8fd
   specs:
     blacklist (0.1)
       dotenv
@@ -36,6 +36,7 @@ PATH
   remote: .
   specs:
     registry (0.9.3)
+      blacklist
       dotenv
       library_stdnums (~> 1.0.2)
       marc
