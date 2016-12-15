@@ -36,7 +36,6 @@ PATH
   remote: .
   specs:
     registry (0.9.3)
-      blacklist
       dotenv
       library_stdnums (~> 1.0.2)
       marc

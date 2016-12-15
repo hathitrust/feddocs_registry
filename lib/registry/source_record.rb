@@ -517,8 +517,14 @@ module Registry
     end
       
 
-    # series
-    #
+    # is_monograph?
+    # Occasionally useful wrapper over checking the leader in the source. 
+    # Note: Just because it is a monograph, does NOT mean it is missing
+    # enumchrons. 
+    def is_monograph?
+      self.source['leader'] =~ /^.{7}m/
+    end
+
     # Uses oclc_resolved to identify a series title (and appropriate module)
     def series
       if !@series.nil?

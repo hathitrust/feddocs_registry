@@ -367,3 +367,18 @@ RSpec.describe Registry::SourceRecord, '#extract_holdings' do
     expect(@src.ht_item_ids).to include('mdp.39015034759749')
   end
 end
+
+RSpec.describe Registry::SourceRecord, '#is_monograph' do
+ 
+  it 'identifies a monograph' do
+    src = SourceRecord.new
+    src.source = open(File.dirname(__FILE__)+'/data/no_enums_no_series_src.json').read
+    expect(src.is_monograph?).to be_truthy
+  end
+
+  it 'identifies a non-monograph' do
+    src = SourceRecord.new
+    src.source = open(File.dirname(__FILE__)+'/series/data/statabstract_multiple_ecs.json').read
+    expect(src.is_monograph?).to be_falsey
+  end
+end
