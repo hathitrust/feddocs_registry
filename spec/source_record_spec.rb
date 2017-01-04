@@ -382,3 +382,12 @@ RSpec.describe Registry::SourceRecord, '#is_monograph' do
     expect(src.is_monograph?).to be_falsey
   end
 end
+
+describe Registry::SourceRecord, 'source' do
+  it 'properly extracts US Reports' do
+    src = SourceRecord.new
+    src.source = open(File.dirname(__FILE__)+'/series/data/usreport.json').read
+    expect(src.enum_chrons.count).to be > 20
+  end
+end
+

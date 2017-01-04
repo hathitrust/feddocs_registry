@@ -14,13 +14,13 @@ describe "parse_ec" do
       ec = CR.parse_ec(line)
       if ec.nil? or ec.length == 0
         misses += 1
-        puts "no match: "+line
+        #puts "no match: "+line
       else 
         matches += 1
         if CR.canonicalize(ec)
           can_canon += 1
         else
-          puts "can't canon: "+line
+          #puts "can't canon: "+line
           cant_canon += 1
         end
       end

@@ -17,3 +17,20 @@ describe "calc_end_year" do
   end
 
 end
+
+describe "all Series" do
+  Registry::Series.constants.each do | s |
+    s = "Registry::Series::#{s.to_s}"
+    if eval(s).respond_to?(:canonicalize)
+      it "the canonicalize method returns nil if {} given" do
+        puts s
+        expect(eval(s).canonicalize({})).to be_nil
+      end
+
+      it "fails to explode if it can't canonicalize" do
+        expect(eval(s).explode({'string'=>"cant_canonicalize_this"}).keys.count).to eq(0)
+      end
+    end
+        
+  end
+end

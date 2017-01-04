@@ -51,8 +51,30 @@ describe "parse_ec" do
     expect(USR.parse_ec('V. 443 (OCT. TERM 1978)')['october']).to eq('OCT. TERM')
   end
 
+  it "parses V. 556PT. 2" do
+    expect(USR.parse_ec('V. 556PT. 2')['part']).to eq('2')
+  end
+
+  it "parses V. 546:1" do
+    expect(USR.parse_ec('V. 556:1')['part']).to eq('1')
+  end
+
+  it "parses V496PT1" do
+    expect(USR.parse_ec('V496PT1')['volume']).to eq('496')
+  end
+
+  it "parses V497" do
+    expect(USR.parse_ec('V497')['volume']).to eq('497')
+  end
+
   it "expands V. 35 1899-01" do 
     expect(USR.parse_ec('V. 35 1899-01')['end_year']).to eq('1901')
+  end
+end
+
+describe "canonicalize" do
+  it "returns nil if ec can't be parsed" do
+    expect(USR.canonicalize({})).to be_nil
   end
 end
 

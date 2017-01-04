@@ -40,6 +40,15 @@ module Registry
         # V. 203-214
         m ||= /^V\. (?<start_volume>\d+)-(?<end_volume>\d+) ?/.match(ec_string)
 
+        # V. 556PT. 2
+        m ||= /^#{v}PT\. (?<part>\d)$/.match(ec_string)
+
+        # V496PT1
+        m ||= /^V(?<volume>\d+)(PT(?<part>\d))?$/.match(ec_string)
+
+        # V. 546:1
+        m ||= /^#{v}:(?<part>\d)$/.match(ec_string)
+
         #we'll just take the volume number
         m ||= /^#{v}[, \(]/.match(ec_string)
 
@@ -75,19 +84,23 @@ module Registry
         end
 
         ecs.each do | ec |
-          ec['canon'] = canonicalize ec
-          enum_chrons[ec['canon']] = ec.clone
+          if canon = self.canonicalize(ec)
+            ec['canon'] = canon 
+            enum_chrons[ec['canon']] = ec.clone
+          end
         end
          
         enum_chrons
       end
 
       def self.canonicalize ec
-        canon = ''
         if self.volumes.include? ec['volume']
           canon = self.volumes[ec['volume']]
-        else
+        elsif ec['volume'] 
           canon = "Volume:#{ec['volume']}"
+          if ec['part']
+            canon += ", Part:#{ec['part']}"
+          end
           if ec['year']
             canon += ", Year:#{ec['year']}"
           elsif ec['start_year']
