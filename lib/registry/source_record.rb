@@ -531,32 +531,32 @@ module Registry
 
     # Uses oclc_resolved to identify a series title (and appropriate module)
     def series
-      if !@series.nil?
-        @series
-      end
+      #try to set it 
       case
       when (self.oclc_resolved.map{|o|o.to_i} & Series::FederalRegister.oclcs).count > 0
-        @series = 'FederalRegister'
+        self.series = 'FederalRegister'
       when (self.oclc_resolved.map{|o|o.to_i} & Series::StatutesAtLarge.oclcs).count > 0
-        @series = 'StatutesAtLarge'
+        self.series = 'StatutesAtLarge'
       when (self.oclc_resolved.map{|o|o.to_i} & Series::AgriculturalStatistics.oclcs).count > 0
-        @series = 'AgriculturalStatistics'
+        self.series = 'AgriculturalStatistics'
       when (self.oclc_resolved.map{|o|o.to_i} & Series::StatisticalAbstract.oclcs).count > 0
-        @series = 'StatisticalAbstract'
+        self.series = 'StatisticalAbstract'
       when ((self.oclc_resolved.map{|o|o.to_i} & Series::UnitedStatesReports.oclcs).count > 0 or
         self.sudocs.grep(/^#{Regexp.escape(Series::UnitedStatesReports.sudoc_stem)}/).count > 0)
-        @series = 'UnitedStatesReports'
+        #self.series = 'UnitedStatesReports'
+        self.series = 'UnitedStatesReports'
       when (self.oclc_resolved.map{|o|o.to_i} & Series::CongressionalRecord.oclcs).count > 0
-        @series = 'CongressionalRecord'
+        self.series = 'CongressionalRecord'
       when self.sudocs.grep(/^#{Regexp.escape(Series::ForeignRelations.sudoc_stem)}/).count > 0
-        @series = 'ForeignRelations'
+        self.series = 'ForeignRelations'
       when self.sudocs.grep(/^#{Regexp.escape(Series::CongressionalSerialSet.sudoc_stem)}/).count > 0
-        @series = 'CongressionalSerialSet'
+        self.series = 'CongressionalSerialSet'
       when (self.sudocs.grep(/^#{Regexp.escape(Series::EconomicReportOfThePresident.sudoc_stem)}/).count > 0 or
         (self.oclc_resolved.map{|o|o.to_i} & Series::EconomicReportOfThePresident.oclcs).count > 0)
-        @series = 'EconomicReportOfThePresident'
+        self.series = 'EconomicReportOfThePresident'
       end
-      @series
+      #get whatever we got
+      super 
     end
 
     def self.parse_ec ec

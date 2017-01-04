@@ -384,10 +384,25 @@ RSpec.describe Registry::SourceRecord, '#is_monograph' do
 end
 
 describe Registry::SourceRecord, 'source' do
-  it 'properly extracts US Reports' do
-    src = SourceRecord.new
-    src.source = open(File.dirname(__FILE__)+'/series/data/usreport.json').read
-    expect(src.enum_chrons.count).to be > 20
+  before(:each) do
+    @src = SourceRecord.new
+    @src.source = open(File.dirname(__FILE__)+'/series/data/usreport.json').read
   end
+
+  it 'properly extracts US Reports' do
+    expect(@src.enum_chrons.count).to be > 20
+  end
+
+  it 'saves the series information' do
+    expect(@src.series).to eq('UnitedStatesReports')
+    @src.save
+    diffsrc = SourceRecord.where(source_id:@src.source_id).first
+    expect(diffsrc.attributes[:series]).to eq('UnitedStatesReports')
+  end
+
+  after(:each) do
+    @src.delete
+  end
+
 end
 
