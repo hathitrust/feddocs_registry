@@ -28,6 +28,7 @@ module Registry
         #canonical
         # Volume: 1, Year:1982-1983, WALLACE 5, October Term
         m ||= /^Volume:(?<volume>\d+)(, Years?:(#{ys}|(?<year>\d{4})))?(, #{rpt})?(, (?<october>October Term))?$/.match(ec_string)
+        m ||= /^Volume:(?<volume>\d+), Part:(?<part>\d+)$/.match(ec_string)
 
         m ||= /^#{v} ?\(?(#{ot})? ?(#{y}|#{ys})\)?$/.match(ec_string)
         m ||= /^#{v}$/.match(ec_string)

@@ -2514,3 +2514,1047 @@ V. 151 YR. 1894
 V. 239 YR. 1916
 V. 346 YR. 1953
 V. 377
+1965 NO. 7
+1965 NO. 96
+V463PT1-3
+V473PT1-3
+Volume:
+Volume:
+Volume:
+Volume:1, DALLAS 1
+Volume:10, Year:1810, CRANCH 6
+Volume:100, Year:1880
+Volume:100, Year:1880, October Term
+Volume:101, Year:1880
+Volume:101, Year:1880, October Term
+Volume:102, Year:1881
+Volume:102, Year:1881, October Term
+Volume:103, Year:1881
+Volume:103, Year:1881, October Term
+Volume:104, Year:1882
+Volume:104, Year:1882, October Term
+Volume:105, Year:1882
+Volume:105, Year:1882, October Term
+Volume:106, Year:1882
+Volume:106, Year:1882, October Term
+Volume:107, Year:1883
+Volume:107, Year:1883, October Term
+Volume:108, Year:1884
+Volume:108, Year:1884, October Term
+Volume:109, Year:1883
+Volume:109, Year:1883, October Term
+Volume:11, Year:1812, CRANCH 7
+Volume:110, Year:1883
+Volume:110, Year:1883, October Term
+Volume:111, Year:1883
+Volume:111, Year:1883, October Term
+Volume:112, Year:1884
+Volume:112, Year:1884, October Term
+Volume:113, Year:1884
+Volume:113, Year:1884, October Term
+Volume:114, Year:1884
+Volume:114, Year:1884, October Term
+Volume:115, Years:1884-1885
+Volume:115, Years:1884-1885, October Term
+Volume:116, Year:1885
+Volume:116, Year:1885, October Term
+Volume:117, Year:1885
+Volume:117, Year:1885, October Term
+Volume:118, Year:1885
+Volume:118, Year:1885, October Term
+Volume:119, Year:1886
+Volume:119, Year:1886, October Term
+Volume:12, Year:1814, CRANCH 8
+Volume:120, Year:1886
+Volume:120, Year:1886, October Term
+Volume:121, Year:1886
+Volume:121, Year:1886, October Term
+Volume:122, Year:1886
+Volume:122, Year:1886, October Term
+Volume:123, Year:1887
+Volume:123, Year:1887, October Term
+Volume:124, Year:1887
+Volume:124, Year:1887, October Term
+Volume:125, Year:1887
+Volume:125, Year:1887, October Term
+Volume:126, Year:1887
+Volume:126, Year:1887, October Term
+Volume:127, Year:1887
+Volume:127, Year:1887, October Term
+Volume:128, Year:1888
+Volume:128, Year:1888, October Term
+Volume:129, Year:1888
+Volume:129, Year:1888, October Term
+Volume:13, Year:1815, CRANCH 9
+Volume:130, Year:1888
+Volume:130, Year:1888, October Term
+Volume:131, Year:1888
+Volume:131, Year:1888, October Term
+Volume:132, Year:1889
+Volume:132, Year:1889, October Term
+Volume:133, Year:1889
+Volume:133, Year:1889, October Term
+Volume:134, Year:1890
+Volume:134, Year:1890, October Term
+Volume:135, Year:1890
+Volume:135, Year:1890, October Term
+Volume:136, Year:1890
+Volume:136, Year:1890, October Term
+Volume:137, Year:1889
+Volume:137, Year:1889, October Term
+Volume:138, Year:1891
+Volume:138, Year:1891, October Term
+Volume:139, Year:1891
+Volume:139, Year:1891, October Term
+Volume:14, Year:1816, WHEATON 1
+Volume:140, Year:1891
+Volume:140, Year:1891, October Term
+Volume:141, Year:1892
+Volume:141, Year:1892, October Term
+Volume:142, Year:1892
+Volume:142, Year:1892, October Term
+Volume:143, Year:1892
+Volume:143, Year:1892, October Term
+Volume:144, Year:1892
+Volume:144, Year:1892, October Term
+Volume:145, Year:1892
+Volume:145, Year:1892, October Term
+Volume:146, Year:1893
+Volume:146, Year:1893, October Term
+Volume:147, Year:1893
+Volume:147, Year:1893, October Term
+Volume:148, Year:1892
+Volume:148, Year:1892, October Term
+Volume:149, Year:1893
+Volume:149, Year:1893, October Term
+Volume:15, Year:1817, WHEATON 2
+Volume:150, Year:1893
+Volume:150, Year:1893, October Term
+Volume:151, Year:1894
+Volume:151, Year:1894, October Term
+Volume:152, Year:1893
+Volume:152, Year:1893, October Term
+Volume:153, Year:1893
+Volume:153, Year:1893, October Term
+Volume:154, Year:1893
+Volume:154, Year:1893, October Term
+Volume:155, Years:1893-1894
+Volume:155, Years:1893-1894, October Term
+Volume:156, Year:1894
+Volume:156, Year:1894, October Term
+Volume:157, Year:1894
+Volume:157, Year:1894, October Term
+Volume:158, Year:1894
+Volume:158, Year:1894, October Term
+Volume:159, Years:1894-1895
+Volume:159, Years:1894-1895, October Term
+Volume:16, Year:1818, WHEATON 3
+Volume:160, Year:1895
+Volume:160, Year:1895, October Term
+Volume:161, Year:1895
+Volume:161, Year:1895, October Term
+Volume:162, Year:1895
+Volume:162, Year:1895, October Term
+Volume:163, Year:1895
+Volume:163, Year:1895, October Term
+Volume:164, Year:1896
+Volume:164, Year:1896, October Term
+Volume:165, Year:1896
+Volume:165, Year:1896, October Term
+Volume:166, Year:1896
+Volume:166, Year:1896, October Term
+Volume:167, Year:1896
+Volume:167, Year:1896, October Term
+Volume:168, Year:1897
+Volume:168, Year:1897, October Term
+Volume:169, Year:1897
+Volume:169, Year:1897, October Term
+Volume:17, WHEATON 4
+Volume:170, Year:1897
+Volume:170, Year:1897, October Term
+Volume:171, Years:1897-1898
+Volume:171, Years:1897-1898, October Term
+Volume:172, Year:1898
+Volume:172, Year:1898, October Term
+Volume:173, Year:1898
+Volume:173, Year:1898, October Term
+Volume:174, Year:1899
+Volume:174, Year:1899, October Term
+Volume:175, Year:1899
+Volume:175, Year:1899, October Term
+Volume:176, Year:1899
+Volume:176, Year:1899, October Term
+Volume:177, Year:1899
+Volume:177, Year:1899, October Term
+Volume:178, Year:1899
+Volume:178, Year:1899, October Term
+Volume:179, Year:1900
+Volume:179, Year:1900, October Term
+Volume:18, Year:1820, WHEATON 5
+Volume:180, Year:1900
+Volume:180, Year:1900, October Term
+Volume:181, Year:1900
+Volume:181, Year:1900, October Term
+Volume:182, Year:1900
+Volume:182, Year:1900, October Term
+Volume:183, Year:1901
+Volume:183, Year:1901, October Term
+Volume:184, Year:1901
+Volume:184, Year:1901, October Term
+Volume:185, Year:1901
+Volume:185, Year:1901, October Term
+Volume:186, Year:1901
+Volume:186, Year:1901, October Term
+Volume:187, Year:1902
+Volume:187, Year:1902, October Term
+Volume:188, Year:1902
+Volume:188, Year:1902, October Term
+Volume:189, Year:1902
+Volume:189, Year:1902, October Term
+Volume:19, Year:1821, WHEATON 6
+Volume:190, Year:1902
+Volume:190, Year:1902, October Term
+Volume:191, Year:1903
+Volume:191, Year:1903, October Term
+Volume:192, Year:1903
+Volume:192, Year:1903, October Term
+Volume:193, Year:1903
+Volume:193, Year:1903, October Term
+Volume:194, Year:1903
+Volume:194, Year:1903, October Term
+Volume:195, Years:1903-1904
+Volume:195, Years:1903-1904, October Term
+Volume:196, Year:1904
+Volume:196, Year:1904, October Term
+Volume:197, Year:1904
+Volume:197, Year:1904, October Term
+Volume:198, Year:1904
+Volume:198, Year:1904, October Term
+Volume:199, Years:1904-1905
+Volume:199, Years:1904-1905, October Term
+Volume:2, DALLAS 2
+Volume:20, Year:1822, WHEATON 7
+Volume:200, Year:1905
+Volume:200, Year:1905, October Term
+Volume:201, Year:1905
+Volume:201, Year:1905, October Term
+Volume:202, Year:1905
+Volume:202, Year:1905, October Term
+Volume:203, Years:1905-1906
+Volume:203, Years:1905-1906, October Term
+Volume:204, Year:1906
+Volume:204, Year:1906, October Term
+Volume:205, Year:1906
+Volume:205, Year:1906, October Term
+Volume:206, Year:1906
+Volume:206, Year:1906, October Term
+Volume:207, Year:1907
+Volume:207, Year:1907, October Term
+Volume:208, Year:1907
+Volume:208, Year:1907, October Term
+Volume:209, Year:1907
+Volume:209, Year:1907, October Term
+Volume:21, Year:1823, WHEATON 8
+Volume:210, Year:1907
+Volume:210, Year:1907, October Term
+Volume:211, Year:1908
+Volume:211, Year:1908, October Term
+Volume:212, Year:1908
+Volume:212, Year:1908, October Term
+Volume:213, Year:1908
+Volume:213, Year:1908, October Term
+Volume:214, Year:1908
+Volume:214, Year:1908, October Term
+Volume:215, Year:1909
+Volume:215, Year:1909, October Term
+Volume:216, Year:1909
+Volume:216, Year:1909, October Term
+Volume:217, Year:1909
+Volume:217, Year:1909, October Term
+Volume:218, Years:1909-1910
+Volume:218, Years:1909-1910, October Term
+Volume:219, Year:1910
+Volume:219, Year:1910, October Term
+Volume:22, Year:1824, WHEATON 9
+Volume:220, Year:1910
+Volume:220, Year:1910, October Term
+Volume:221, Year:1910
+Volume:221, Year:1910, October Term
+Volume:222, Year:1911
+Volume:222, Year:1911, October Term
+Volume:223, Year:1911
+Volume:223, Year:1911, October Term
+Volume:224, Year:1911
+Volume:224, Year:1911, October Term
+Volume:225, Year:1911
+Volume:225, Year:1911, October Term
+Volume:226, Year:1912
+Volume:226, Year:1912, October Term
+Volume:227, Year:1912
+Volume:227, Year:1912, October Term
+Volume:228, Year:1912
+Volume:228, Year:1912, October Term
+Volume:229, Year:1912
+Volume:229, Year:1912, October Term
+Volume:23, Year:1825, WHEATON 10
+Volume:230, Year:1912
+Volume:230, Year:1912, October Term
+Volume:231, Year:1913
+Volume:231, Year:1913, October Term
+Volume:232, Year:1913
+Volume:232, Year:1913, October Term
+Volume:233, Year:1913
+Volume:233, Year:1913, October Term
+Volume:234, Year:1913
+Volume:234, Year:1913, October Term
+Volume:235, Year:1914
+Volume:235, Year:1914, October Term
+Volume:236, Year:1914
+Volume:236, Year:1914, October Term
+Volume:237, Year:1914
+Volume:237, Year:1914, October Term
+Volume:238, Year:1914
+Volume:238, Year:1914, October Term
+Volume:239, Year:1916
+Volume:239, Year:1916, October Term
+Volume:24, Year:1826, WHEATON 11
+Volume:240, Year:1915
+Volume:240, Year:1915, October Term
+Volume:241, Year:1915
+Volume:241, Year:1915, October Term
+Volume:242, Year:1916
+Volume:242, Year:1916, October Term
+Volume:243, Year:1916
+Volume:243, Year:1916, October Term
+Volume:244, Year:1916
+Volume:244, Year:1916, October Term
+Volume:245, Year:1917
+Volume:245, Year:1917, October Term
+Volume:246, Year:1917
+Volume:246, Year:1917, October Term
+Volume:247, Year:1917
+Volume:247, Year:1917, October Term
+Volume:248, Year:1918
+Volume:248, Year:1918, October Term
+Volume:249, Year:1918
+Volume:249, Year:1918, October Term
+Volume:25, Year:1827, WHEATON 12
+Volume:250, Years:1918-1919
+Volume:250, Years:1918-1919, October Term
+Volume:251, Year:1919
+Volume:251, Year:1919, October Term
+Volume:252, Year:1919
+Volume:252, Year:1919, October Term
+Volume:253, Year:1919
+Volume:253, Year:1919, October Term
+Volume:254, Year:1920
+Volume:254, Year:1920, October Term
+Volume:255, Year:1920
+Volume:255, Year:1920, October Term
+Volume:256, Year:1920
+Volume:256, Year:1920, October Term
+Volume:257, Year:1921
+Volume:257, Year:1921, October Term
+Volume:258, Year:1921
+Volume:258, Year:1921, October Term
+Volume:259, Year:1921
+Volume:259, Year:1921, October Term
+Volume:26, Year:1928, PETERS 1
+Volume:260, Year:1922
+Volume:260, Year:1922, October Term
+Volume:261, Year:1922
+Volume:261, Year:1922, October Term
+Volume:262, Year:1922
+Volume:262, Year:1922, October Term
+Volume:263, Year:1923
+Volume:263, Year:1923, October Term
+Volume:264, Year:1923
+Volume:264, Year:1923, October Term
+Volume:265, Year:1923
+Volume:265, Year:1923, October Term
+Volume:266, Year:1924
+Volume:266, Year:1924, October Term
+Volume:267, Year:1924
+Volume:267, Year:1924, October Term
+Volume:268, Year:1924
+Volume:268, Year:1924, October Term
+Volume:269, Year:1925
+Volume:269, Year:1925, October Term
+Volume:27, Year:1829, PETERS 2
+Volume:270, Year:1925
+Volume:270, Year:1925, October Term
+Volume:271, Year:1925
+Volume:271, Year:1925, October Term
+Volume:272, Year:1926
+Volume:272, Year:1926, October Term
+Volume:273, Year:1926
+Volume:273, Year:1926, October Term
+Volume:274, Year:1926
+Volume:274, Year:1926, October Term
+Volume:275, Year:1927
+Volume:275, Year:1927, October Term
+Volume:276, Year:1927
+Volume:276, Year:1927, October Term
+Volume:277, Year:1927
+Volume:277, Year:1927, October Term
+Volume:278, Year:1928
+Volume:278, Year:1928, October Term
+Volume:279, Year:1928
+Volume:279, Year:1928, October Term
+Volume:28, Year:1830, PETERS 3
+Volume:280, Year:1929
+Volume:280, Year:1929, October Term
+Volume:281, Year:1929
+Volume:281, Year:1929, October Term
+Volume:282, Year:1930
+Volume:282, Year:1930, October Term
+Volume:283, Year:1930
+Volume:283, Year:1930, October Term
+Volume:284, Year:1931
+Volume:284, Year:1931, October Term
+Volume:285, Year:1931
+Volume:285, Year:1931, October Term
+Volume:286, Year:1931
+Volume:286, Year:1931, October Term
+Volume:287, Year:1932
+Volume:287, Year:1932, October Term
+Volume:288, Year:1932
+Volume:288, Year:1932, October Term
+Volume:289, Year:1932
+Volume:289, Year:1932, October Term
+Volume:29, Year:1830, PETERS 4
+Volume:290, Year:1933
+Volume:290, Year:1933, October Term
+Volume:291, Year:1933
+Volume:291, Year:1933, October Term
+Volume:292, Year:1933
+Volume:292, Year:1933, October Term
+Volume:293, Year:1934
+Volume:293, Year:1934, October Term
+Volume:294, Year:1934
+Volume:294, Year:1934, October Term
+Volume:295, Year:1934
+Volume:295, Year:1934, October Term
+Volume:296, Year:1935
+Volume:296, Year:1935, October Term
+Volume:297, Year:1935
+Volume:297, Year:1935, October Term
+Volume:298, Year:1935
+Volume:298, Year:1935, October Term
+Volume:299, Year:1936
+Volume:299, Year:1936, October Term
+Volume:3, DALLAS 3
+Volume:30, Year:1831, PETERS 5
+Volume:300, Year:1936
+Volume:300, Year:1936, October Term
+Volume:301, Year:1936
+Volume:301, Year:1936, October Term
+Volume:302, Year:1937
+Volume:302, Year:1937, October Term
+Volume:303, Year:1937
+Volume:303, Year:1937, October Term
+Volume:304, Year:1937
+Volume:304, Year:1937, October Term
+Volume:305, Year:1938
+Volume:305, Year:1938, October Term
+Volume:306, Year:1938
+Volume:306, Year:1938, October Term
+Volume:307, Year:1938
+Volume:307, Year:1938, October Term
+Volume:308, Year:1939
+Volume:308, Year:1939, October Term
+Volume:309, Year:1939
+Volume:309, Year:1939, October Term
+Volume:31, Year:1832, PETERS 6
+Volume:310, Year:1939
+Volume:310, Year:1939, October Term
+Volume:311, Year:1940
+Volume:311, Year:1940, October Term
+Volume:312, Year:1940
+Volume:312, Year:1940, October Term
+Volume:313, Year:1940
+Volume:313, Year:1940, October Term
+Volume:314, Year:1941
+Volume:314, Year:1941, October Term
+Volume:315, Year:1941
+Volume:315, Year:1941, October Term
+Volume:316, Year:1941
+Volume:316, Year:1941, October Term
+Volume:317, Year:1942
+Volume:317, Year:1942, October Term
+Volume:318, Year:1942
+Volume:318, Year:1942, October Term
+Volume:319, Year:1942
+Volume:319, Year:1942, October Term
+Volume:32, Year:1833, PETERS 7
+Volume:320, Year:1944
+Volume:320, Year:1944, October Term
+Volume:321, Year:1943
+Volume:321, Year:1943, October Term
+Volume:322, Year:1943
+Volume:322, Year:1943, October Term
+Volume:323, Year:1944
+Volume:323, Year:1944, October Term
+Volume:324, Year:1944
+Volume:324, Year:1944, October Term
+Volume:325, Year:1944
+Volume:325, Year:1944, October Term
+Volume:326, Years:1944-1945
+Volume:326, Years:1944-1945, October Term
+Volume:327, Year:1945
+Volume:327, Year:1945, October Term
+Volume:328, Year:1945
+Volume:328, Year:1945, October Term
+Volume:329, Year:1946
+Volume:329, Year:1946, October Term
+Volume:33, Year:1834, PETERS 8
+Volume:330, Year:1946
+Volume:330, Year:1946, October Term
+Volume:331, Year:1946
+Volume:331, Year:1946, October Term
+Volume:332, Year:1947
+Volume:332, Year:1947, October Term
+Volume:333, Year:1947
+Volume:333, Year:1947, October Term
+Volume:334, Year:1947
+Volume:334, Year:1947, October Term
+Volume:335, Year:1949
+Volume:335, Year:1949, October Term
+Volume:336, Year:1948
+Volume:336, Year:1948, October Term
+Volume:337, Year:1948
+Volume:337, Year:1948, October Term
+Volume:338, Year:1950
+Volume:338, Year:1950, October Term
+Volume:339, Year:1949
+Volume:339, Year:1949, October Term
+Volume:34, Year:1835, PETERS 9
+Volume:340, Year:1950
+Volume:340, Year:1950, October Term
+Volume:341, Year:1950
+Volume:341, Year:1950, October Term
+Volume:342, Year:1951
+Volume:342, Year:1951, October Term
+Volume:343, Year:1951
+Volume:343, Year:1951, October Term
+Volume:344, Year:1952
+Volume:344, Year:1952, October Term
+Volume:345, Year:1952
+Volume:345, Year:1952, October Term
+Volume:346, Year:1953
+Volume:346, Year:1953, October Term
+Volume:347, Year:1953
+Volume:347, Year:1953, October Term
+Volume:348, Year:1954
+Volume:348, Year:1954, October Term
+Volume:349, Year:1954
+Volume:349, Year:1954, October Term
+Volume:35, Year:1836, PETERS 10
+Volume:350, Year:1955
+Volume:350, Year:1955, October Term
+Volume:351, Year:1955
+Volume:351, Year:1955, October Term
+Volume:352, Year:1956
+Volume:352, Year:1956, October Term
+Volume:353, Year:1956
+Volume:353, Year:1956, October Term
+Volume:354, Year:1956
+Volume:354, Year:1956, October Term
+Volume:355, Year:1957
+Volume:355, Year:1957, October Term
+Volume:356, Year:1957
+Volume:356, Year:1957, October Term
+Volume:357, Year:1957
+Volume:357, Year:1957, October Term
+Volume:358, Year:1958
+Volume:358, Year:1958, October Term
+Volume:359, Year:1958
+Volume:359, Year:1958, October Term
+Volume:36, Year:1846, PETERS 11
+Volume:360, Year:1958
+Volume:360, Year:1958, October Term
+Volume:361, Year:1959
+Volume:361, Year:1959, October Term
+Volume:362, Year:1959
+Volume:362, Year:1959, October Term
+Volume:363, Year:1959
+Volume:363, Year:1959, October Term
+Volume:364, Year:1961
+Volume:364, Year:1961, October Term
+Volume:365, Year:1960
+Volume:365, Year:1960, October Term
+Volume:366, Year:1960
+Volume:366, Year:1960, October Term
+Volume:367, Year:1960
+Volume:367, Year:1960, October Term
+Volume:368, Year:1961
+Volume:368, Year:1961, October Term
+Volume:369, Year:1961
+Volume:369, Year:1961, October Term
+Volume:37, Year:1846, PETERS 12
+Volume:370, Year:1961
+Volume:370, Year:1961, October Term
+Volume:371, Year:1962
+Volume:371, Year:1962, October Term
+Volume:372, Year:1962
+Volume:372, Year:1962, October Term
+Volume:373, Year:1962
+Volume:373, Year:1962, October Term
+Volume:374, Year:1962
+Volume:374, Year:1962, October Term
+Volume:375, Year:1963
+Volume:375, Year:1963, October Term
+Volume:376, Year:1963
+Volume:376, Year:1963, October Term
+Volume:377, Year:1963
+Volume:377, Year:1963, October Term
+Volume:378, Year:1963
+Volume:378, Year:1963, October Term
+Volume:379, Year:1964
+Volume:379, Year:1964, October Term
+Volume:38, Year:1847, PETERS 13
+Volume:380, Year:1964
+Volume:380, Year:1964, October Term
+Volume:381, Year:1964
+Volume:381, Year:1964, October Term
+Volume:382, Year:1965
+Volume:382, Year:1965, October Term
+Volume:383, Year:1965
+Volume:383, Year:1965, October Term
+Volume:384, Year:1965
+Volume:384, Year:1965, October Term
+Volume:385, Year:1966
+Volume:385, Year:1966, October Term
+Volume:386, Year:1966
+Volume:386, Year:1966, October Term
+Volume:387, Year:1966
+Volume:387, Year:1966, October Term
+Volume:388, Year:1966
+Volume:388, Year:1966, October Term
+Volume:389, Year:1967
+Volume:389, Year:1967, October Term
+Volume:39, Year:1840, PETERS 14
+Volume:390, Year:1967
+Volume:390, Year:1967, October Term
+Volume:391, Year:1967
+Volume:391, Year:1967, October Term
+Volume:392, Year:1967
+Volume:392, Year:1967, October Term
+Volume:393, Year:1968
+Volume:393, Year:1968, October Term
+Volume:394, Year:1968
+Volume:394, Year:1968, October Term
+Volume:395, Year:1968
+Volume:395, Year:1968, October Term
+Volume:396, Year:1969
+Volume:396, Year:1969, October Term
+Volume:397, Year:1969
+Volume:397, Year:1969, October Term
+Volume:398, Year:1969
+Volume:398, Year:1969, October Term
+Volume:399, Year:1969
+Volume:399, Year:1969, October Term
+Volume:4, DALLAS 4
+Volume:40, Year:1841, PETERS 15
+Volume:400, Year:1970
+Volume:400, Year:1970, October Term
+Volume:401, Year:1970
+Volume:402, Year:1970
+Volume:403, Year:1970
+Volume:403, Year:1970, October Term
+Volume:404, Year:1971
+Volume:405, Year:1971
+Volume:406, Year:1971
+Volume:406, Year:1971, October Term
+Volume:407, Year:1971
+Volume:407, Year:1971, October Term
+Volume:408, Year:1971
+Volume:408, Year:1971, October Term
+Volume:409, Year:1972
+Volume:41, Year:1846, PETERS 16
+Volume:410, Year:1972
+Volume:410, Year:1972, October Term
+Volume:411, Year:1972
+Volume:411, Year:1972, October Term
+Volume:412, Year:1972
+Volume:412, Year:1972, October Term
+Volume:413, Year:1972
+Volume:413, Year:1972, October Term
+Volume:414, Year:1973
+Volume:414, Year:1973, October Term
+Volume:415, Year:1973
+Volume:415, Year:1973, October Term
+Volume:416, Year:1973
+Volume:417, Year:1973
+Volume:417, Year:1973, October Term
+Volume:418, Year:1973
+Volume:418, Year:1973, October Term
+Volume:419, Year:1974
+Volume:419, Year:1974, October Term
+Volume:42, Year:1843, HOWARD 1
+Volume:420, Year:1974
+Volume:420, Year:1974, October Term
+Volume:421, Year:1974
+Volume:421, Year:1974, October Term
+Volume:422, Year:1974
+Volume:422, Year:1974, October Term
+Volume:423, Year:1975
+Volume:423, Year:1975
+Volume:423, Year:1975, October Term
+Volume:424, Year:1975
+Volume:424, Year:1975
+Volume:424, Year:1975, October Term
+Volume:425, Year:1975
+Volume:425, Year:1975
+Volume:425, Year:1975, October Term
+Volume:426, Year:1975
+Volume:426, Year:1975
+Volume:426, Year:1975, October Term
+Volume:427, Year:1975
+Volume:427, Year:1975
+Volume:427, Year:1975, October Term
+Volume:428, Year:1975
+Volume:428, Year:1975
+Volume:428, Year:1975, October Term
+Volume:429, Year:1976
+Volume:429, Year:1976
+Volume:429, Year:1976, October Term
+Volume:43, Year:1844, HOWARD 2
+Volume:430, Year:1976
+Volume:430, Year:1976
+Volume:430, Year:1976, October Term
+Volume:431, Year:1976
+Volume:431, Year:1976, October Term
+Volume:432, Year:1976
+Volume:432, Year:1976
+Volume:432, Year:1976, October Term
+Volume:433, Year:1976
+Volume:433, Year:1976
+Volume:433, Year:1976, October Term
+Volume:434, Year:1977
+Volume:434, Year:1977
+Volume:434, Year:1977, October Term
+Volume:435, Year:1977
+Volume:435, Year:1977
+Volume:435, Year:1977, October Term
+Volume:436, Year:1977
+Volume:436, Year:1977, October Term
+Volume:437, Year:1977
+Volume:437, Year:1977, October Term
+Volume:438, Year:1977
+Volume:438, Year:1977
+Volume:438, Year:1977, October Term
+Volume:439, Year:1978
+Volume:439, Year:1978
+Volume:439, Year:1978, October Term
+Volume:44, HOWARD 3
+Volume:440, Year:1978
+Volume:440, Year:1978
+Volume:440, Year:1978, October Term
+Volume:441, Year:1978
+Volume:441, Year:1978
+Volume:441, Year:1978, October Term
+Volume:442, Year:1978
+Volume:442, Year:1978
+Volume:442, Year:1978, October Term
+Volume:443, Year:1978
+Volume:443, Year:1978
+Volume:443, Year:1978, October Term
+Volume:444, Year:1979
+Volume:444, Year:1979
+Volume:444, Year:1979, October Term
+Volume:445, Year:1979
+Volume:445, Year:1979
+Volume:445, Year:1979, October Term
+Volume:446, Year:1979
+Volume:446, Year:1979
+Volume:446, Year:1979, October Term
+Volume:447, Year:1979
+Volume:447, Year:1979
+Volume:447, Year:1979, October Term
+Volume:448, Year:1979
+Volume:448, Year:1979
+Volume:448, Year:1979, October Term
+Volume:449, Year:1980
+Volume:449, Year:1980
+Volume:45, Year:1846, HOWARD 4
+Volume:450, Year:1980
+Volume:450, Year:1980
+Volume:450, Year:1980, October Term
+Volume:451, Year:1980
+Volume:451, Year:1980
+Volume:451, Year:1980, October Term
+Volume:452, Year:1980
+Volume:452, Year:1980
+Volume:452, Year:1980, October Term
+Volume:453, Year:1980
+Volume:453, Year:1980
+Volume:453, Year:1980, October Term
+Volume:454, Year:1981
+Volume:454, Year:1981, October Term
+Volume:455, Year:1981
+Volume:455, Year:1981
+Volume:455, Year:1981, October Term
+Volume:456, Year:1981
+Volume:456, Year:1981, October Term
+Volume:457, Year:1981
+Volume:457, Year:1981, October Term
+Volume:458, Year:1981
+Volume:458, Year:1981, October Term
+Volume:459, Year:1982
+Volume:459, Year:1982, October Term
+Volume:46, Year:1847, HOWARD 5
+Volume:460, Year:1982
+Volume:460, Year:1982, October Term
+Volume:461, Year:1982
+Volume:461, Year:1982
+Volume:461, Year:1982, October Term
+Volume:462, Year:1982
+Volume:462, Year:1982
+Volume:462, Year:1982, October Term
+Volume:463, Year:1982
+Volume:463, Year:1982, October Term
+Volume:464, Year:1983
+Volume:464, Year:1983
+Volume:464, Year:1983, October Term
+Volume:465, Year:1983
+Volume:465, Year:1983, October Term
+Volume:466, Year:1983
+Volume:466, Year:1983, October Term
+Volume:467, Year:1983
+Volume:467, Year:1983, October Term
+Volume:468, Year:1983
+Volume:468, Year:1983, October Term
+Volume:469, Year:1984
+Volume:469, Year:1984, October Term
+Volume:47, Year:1848, HOWARD 6
+Volume:470, Year:1984
+Volume:470, Year:1984, October Term
+Volume:471, Year:1984
+Volume:471, Year:1984
+Volume:471, Year:1984, October Term
+Volume:472, Year:1984
+Volume:472, Year:1984, October Term
+Volume:473, Year:1984
+Volume:473, Year:1984, October Term
+Volume:474, Year:1985
+Volume:474, Year:1985, October Term
+Volume:475, Year:1985
+Volume:475, Year:1985, October Term
+Volume:476, Year:1985
+Volume:476, Year:1985
+Volume:476, Year:1985, October Term
+Volume:477, Year:1985
+Volume:477, Year:1985
+Volume:477, Year:1985, October Term
+Volume:478, Year:1985
+Volume:478, Year:1985
+Volume:478, Year:1985, October Term
+Volume:479, Year:1986
+Volume:48, Year:1849, HOWARD 7
+Volume:480, Year:1986
+Volume:480, Year:1986, October Term
+Volume:481, Year:1986
+Volume:482, Year:1986
+Volume:482, Year:1986
+Volume:483, Year:1986
+Volume:484, Year:1987
+Volume:485, Year:1987
+Volume:485, Year:1987
+Volume:486, Year:1987
+Volume:486, Year:1987
+Volume:487, Year:1987
+Volume:487, Year:1987
+Volume:488, Year:1988
+Volume:488, Year:1988
+Volume:489, Year:1988
+Volume:489, Year:1988
+Volume:49, Year:1850, HOWARD 8
+Volume:490, Year:1988
+Volume:490, Year:1988
+Volume:491, Year:1993
+Volume:492, Year:1988
+Volume:492, Year:1988
+Volume:493, Year:1989
+Volume:494, Year:1989
+Volume:495, Year:1989
+Volume:495, Year:1989
+Volume:496, Year:1990
+Volume:496, Year:1990
+Volume:497, Year:1989
+Volume:497, Year:1989
+Volume:498, Year:1996
+Volume:498, Year:1996
+Volume:499, Year:1995
+Volume:5, CRANCH 1
+Volume:50, Year:1851, HOWARD 9
+Volume:500, Year:1990
+Volume:501, Year:1990
+Volume:502, Year:1991
+Volume:503, Year:1996
+Volume:503, Year:1996
+Volume:504, Year:1996
+Volume:504, Year:1996
+Volume:505, Year:1996
+Volume:505, Year:1996
+Volume:506, Year:1992
+Volume:506, Year:1992
+Volume:507, Year:1997
+Volume:507, Year:1997
+Volume:508, Year:1997
+Volume:509, Year:1997
+Volume:51, Year:1851, HOWARD 10
+Volume:510, Year:1993
+Volume:511, Year:1997
+Volume:512, Year:1998
+Volume:513, Year:1994
+Volume:514, Year:1996
+Volume:515, Year:1998
+Volume:516, Year:1998
+Volume:517, Year:1995
+Volume:518, Year:1999
+Volume:519, Year:1999
+Volume:52, Year:1850, HOWARD 11
+Volume:520, Year:1999
+Volume:521, Year:2000
+Volume:522, Year:1997
+Volume:523, Year:2000
+Volume:523, Year:2000
+Volume:524, Year:2000
+Volume:524, Year:2000
+Volume:525, Year:1998
+Volume:525, Year:1998
+Volume:526, Year:2001
+Volume:526, Year:2001
+Volume:527, Year:2001
+Volume:527, Year:2001
+Volume:528, Year:2001
+Volume:528, Year:2001
+Volume:529, Year:1999
+Volume:529, Year:1999
+Volume:53, Year:1851, HOWARD 12
+Volume:530, Year:1999
+Volume:530, Year:1999
+Volume:531, Year:2002
+Volume:531, Year:2002
+Volume:532, Year:2002
+Volume:533, Year:2002
+Volume:534, Year:2003
+Volume:535, Year:2001
+Volume:536, Year:2004
+Volume:537, Year:2002
+Volume:538, Year:2002
+Volume:539, Year:2002
+Volume:54, Year:1851, HOWARD 13
+Volume:540, Year:2003
+Volume:540, Year:2003
+Volume:540, Year:2003, October Term
+Volume:541, Year:2003
+Volume:541, Year:2003
+Volume:541, Year:2003, October Term
+Volume:541, Year:2003, October Term
+Volume:542, Year:2003
+Volume:542, Year:2003
+Volume:542, Year:2003, October Term
+Volume:542, Year:2003, October Term
+Volume:543, Year:2004
+Volume:543, Year:2004
+Volume:543, Year:2004, October Term
+Volume:543, Year:2004, October Term
+Volume:544, Year:2004
+Volume:544, Year:2004
+Volume:544, Year:2004, October Term
+Volume:544, Year:2004, October Term
+Volume:545, Year:2004
+Volume:545, Year:2004
+Volume:545, Year:2004, October Term
+Volume:546, Year:2005
+Volume:546, Year:2005
+Volume:546, Year:2005, October Term
+Volume:546, Year:2005, October Term
+Volume:547, Year:2005
+Volume:547, Year:2005
+Volume:548, Year:2005
+Volume:548, Year:2005
+Volume:548, Year:2005, October Term
+Volume:549, Year:2006
+Volume:549, Year:2006
+Volume:549, Year:2006, October Term
+Volume:549, Year:2006, October Term
+Volume:55, Year:1852, HOWARD 14
+Volume:550, Year:2006
+Volume:550, Year:2006
+Volume:550, Year:2006, October Term
+Volume:551, Year:2006
+Volume:551, Year:2006
+Volume:552, Year:2007
+Volume:552, Year:2007
+Volume:552, Year:2007, October Term
+Volume:553, Year:2007
+Volume:553, Year:2007
+Volume:553, Year:2007, October Term
+Volume:554, Year:2007
+Volume:554, Year:2007, October Term
+Volume:555, Year:2008
+Volume:556, Part:2
+Volume:556, Year:2008
+Volume:558
+Volume:559
+Volume:56, Year:1854, HOWARD 15
+Volume:561
+Volume:57, Year:1854, HOWARD 16
+Volume:58, Year:1854, HOWARD 17
+Volume:59, Year:1855, HOWARD 18
+Volume:6, CRANCH 2
+Volume:60, Year:1856, HOWARD 19
+Volume:61, Year:1857, HOWARD 20
+Volume:62, Year:1858, HOWARD 21
+Volume:63, Year:1859, HOWARD 22
+Volume:64, Year:1859, HOWARD 23
+Volume:65, Year:1860, HOWARD 24
+Volume:66, Year:1862, BLACK 1
+Volume:67, Year:1862, BLACK 2
+Volume:68, Year:1866, WALLACE 1
+Volume:69, Year:1866, WALLACE 2
+Volume:7, CRANCH 3
+Volume:70, Year:1867, WALLACE 3
+Volume:71, Year:1866, WALLACE 4
+Volume:72, WALLACE 5
+Volume:73, WALLACE 6
+Volume:74, Year:1870, WALLACE 7
+Volume:75, Year:1870, WALLACE 8
+Volume:76, Year:1870, WALLACE 9
+Volume:77, Year:1871, WALLACE 10
+Volume:78, Year:1871, WALLACE 11
+Volume:79, Year:1872, WALLACE 12
+Volume:8, CRANCH 4
+Volume:80, Year:1872, WALLACE 13
+Volume:81, WALLACE 14
+Volume:82, Year:1873, WALLACE 15
+Volume:83, Year:1872, WALLACE 16
+Volume:84, Year:1874, WALLACE 17
+Volume:85, Year:1874, WALLACE 18
+Volume:86, Year:1874, WALLACE 19
+Volume:87, Year:1875, WALLACE 20
+Volume:88, WALLACE 21
+Volume:89, Year:1876, WALLACE 22
+Volume:9, Year:1809, CRANCH 5
+Volume:90, Year:1876, WALLACE 23
+Volume:91, Year:1875
+Volume:91, Year:1875, October Term
+Volume:92, Year:1875
+Volume:92, Year:1875, October Term
+Volume:93, Year:1876
+Volume:93, Year:1876, October Term
+Volume:94, Year:1876
+Volume:94, Year:1876, October Term
+Volume:95, Year:1878
+Volume:95, Year:1878, October Term
+Volume:96, Year:1878
+Volume:96, Year:1878, October Term
+Volume:97, Year:1879
+Volume:97, Year:1879, October Term
+Volume:98, Year:1879
+Volume:98, Year:1879, October Term
+Volume:99, Year:1879
+Volume:99, Year:1879, October Term

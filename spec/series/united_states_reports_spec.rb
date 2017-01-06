@@ -13,7 +13,7 @@ describe "parse_ec" do
       ec = USR.parse_ec(line)
       if ec.nil? or ec.length == 0
         misses += 1
-        #puts "no match: "+line
+        puts "no match: "+line
       else
         USR.explode(ec).each do | canon, enum_chron |
           volumes[enum_chron["volume"]] = volumes[enum_chron["volume"]].merge(enum_chron)
