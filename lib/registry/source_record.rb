@@ -485,7 +485,7 @@ module Registry
 
         #possible to parse/explode one enumchron into many for select series
         ecs = []
-        if self.series.nil? or self.series == ''
+        if self.series.nil? or self.series == '' or self.series != 'CivilRightsCommission'
           ecs << ec_string
         else
           parsed_ec = eval(self.series).parse_ec ec_string
