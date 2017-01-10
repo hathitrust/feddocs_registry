@@ -420,7 +420,7 @@ module Registry
       ec_strings.uniq.each do | ec_string | 
           
         # Series specific parsing 
-        if !self.series.nil? and self.series != '' and self.series != 'CivilRightsCommission'
+        if !self.series.nil? and self.series != ''
           parsed_ec = eval(self.series).parse_ec ec_string
           if parsed_ec.nil?
             parsed_ec = {}
@@ -485,7 +485,7 @@ module Registry
 
         #possible to parse/explode one enumchron into many for select series
         ecs = []
-        if self.series.nil? or self.series == '' or self.series != 'CivilRightsCommission'
+        if self.series.nil? or self.series == ''
           ecs << ec_string
         else
           parsed_ec = eval(self.series).parse_ec ec_string
