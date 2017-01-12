@@ -13,7 +13,7 @@ describe "parse_ec" do
       ec = FR.parse_ec(line)
       if ec.nil? or ec.length == 0
         misses += 1
-        puts "no match: '#{l}' : '#{line}'" 
+        #puts "no match: '#{l}' : '#{line}'" 
       else
         matches += 1
       end

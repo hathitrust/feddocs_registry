@@ -10,7 +10,7 @@ describe "new" do
     sr.source = open(File.dirname(__FILE__)+'/data/civil_rights_commission.json').read
     expect(sr.enum_chrons[0]).to eq('NOT A REAL ENUMCHRON')
     expect(sr.holdings.values[0][0][:ec]).to eq('NOT A REAL ENUMCHRON')
-    PP.pp sr
+    #PP.pp sr
   end
 end
 

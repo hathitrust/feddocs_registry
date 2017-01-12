@@ -30,7 +30,7 @@ module Registry
       end
 
       def self.canonicalize ec
-        canon
+        return nil
       end
 
       def self.load_context 
