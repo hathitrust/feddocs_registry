@@ -49,6 +49,10 @@ module Registry
           ec_string = '2' + ec_string
         end
 
+        #fix some manglings
+        ec_string.gsub!(/(\d{2,4})V/, '\1 V')
+        ec_string.gsub!(/(\d)PT/, '\1 PT')
+
         #canonical
         m ||= /^Year:(?<year>\d{4})(, Volume:(?<volume>\d+))?(, Part:(?<part>\d+))?$/.match(ec_string)
         m ||= /^Years:(?<start_year>\d{4})-(?<end_year>\d{4})(, Volume:(?<volume>\d+))?(, Part:(?<part>\d+))?$/.match(ec_string)
