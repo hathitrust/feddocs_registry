@@ -19,10 +19,26 @@ module Registry
       end
       
       def self.parse_ec ec_string
+        v = 'V\.?\s?(?<volume>\d{1,2})'
+        p = 'PT\.?\s?(?<part>\d{1,2})'
+        div = '[\s:,;\/-]\s?'
+
         #some junk in the back
         ec_string.gsub!(/ COPY$/, '')
+        ec_string.gsub!(/ ?=.*/, '')
+        ec_string.gsub!(/#{div}FICHE \d+(-\d+)?$/, '')
+        ec_string.gsub!(/#{div}MF\.? SUP\.?$/, '')
+        ec_string.chomp!
+
         #some junk in the front
         ec_string.gsub!(/^KZ233 . U55 /, '')
+        ec_string.gsub!(/^V\. \/V/, 'V')
+
+        #expand some stuff
+        ec_string.gsub!(/SUP\.?([^P])?/, 'SUPPLEMENT\1')
+        ec_string.gsub!(/CONF\.?([^E])?/, 'CONFERENCE\1')
+        #just telling us supplement doesn't do us any good anyway
+        ec_string.gsub!(/#{div}SUPPLEMENT$/, '')
 
         #fix the three digit years
         if ec_string =~ /^[89]\d\d[^0-9]*/
@@ -33,23 +49,9 @@ module Registry
           ec_string = '2' + ec_string
         end
 
-=begin
-        ec_string.gsub!(/REEL \d+.* P77-/, '')
-        ec_string.gsub!(/^A V\./, 'V.')
-        ec_string.gsub!(/^: /, '')
-
-        #space before trailing ) is always a typo
-        ec_string.gsub!(/ \)/, ')')
-
-        #trailing junk
-        ec_string.gsub!(/[,: ]$/, '')  
-
-        #remove unnecessary crap
-        ec_string.gsub!(/ ?= ?[0-9]+.*/, '')
-
-        #sometimes years get duplicated
-        ec_string.gsub!(/(?<y>\d{4}) \k<y>/, '\k<y>')
-=end
+        #canonical
+        m ||= /^Year:(?<year>\d{4})(, Volume:(?<volume>\d+))?(, Part:(?<part>\d+))?$/.match(ec_string)
+        m ||= /^Years:(?<start_year>\d{4})-(?<end_year>\d{4})(, Volume:(?<volume>\d+))?(, Part:(?<part>\d+))?$/.match(ec_string)
 
         #simple year
         #2008 /* 68 */
@@ -61,59 +63,110 @@ module Registry
 
         # V. 1969-76:9 /* 140 */
         # V. 1969-76/V. 1 
-        m ||= /^V\. (?<start_year>\d{4})-(?<end_year>\d{2})[:\/](V\. )?(?<volume>\d{1,2})$/.match(ec_string)
+        m ||= /^V\. (?<start_year>\d{4})-(?<end_year>\d{2})#{div}(V\. )?(?<volume>\d{1,2})$/.match(ec_string)
+
+        # 1906 PT. 1
+        # 1906,PT. 1
+        # 1906:PT. 1
+        # 1906/PT. 1
+        # V. 1906/PT. 2
+        m ||= /^(V\. )?(?<year>\d{4})#{div}#{p}$/.match(ec_string)
+        # 1864-65 PT. 4
+        m ||= /^(V\. )?(?<start_year>\d{4})#{div}(?<end_year>\d{2,4})#{div}#{p}$/.match(ec_string)
 
         # V. 1950/V. 3 /* 149 */
-        m ||= /^V\. (?<year>\d{4})\/V\. (?<volume>\d{1,2})$/.match(ec_string)
+        m ||= /^V\. (?<year>\d{4})#{div}#{v}$/.match(ec_string)
 
         # V. 3(1928) /* 370 */
-        m ||= /^V\. (?<volume>\d{1,2})\((?<year>\d{4})\)$/.match(ec_string)
+        m ||= /^#{v}\((?<year>\d{4})\)$/.match(ec_string)
 
         # V. 2 1958-1960 /* 98 */
-        m ||= /^V\. (?<volume>\d{1,2}) (?<start_year>\d{4})-(?<end_year>\d{2,4})$/.match(ec_string)
+        m ||= /^#{v} (?<start_year>\d{4})-(?<end_year>\d{2,4})$/.match(ec_string)
 
         # wut?
         # V. 1914  /* 41 */
         m ||= /^V\. (?<year>\d{4})$/.match(ec_string)
 
         # V. 1951/V. 7/PT. 2 /* 7 */
-        m ||= /^V\. (?<year>\d{4})\/V\. (?<volume>\d{1,2})\/PT\. (?<part>\d{1,2})$/.match(ec_string)
+        m ||= /^V\. (?<year>\d{4})#{div}#{v}#{div}#{p}$/.match(ec_string)
 
         # V. 1952-54/V. 11/PT. 1 /* 31 */
-        m ||= /^V\. (?<start_year>\d{4})-(?<end_year>\d{2,4})\/V\. (?<volume>\d{1,2})\/PT\. (?<part>\d{1,2})$/.match(ec_string)
+        m ||= /^V\. (?<start_year>\d{4})-(?<end_year>\d{2,4})#{div}#{v}#{div}#{p}$/.match(ec_string)
+
+        # V. -54/V. 5/PT. 1
+        # V. 54/V. 5/PT. 1
+        m ||= /^V\. -?(?<year>\d{2})\/#{v}(\/#{p})?$/.match(ec_string) 
 
         # 1934, V. 5 /* 743 */
         # 1934,V. 5
         # 1934: V. 5
         # 1934:V. 5
         # 1919/V. 2
-        m ||= /^(?<year>\d{4})[,:\/]? ?V\. (?<volume>\d{1,2})$/.match(ec_string)
+        m ||= /^(?<year>\d{4})#{div}#{v}$/.match(ec_string)
 
         # 1969-76:V. 14 /* 890 */
-        m ||= /^(?<start_year>\d{4})-(?<end_year>\d{2,4})[,:\/]? ?V\. (?<volume>\d{1,2})$/.match(ec_string)
+        m ||= /^(?<start_year>\d{4})-(?<end_year>\d{2,4})#{div}#{v}$/.match(ec_string)
        
         # 952-954/V. 11:PT. 1 /* 25 */ 
-        m ||= /^(?<start_year>\d{4})-(?<end_year>\d{2,4})\/V\. (?<volume>\d{1,2}):PT\. (?<part>\d{1,2})$/.match(ec_string)
+        m ||= /^(?<start_year>\d{4})-(?<end_year>\d{2,4})#{div}#{v}#{div}#{p}$/.match(ec_string)
         # 948/V. 1:PT. 1
-        m ||= /^(?<year>\d{4})\/V\. (?<volume>\d{1,2}):PT\. (?<part>\d{1,2})$/.match(ec_string)
+        # 1951 V. 3 PT. 1
+        m ||= /^(?<year>\d{4})#{div}#{v}#{div}#{p}$/.match(ec_string)
+
+        # V. 1/PT. 1
+        # V. 9 PT. 1
+        m ||= /^#{v}#{div}#{p}$/.match(ec_string)
 
         # V. 7 PT. 1 1949
         # V. 6, PT. 2 1952-1954
-        m ||= /^V\. (?<volume>\d{1,2}),? PT\. (?<part>\d{1,2}) (?<year>\d{4})$/.match(ec_string)
-        m ||= /^V\. (?<volume>\d{1,2}),? PT\. (?<part>\d{1,2}) (?<start_year>\d{4})-(?<end_year>\d{2,4})$/.match(ec_string)
+        m ||= /^#{v}#{div}#{p} (?<year>\d{4})$/.match(ec_string)
+        m ||= /^#{v}#{div}#{p} (?<start_year>\d{4})-(?<end_year>\d{2,4})$/.match(ec_string)
+
+        #  V. 1872/PT. 2/V. 1
+        m ||= /^(V\. )?(?<year>\d{4})#{div}#{p}#{div}#{v}$/.match(ec_string)
 
         # PARIS V. 10 1919 /* 13 */
         m ||= /^(?<paris>PARIS) V\. (?<volume>\d{1,2}) (?<year>\d{4})$/.match(ec_string)
 
         # 1969/76:V. 14 /* 214 */
         # 1969/1976:V. 14
-        m ||= /^(?<start_year>\d{4})\/(?<end_year>\d{2,4}):V\. (?<volume>\d{1,2})$/.match(ec_string)
+        # 1952-54:V. 9/PT. 2
+        # 1952/54:V. 9 PT. 2
+        m ||= /^(?<start_year>\d{4})[-\/](?<end_year>\d{2,4})#{div}#{v}(#{div}#{p})?$/.match(ec_string)
+
+        # 23
+        # 23/PT. 1
+        m ||= /^(?<volume>\d{1,2})(#{div}#{p})?$/.match(ec_string)
+  
+        # 1951 V. 6:2
+        m ||= /^(?<year>\d{4})#{div}#{v}#{div}(?<part>\d)$/.match(ec_string)
+
+        # 1964-1968 V. 31 2004
+        # pretty sure that last 4 digits is something else
+        m ||= /^(?<start_year>\d{4})(#{div}(?<end_year>\d{2,4}))?#{div}#{v}#{div}(?<junk>\d{4})$/.match(ec_string)
+
+        # 1952/54:V. 5:PT. 2:FICHE 1-5
+        # 1952/54:V. 5:PT. 2:FICHE 6-9
+        # 1952-54 V. 6:1
+        m ||= /^(?<start_year>\d{4})#{div}(?<end_year>\d{2,4})#{div}#{v}#{div}(PT\. )?(?<part>\d)(:FICHE \d(-\d)?)?$/.match(ec_string)
+
+        # 1958-1960
+        # 1969/76 (V. 34)
+        m ||= /^(?<start_year>\d{4})#{div}(?<end_year>\d{2,4})( \(#{v}\))?$/.match(ec_string)
+
+        m ||= /^#{v}$/.match(ec_string)
+
+        # 1944:4
+        # 1944:5
+        m ||= /^(?<year>\d{4}):(?<part>\d)$/.match(ec_string)
 
         if !m.nil?
           ec = Hash[ m.names.zip( m.captures ) ]
           #remove nils
           ec.delete_if {|k, v| v.nil? }
-          if ec.key? 'year' and ec['year'].length == 3
+          if ec.key? 'year' and ec['year'].length == 2
+            ec['year'] = '19' + ec['year']
+          elsif ec.key? 'year' and ec['year'].length == 3
             if ec['year'][0] == '8' or ec['year'][0] == '9'
               ec['year'] = '1' + ec['year']
             else
@@ -129,19 +182,8 @@ module Registry
             end
           end
 
-          if ec.key? 'end_year' and /^\d\d$/.match(ec['end_year'])
-            if ec['end_year'].to_i < ec['start_year'][2,2].to_i
-              # crosses century. e.g. 1998-01
-              ec['end_year'] = (ec['start_year'][0,2].to_i + 1).to_s + ec['end_year']
-            else
-              ec['end_year'] = ec['start_year'][0,2]+ec['end_year']
-            end
-          elsif ec.key? 'end_year' and /^\d\d\d$/.match(ec['end_year'])
-            if ec['end_year'].to_i < 700 #add a 2; 1699 and 2699 are both wrong, but...
-              ec['end_year'] = '2'+ec['end_year']
-            else
-              ec['end_year'] = '1'+ec['end_year']
-            end
+          if ec.key? 'end_year' 
+            ec['end_year'] = calc_end_year(ec['start_year'], ec['end_year'])
           end 
         end
         ec  #ec string parsed into hash
@@ -157,30 +199,32 @@ module Registry
           return {}
         end
 
+        if canon = self.canonicalize(ec)
+          ec['canon'] = canon
+          enum_chrons[ec['canon']] = ec.clone
+        end
+
         enum_chrons
       end
 
-      def self.parse_file
-        @no_match = 0
-        @match = 0
-        input = File.dirname(__FILE__)+'/data/foreign_relations_enumchrons.txt'
-        open(input, 'r').each do | line |
-          line.chomp!
-
-          ec = self.parse_ec(line)
-          if ec.nil? or ec.length == 0
-            @no_match += 1
-            #puts "no match: "+line
-          else 
-            #puts "match: "+self.explode(ec).to_s
-            @match += 1
+      def self.canonicalize ec
+        if ec['year'] or ec['start_year'] or ec['volume']
+          parts = []
+          if ec['start_year']
+            parts << "Year:#{ec['start_year']}-#{ec['end_year']}"
           end
-
+          if ec['year']
+            parts << "Year:#{ec['year']}"
+          end
+          if ec['volume']
+            parts << "Volume:#{ec['volume']}"
+          end
+          if ec['part']
+            parts << "Part:#{ec['part']}"
+          end
+          canon = parts.join(', ')
         end
-
-        puts "Foreign Relations match: #{@match}"
-        puts "Foreign Relations no match: #{@no_match}"
-        return @match, @no_match
+        canon
       end
 
       def self.load_context 
