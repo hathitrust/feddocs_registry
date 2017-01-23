@@ -1,4 +1,4 @@
-
+include Registry::Series
 describe "calc_end_year" do
   it "handles simple 3 digit years" do
     expect(calc_end_year("1995", "998")).to eq("1998")
@@ -18,6 +18,16 @@ describe "calc_end_year" do
 
 end
 
+describe "lookup_month" do
+  it "returns August for aug" do
+    expect(lookup_month('aug.')).to eq('August')
+  end
+
+  it "returns June for JE." do
+    expect(lookup_month('JE.')).to eq('June')
+  end
+end
+
 describe "all Series" do
   Registry::Series.constants.each do | s |
     s = "Registry::Series::#{s.to_s}"
@@ -34,3 +44,5 @@ describe "all Series" do
         
   end
 end
+
+
