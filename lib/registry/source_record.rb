@@ -538,6 +538,7 @@ module Registry
     # in which there are other sources, deprecate and replace with the new 
     # smaller cluster. All handled with delete_enumchron
     def remove_from_registry reason_str=""
+      self.in_registry = false
       num_removed = self.enum_chrons.count # in theory
       self.enum_chrons.each do | ec |
         self.delete_enumchron ec, reason_str
