@@ -25,7 +25,7 @@ module Registry
         ns = '(NOS?\.\s?)?(?<start_number>\d{1,2})[-\/](?<end_number>\d{1,2})'
         month = '(?<month>(JAN|FEB|MAR(CH)?|APR(IL)?|MAY|JUNE?|JULY?|AUG|SEPT?|OCT|NOV|DEC)\.?)'
         months = '(?<start_month>[A-Z]+\.?)\s?-(?<end_month>[A-Z]+\.?)'
-        y = '[\(\s]('+month+'[-\/]'+month+'\s)?(?<year>\d{4})(:+'+month+'\s?)?\)?'
+        y = '[\(\s]('+months+'\s)?(?<year>\d{4})(:+'+month+'\s?)?\)?'
         div = '[\s:,;\/-]+\s?'
 
         patterns = [
@@ -48,7 +48,7 @@ module Registry
         # V. 128NO. 10-12
         # V. 123:5-8 (MAY-AUG 2000)
         %r{
-          ^#{v}(#{div})?#{ns}(\s?#{y})?$
+          ^#{v}(#{div}|NOS?\.\s?)+#{ns}(\s?#{y})?$
         }x,
         
         # V. 64 1947
@@ -117,7 +117,57 @@ module Registry
           \(?#{months}
           #{y}\)?$
         }x,
-        #98 1987
+        #V. 94(1971NO. 7-12
+        %r{
+          ^#{v}
+          \((?<year>\d{4})
+          NO\.\s(?<start_number>\d{1,2})-
+            (?<end_number>\d{1,2})\)$
+        }x,
+        # V. 84-93/INDEX 1961/1970
+        %r{
+          ^V\.\s?(?<start_volume>\d{1,3})[-\/]
+          (?<end_volume>\d{1,3})[\s\/:]
+          (?<index>INDEX)\s?
+          (\(?(?<start_year>\d{4})[-\/]
+          (?<end_year>\d{2,4})\)?\s?)?$
+        }x,
+        # V. 77:SUBJ. INDEX (1954)
+        %r{
+          ^#{v}[:\/\s]\s?
+          (?<index>SUBJ.\sINDEX)\s?
+          \((?<year>\d{4})\)$
+        }x, 
+        # V. 62-63 (1946)'
+        %r{
+          ^V\.\s(?<start_volume>\d{1,3})-
+          (?<end_volume>\d{1,3})\s
+          \((?<year>\d{4})\)$
+        }x,
+        # V. 72-83(INDEX)
+        # V. 84-93 1961-70 INDEX
+        %r{
+          ^V\.\s?(?<start_volume>\d{1,3})[-\/]
+          (?<end_volume>\d{1,3})\s?
+          ((?<start_year>\d{4})-
+          (?<end_year>\d{2,4})\s?)?
+          :?\(?(?<index>INDEX)\)?$
+        }x,
+        # V. 72(INDEX)
+        %r{
+          ^#{v}\((?<index>INDEX)\)$
+        }x,
+        # INDEX:V. 52-71
+        # INDEX V. 94-98 1971-1975
+        %r{
+          ^(?<index>INDEX):?\s?
+          V\.\s?(?<start_volume>\d{1,3})[-\/]
+          (?<end_volume>\d{1,3})
+          (\s\(?(?<start_year>\d{4})[-\/]
+          (?<end_year>\d{2,4})\)?)?$
+        }x,
+
+        ##98 1987
         #96 1973:JAN. -JUNE
         #119:1-6 1996
         %r{
@@ -191,12 +241,17 @@ module Registry
       end
 
       def self.canonicalize ec
-        if self.volumes.include? ec['volume']
-          canon = self.volumes[ec['volume']]
-        elsif ec['volume'] 
+        # don't think we actually want to do this
+        #if self.volumes.include? ec['volume']
+        #  canon = self.volumes[ec['volume']]
+        if ec['volume'] 
           canon = "Volume:#{ec['volume']}"
+          if !ec['index'] and !ec['year'] and self.volumes[ec['volume']]
+            ec['year'] ||= self.volumes[ec['volume']]
+          end
           if ec['number']
             canon += ", Number:#{ec['number']}"
+            ec['month'] ||= MONTHS[ec['number'].to_i-1]
           end
           if ec['year']
             canon += ", Year:#{ec['year']}"
@@ -207,11 +262,24 @@ module Registry
           if ec['index']
             canon += ", Index"
           end
+        elsif ec['start_volume']
+          canon = "Volumes:#{ec['start_volume']}-#{ec['end_volume']}"
+          if ec['start_year']
+            canon += ", Years:#{ec['start_year']}-#{ec['end_year']}"
+          end
+          if ec['index']
+            canon += ", #{ec['index']}"
+          end
         end
         canon
       end
  
       def self.load_context 
+        vs = File.dirname(__FILE__)+'/data/mlr_volumes.tsv'
+        open(vs).each do |line|
+          volume, canon = line.chomp.split(/\t/)
+          @volumes[volume] = canon
+        end
       end
       self.load_context
     end

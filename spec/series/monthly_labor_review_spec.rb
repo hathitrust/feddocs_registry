@@ -12,14 +12,25 @@ describe "parse_ec" do
       ec = MLR.parse_ec(line)
       if ec.nil? or ec.length == 0
         misses += 1
-        puts "no match: "+line
+        #puts "no match: "+line
       else
+        res = MLR.explode(ec)
+        res.each do | canon, features |
+          if canon =~ /Volume:.*Year:/ and canon !~ /INDEX/i
+            #puts [features['volume'], features['year']].join("\t")
+          end
+        end
         matches += 1
       end
     end
     puts "MLR Record match: #{matches}"
     puts "MLR Record no match: #{misses}"
     expect(matches).to eq(matches+misses)
+  end
+
+  it "parses 'V. 62-63 (1946)'" do
+    expect(MLR.parse_ec('V. 62-63 (1946)')['start_volume']).to eq('62')
+    expect(MLR.parse_ec('V. 62-63 (1946)')['start_number']).to be_nil
   end
 
   it "parses '96 1973:JAN. -JUNE'" do
@@ -48,6 +59,8 @@ describe "parse_ec" do
 
   it "parses '81 1958'" do
     expect(MLR.parse_ec('81 1958')['volume']).to eq('81')
+    expect(MLR.parse_ec('81 1958')['year']).to eq('1958')
+    expect(MLR.parse_ec('81 1958')['start_month']).to be_nil 
   end
 
   it "parses 'V. 19:NO. 3 (1924)'" do
@@ -60,6 +73,7 @@ describe "parse_ec" do
 
   it "parses 'V. 64 1947'" do
     expect(MLR.parse_ec('V. 64 1947')['volume']).to eq('64')
+    expect(MLR.parse_ec('V. 64 1947')['year']).to eq('1947')
   end
 
   it "parses 'V. 61 NO. 10 1977'" do
@@ -105,7 +119,7 @@ describe "canonicalize" do
   end
 
   it "turns a parsed ec into a canonical string" do
-    expect(MLR.canonicalize(MLR.parse_ec('V. 10:NO. 4 (1920)'))).to eq('Volume:10, Number:4')
+    expect(MLR.canonicalize(MLR.parse_ec('V. 10:NO. 4 (1920)'))).to eq('Volume:10, Number:4, Year:1920, Month:April')
   end
 
   it "converts multi months into numbers" do
@@ -118,7 +132,7 @@ end
 describe "explode" do
   it "expands multi numbers" do
     expect(MLR.explode(MLR.parse_ec('V. 100 NO. 1-4 1977')).count).to eq(4)
-    expect(MLR.explode(MLR.parse_ec('V. 100 NO. 1-4 1977')).keys[1]).to eq('Volume:100, Number:2')
+    expect(MLR.explode(MLR.parse_ec('V. 100 NO. 1-4 1977')).keys[1]).to eq('Volume:100, Number:2, Year:1977, Month:February')
   end
 
   it "expands multi months into numbers" do
