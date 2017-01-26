@@ -5,6 +5,7 @@ require 'pp'
 Dotenv.load
 Mongoid.load!("config/mongoid.yml")
 SourceRecord = Registry::SourceRecord
+RegistryRecord = Registry::RegistryRecord
 
 RSpec.describe SourceRecord do
   it "detects series" do
@@ -111,6 +112,19 @@ RSpec.describe Registry::SourceRecord do
     expect(sr.formats).to eq(["Book","Print"])
   end
 
+=begin
+  it "won't allow duplicate local_id/org_codes" do
+    sr = SourceRecord.new
+    sr.org_code = "miaahdl"
+    sr.source = open(File.dirname(__FILE__)+'/data/ht_record_3_items.json').read
+    sr.save
+    update = SourceRecord.new
+    update.org_code = "miaahdl"
+    
+    expect{update.source = open(File.dirname(__FILE__)+'/data/ht_record_different_3_items.json').read}.to raise_error(BSON::String::IllegalKey)
+  end
+=end
+
 end
 
 RSpec.describe Registry::SourceRecord, "#deprecate" do
@@ -127,6 +141,139 @@ RSpec.describe Registry::SourceRecord, "#deprecate" do
     @rec.deprecate("testing deprecation")
     expect(@rec.deprecated_reason).to eq("testing deprecation")
   end
+end
+
+   
+RSpec.describe Registry::SourceRecord, "#add_to_registry" do
+  # in theory none of this works if .delete_enumchron and .add_enumchron
+  # don't work. 
+  # todo: test separately
+  before(:all) do
+    @old_rec = SourceRecord.new
+    @old_rec.org_code = "miaahdl"
+    @old_rec.source = open(File.dirname(__FILE__)+'/data/ht_record_3_items.json').read
+    @old_rec.save
+    @old_ecs = @old_rec.enum_chrons
+
+    @no_ec_rec = SourceRecord.new
+    @no_ec_rec.org_code = "miaahdl"
+    @no_ec_rec.source = open(File.dirname(__FILE__)+'/data/ht_record_0_items.json').read
+    @no_ec_rec.save
+    
+    @repl_rec = @old_rec
+    @repl_rec.org_code = "miaahdl"
+    @repl_rec.source = open(File.dirname(__FILE__)+'/data/ht_record_different_3_items.json').read
+    @repl_rec.save
+
+    @new_rec = SourceRecord.new
+    @new_rec.org_code = "miaahdl"
+    @new_rec.source = open(File.dirname(__FILE__)+'/data/ht_record_3_items.json').read
+    @new_rec.local_id = (@old_rec.local_id.to_i + 1).to_s # just make sure we aren't clobbering
+    @new_rec.save
+  end
+
+  after(:all) do
+    RegistryRecord.where(:source_record_ids.in => [@old_rec.source_id,
+                                                   @repl_rec.source_id,
+                                                   @new_rec.source_id,
+                                                   @no_ec_rec.source_id]).each {|r| r.delete}
+    @old_rec.delete
+    @repl_rec.delete
+    @new_rec.delete
+    @no_ec_rec.delete
+  end
+
+  it "SRs with no ECs still get added to Register" do
+    results = @no_ec_rec.add_to_registry
+    expect(results[:num_new]).to eq(1)
+    expect(results[:num_deleted]).to eq(0)
+    num_in_reg = RegistryRecord.where(source_record_ids:@no_ec_rec.source_id,
+                                deprecated_timestamp:{"$exists":0}).count
+    expect(num_in_reg).to be > 0
+
+  end
+
+  it "deprecates old enum_chrons" do 
+    deleted_ecs = @old_ecs - @repl_rec.enum_chrons
+    expect(deleted_ecs.count).to be > 0
+    @repl_rec.update_in_registry
+    deleted_ecs.each do | ec | 
+      expect(RegistryRecord.where(source_record_ids:@old_rec.source_id,
+                            enumchron_display:ec,
+                            deprecated_timestamp:{"$exists":0}).count).to eq(0)
+    end
+  end
+
+  it "adds new enum_chrons" do
+    new_ecs = @repl_rec.enum_chrons - @old_ecs
+    expect(new_ecs.count).to be > 0
+    @repl_rec.update_in_registry
+    expect(@repl_rec.source_id).to eq(@old_rec.source_id)
+    new_ecs.each do | ec |
+      expect(RegistryRecord.where(source_record_ids:@old_rec.source_id,
+                            enumchron_display:ec,
+                            deprecated_timestamp:{"$exists":0}).count).to eq(1)
+    end
+  end
+
+  it "update_in_registry doesn't do anything if nothing has changed" do 
+    orig_count = RegistryRecord.where(source_record_ids:@repl_rec.source_id).count
+    results = @repl_rec.update_in_registry
+    new_count = RegistryRecord.where(source_record_ids:@repl_rec.source_id).count
+    expect(orig_count).to eq(new_count)
+    expect(results[:num_new]).to eq(0)
+    expect(results[:num_deleted]).to eq(0)
+  end
+
+  it "adds new enum_chrons for new records" do
+    results = @new_rec.add_to_registry
+    @new_rec.enum_chrons.each do |ec|
+      expect(RegistryRecord.where(source_record_ids:@new_rec.source_id,
+                            enumchron_display:ec,
+                            deprecated_timestamp:{"$exists":0}).count).to eq(1)
+    end
+    expect(results[:num_new]).to eq(3)
+  end
+
+end
+
+RSpec.describe Registry::SourceRecord, "#remove_from_registry" do
+  before(:all) do
+    @src_rec = SourceRecord.new
+    @src_rec.org_code = "miaahdl"
+    @src_rec.source = open(File.dirname(__FILE__)+'/data/ht_record_3_items.json').read
+    @src_rec.save
+    @src_rec.add_to_registry "testing removal"
+    @second_src_rec = SourceRecord.new
+    @second_src_rec.org_code = "miaahdl"
+    @second_src_rec.source = open(File.dirname(__FILE__)+'/data/ht_record_3_items.json').read
+    @second_src_rec.local_id = (@second_src_rec.local_id.to_i + 1).to_s
+    @second_src_rec.save
+    @second_src_rec.add_to_registry "testing removal"
+  end
+
+  after(:all) do
+    RegistryRecord.where(source_record_ids:@src_rec.source_id).each { |r| r.delete }
+    RegistryRecord.where(source_record_ids:@second_src_rec.source_id).each { |r| r.delete }
+    @src_rec.delete
+    @second_src_rec.delete
+  end
+
+  it "deprecates registry records it was a member of" do 
+    expect(RegistryRecord.where(source_record_ids:[@src_rec.source_id,
+                                                   @second_src_rec.source_id],
+                                deprecated_timestamp:{"$exists":0}).count).to eq(3)
+    num_removed = @src_rec.remove_from_registry
+    expect(num_removed).to eq(3)
+    expect(RegistryRecord.where(source_record_ids:[@src_rec.source_id,
+                                                   @second_src_rec.source_id],
+                                deprecated_timestamp:{"$exists":0}).count).to eq(0)
+    expect(RegistryRecord.where(source_record_ids:[@src_rec.source_id],
+                                deprecated_timestamp:{"$exists":0}).count).to eq(0)
+    expect(RegistryRecord.where(source_record_ids:[@second_src_rec.source_id],
+                                deprecated_timestamp:{"$exists":0}).count).to eq(3)
+  end
+    
 end
 
 RSpec.describe Registry::SourceRecord, '#ht_availability' do 
@@ -303,18 +450,20 @@ RSpec.describe Registry::SourceRecord, '#extract_enum_chrons' do
     expect(sr.enum_chrons).to include('Edition:1, Year:1878')
   end
 
-  it 'returns an empty set for records without enum_chrons, with series' do
+  it 'returns [""] for records without enum_chrons, with series' do
     sr = SourceRecord.new
     sr.org_code = "miaahdl"
     sr.source = open(File.dirname(__FILE__)+'/series/data/econreport_no_enums.json').read
-    expect(sr.enum_chrons.count).to eq(0)
+    expect(sr.enum_chrons.count).to eq(1)
+    expect(sr.enum_chrons[0]).to eq("")
   end
 
-  it 'returns an empty set for records without enum_chrons, without series' do
+  it 'returns [""] for records without enum_chrons, without series' do
     sr = SourceRecord.new
     sr.org_code = "miaahdl"
     sr.source = open(File.dirname(__FILE__)+'/data/no_enums_no_series_src.json').read
-    expect(sr.enum_chrons.count).to eq(0)
+    expect(sr.enum_chrons.count).to eq(1)
+    expect(sr.enum_chrons[0]).to eq("")
   end
 
 =begin

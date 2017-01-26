@@ -87,11 +87,11 @@ module Registry
     def source=(value)
       s = JSON.parse(value)
       super(s)
+      self.local_id = self.extract_local_id
       self.source_blob = value
       @@collator.normalize_viaf(s).each {|k, v| self.send("#{k}=",v) }
       marc = MARC::Record.new_from_hash(self.source)
       self.pub_date = @@extractor.map_record(marc)['pub_date']
-      self.local_id = self.extract_local_id
       self.extract_identifiers marc
       self.ec = self.extract_enum_chrons marc
       self.enum_chrons = self.ec.collect do | k,fields |
@@ -100,6 +100,9 @@ module Registry
         else
           fields['string']
         end
+      end
+      if self.enum_chrons.count == 0 
+        self.enum_chrons << ""
       end
       if self.org_code == 'miaahdl'
         self.extract_holdings marc
@@ -529,6 +532,75 @@ module Registry
       self.source['leader'] =~ /^.{7}m/
     end
 
+    # Remove from registry. 
+    # For whatever reason this is a bad record. Remove any reference to it
+    # in the Registry. For solo clusters that means deprecating. For clusters
+    # in which there are other sources, deprecate and replace with the new 
+    # smaller cluster. All handled with delete_enumchron
+    def remove_from_registry reason_str=""
+      self.in_registry = false
+      num_removed = self.enum_chrons.count # in theory
+      self.enum_chrons.each do | ec |
+        self.delete_enumchron ec, reason_str
+      end
+      num_removed  
+    end
+
+    # Add or update a record's holdings/enumchrons in the registry. 
+    # 
+    # Checks for existing enumchrons in registry. Compares to current list
+    # for this source record. Handles removal from registry of missing ECs,
+    # and creation of new ECs.
+    def add_to_registry reason_str=""
+      ecs_in_reg = RegistryRecord.where(source_record_ids:self.source_id,
+                                    deprecated_timestamp:{"$exists":0}).no_timeout.pluck(:enumchron_display)
+      new_ecs = self.enum_chrons - ecs_in_reg
+      new_ecs.each {|ec| self.add_enumchron(ec, reason_str) }
+      #make sure it's "in_registry"
+      self.in_registry = true
+      self.save # ehhhhhh, maybe not here
+
+      deleted_ecs = ecs_in_reg - self.enum_chrons
+      deleted_ecs.each {|ec| self.delete_enumchron(ec, reason_str) }
+
+      return {num_new:new_ecs.count, num_deleted:deleted_ecs.count}
+    end
+    alias_method :update_in_registry, :add_to_registry
+
+    # For whatever reason an enumchron has disappeared from Source Record.
+    # Remove from RegistryRecord's associated with this Source Record.
+    def delete_enumchron ec, reason_str=""
+      #in theory should only be one
+      RegistryRecord.where(source_record_ids:self.source_id,
+                           enumchron_display:ec,
+                           deprecated_timestamp:{"$exists":0}).no_timeout.each do |reg|
+        # just trash it if this is the only source
+        if reg.source_record_ids.count == 1
+         reg.deprecate( reason_str )
+        # replace old cluster with new
+        else
+          cluster = reg.source_record_ids - [self.source_id]
+          repl_regrec = RegistryRecord.new(cluster, 
+                                           ec, 
+                                          "#{reason_str} Replaces #{reg.registry_id}.")
+          repl_regrec.save
+          reg.deprecate(reason_str, [repl_regrec.registry_id])
+        end
+      end 
+    end
+
+    # This record has an enumchron that needs to be added to the registry.
+    # Mostly reliant upon RR::cluster
+    #
+    def add_enumchron ec, reason_str=""
+      if regrec = RegistryRecord::cluster( self, ec )
+        regrec.add_source(self) # this is expensive if the src is already in the record
+      else
+        regrec = RegistryRecord.new([self.source_id], ec, reason_str)
+      end
+      regrec.save
+    end
+     
     # Uses oclc_resolved to identify a series title (and appropriate module)
     def series
       #try to set it 
