@@ -611,6 +611,8 @@ module Registry
         self.series = 'StatutesAtLarge'
       when (self.oclc_resolved.map{|o|o.to_i} & Series::AgriculturalStatistics.oclcs).count > 0
         self.series = 'AgriculturalStatistics'
+      when (self.oclc_resolved.map{|o|o.to_i} & Series::MonthlyLaborReport.oclcs).count > 0
+        self.series = 'MonthlyLaborReport'
       when (self.oclc_resolved.map{|o|o.to_i} & Series::StatisticalAbstract.oclcs).count > 0
         self.series = 'StatisticalAbstract'
       when ((self.oclc_resolved.map{|o|o.to_i} & Series::UnitedStatesReports.oclcs).count > 0 or
