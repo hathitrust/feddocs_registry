@@ -169,6 +169,10 @@ module Registry
       field ||= '001'
       begin
         id = self.source["fields"].find{|f| f[field]}[field].gsub(/ /, '')
+        # this will eliminate leading zeros but only for actual integer ids 
+        if id =~ /^[0-9]+$/
+          id.gsub!(/^0+/, '')
+        end
       rescue
         #the field doesn't exist
         id = ''
@@ -611,7 +615,7 @@ module Registry
         self.series = 'StatutesAtLarge'
       when (self.oclc_resolved.map{|o|o.to_i} & Series::AgriculturalStatistics.oclcs).count > 0
         self.series = 'AgriculturalStatistics'
-      when (self.oclc_resolved.map{|o|o.to_i} & Series::MonthlyLaborReport.oclcs).count > 0
+      when (self.oclc_resolved.map{|o|o.to_i} & Series::MonthlyLaborReview.oclcs).count > 0
         self.series = 'MonthlyLaborReport'
       when (self.oclc_resolved.map{|o|o.to_i} & Series::StatisticalAbstract.oclcs).count > 0
         self.series = 'StatisticalAbstract'

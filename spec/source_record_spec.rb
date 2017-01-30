@@ -127,6 +127,39 @@ RSpec.describe Registry::SourceRecord do
 
 end
 
+RSpec.describe Registry::SourceRecord, "#extract_local_id" do
+  before(:all) do
+    #zero filled integer
+    @rec = SourceRecord.new
+    @rec.org_code = "miaahdl"
+    @rec.source = open(File.dirname(__FILE__)+"/data/ht_ic_record.json").read
+    # has non-integer in id
+    @weird = SourceRecord.new
+    @weird.org_code = "miaahdl"
+    @weird.source = open(File.dirname(__FILE__)+"/data/ht_weird_id.json").read
+  end
+
+  after(:all) do
+    @rec.delete
+    @weird.delete
+  end
+
+  it "keeps the local id as a string" do
+    expect(@rec.local_id).to be_a(String)
+    expect(@weird.local_id).to be_a(String)
+  end
+
+  it "removes leading zeroes if it is an integer" do
+    expect(@rec.local_id).to eq("34395")
+  end
+
+  it "doesn't mess with non-integer ids" do
+    expect(@weird.local_id).to eq("000034395weirdness")
+  end
+end
+
+
+  
 RSpec.describe Registry::SourceRecord, "#deprecate" do
   before(:each) do
     @rec = SourceRecord.first
