@@ -616,7 +616,7 @@ module Registry
       when (self.oclc_resolved.map{|o|o.to_i} & Series::AgriculturalStatistics.oclcs).count > 0
         self.series = 'AgriculturalStatistics'
       when (self.oclc_resolved.map{|o|o.to_i} & Series::MonthlyLaborReview.oclcs).count > 0
-        self.series = 'MonthlyLaborReport'
+        self.series = 'MonthlyLaborReview'
       when (self.oclc_resolved.map{|o|o.to_i} & Series::StatisticalAbstract.oclcs).count > 0
         self.series = 'StatisticalAbstract'
       when ((self.oclc_resolved.map{|o|o.to_i} & Series::UnitedStatesReports.oclcs).count > 0 or
