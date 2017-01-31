@@ -39,7 +39,7 @@ module Registry
     field :lccn_normalized
     field :last_modified, type: DateTime
     field :line_number, type: Integer
-    field :local_id
+    field :local_id, type: String
     field :oclc_alleged
     field :oclc_resolved
     field :org_code, type: String, default: "miaahdl"
