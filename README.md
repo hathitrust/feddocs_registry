@@ -20,20 +20,20 @@ Used by SourceRecords and RegistryRecords to extract, normalize, and collect VIA
 Using a traject config, extracts and compiles fields from multiple sources into a single data structure. Establishes HT availability. 
 
 ## Registry
-  --> RegistryRecord
-  --> SourceRecord
-  --> Series
-      --> AgriculturalStatistics
-      --> CongressionalSerialSet
-      --> FederalRegister
-      --> UnitedStatesReports 
-      --> CivilRightsCommission
-      --> ForeignRelations
-      --> StatisticalAbstract
-      --> CongressionalRecord
-      --> EconomicReportOfThePresident
-      --> MonthlyLaborReview
-      --> StatutesAtLarge
+  --> RegistryRecord  
+  --> SourceRecord  
+  --> Series  
+      --> AgriculturalStatistics  
+      --> CongressionalSerialSet  
+      --> FederalRegister  
+      --> UnitedStatesReports  
+      --> CivilRightsCommission  
+      --> ForeignRelations  
+      --> StatisticalAbstract  
+      --> CongressionalRecord  
+      --> EconomicReportOfThePresident  
+      --> MonthlyLaborReview  
+      --> StatutesAtLarge  
 
 ## More Documentation (not public)
 https://tools.lib.umich.edu/confluence/display/HAT/Federal+Documents+Registry
