@@ -5,7 +5,7 @@ require 'pp'
 module Registry
   module Series
     module UnitedStatesReports
-      #include EC
+      include Registry::Series
       class << self; attr_accessor :volumes end
       @volumes = {}
 

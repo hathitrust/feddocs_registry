@@ -5,7 +5,7 @@ require 'pp'
 module Registry
   module Series
     module ForeignRelations
-      #include EC
+      include Registry::Series
       class << self; attr_accessor :years, :editions end
       @years = {}
       @editions = {}
