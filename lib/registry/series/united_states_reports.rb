@@ -57,7 +57,7 @@ module Registry
           ec = Hash[ m.names.zip( m.captures ) ]
           ec.delete_if {|k, v| v.nil? }
           if ec.key? 'end_year'
-            ec['end_year'] = calc_end_year(ec['start_year'], ec['end_year'])
+            ec['end_year'] = Series.calc_end_year(ec['start_year'], ec['end_year'])
           end
 
           #kill the zero fills

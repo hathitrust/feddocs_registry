@@ -3,6 +3,25 @@ require 'json'
 StatisticalAbstract = Registry::Series::StatisticalAbstract
 
 describe "parse_ec" do
+  it "can parse them all" do 
+    matches = 0
+    misses = 0
+    can_canon = 0
+    cant_canon = 0
+    input = File.dirname(__FILE__)+'/data/statabstract_enumchrons.txt'
+    open(input, 'r').each do |line|
+      line.chomp!
+      ec = StatisticalAbstract.parse_ec(line)
+      if ec.nil? or ec.length == 0
+        misses += 1
+        #puts "no match: "+line
+      else 
+        matches += 1
+      end
+    end
+    expect(matches).to eq(matches+misses)
+  end
+
   it "can handle a single year" do
     expect(StatisticalAbstract.parse_ec('1980')['year']).to eq('1980')
   end

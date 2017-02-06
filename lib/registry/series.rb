@@ -2,7 +2,7 @@ module Registry
   module Series
     # given a starting year with 4 digits and an ending year with 2 or 3 digits,
     # figure out the century and millenium
-    def calc_end_year start_year, end_year
+    def self.calc_end_year start_year, end_year
       start_year = start_year.to_str
       end_year = end_year.to_str
       if /^\d\d$/.match(end_year)
@@ -26,7 +26,7 @@ module Registry
     MONTHS = ['January', 'February', 'March', 'April', 'May',
                 'June', 'July', 'August', 'September', 'October',
                 'November', 'December']
-    def lookup_month m_abbrev
+    def self.lookup_month m_abbrev
       m_abbrev.chomp!('.')
       MONTHS.each do | month |
         if /^#{m_abbrev}/i =~ month

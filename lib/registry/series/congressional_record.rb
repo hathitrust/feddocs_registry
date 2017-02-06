@@ -248,7 +248,7 @@ module Registry
 
           if ec.key? 'end_year'
             ec['start_year'] ||= ec['year']
-            ec['end_year'] = calc_end_year(ec['start_year'], ec['end_year'])
+            ec['end_year'] = Series.calc_end_year(ec['start_year'], ec['end_year'])
           end 
         end
         ec  #ec string parsed into hash

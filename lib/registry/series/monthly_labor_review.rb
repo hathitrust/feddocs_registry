@@ -5,7 +5,7 @@ require 'pp'
 module Registry
   module Series
     module MonthlyLaborReview
-      include Registry::Series
+      
       class << self; attr_accessor :volumes end
       @volumes = {}
 
@@ -190,7 +190,7 @@ module Registry
           ec = Hash[ m.names.zip( m.captures ) ]
           ec.delete_if {|k, v| v.nil? }
           if ec.key? 'end_year'
-            ec['end_year'] = calc_end_year(ec['start_year'], ec['end_year'])
+            ec['end_year'] = Series.calc_end_year(ec['start_year'], ec['end_year'])
           end
 
           #kill the zero fills
@@ -218,8 +218,8 @@ module Registry
             ecs << ecn
           end
         elsif ec['start_month']
-          sm = MONTHS.index(lookup_month(ec['start_month']))
-          em = MONTHS.index(lookup_month(ec['end_month']))
+          sm = MONTHS.index(Series.lookup_month(ec['start_month']))
+          em = MONTHS.index(Series.lookup_month(ec['end_month']))
           (sm..em).each do |n|
             ecn = ec.clone
             ecn['number'] = n+1
@@ -257,7 +257,7 @@ module Registry
             canon += ", Year:#{ec['year']}"
           end
           if ec['month']
-            canon += ", Month:#{lookup_month(ec['month'])}"
+            canon += ", Month:#{Series.lookup_month(ec['month'])}"
           end
           if ec['index']
             canon += ", Index"

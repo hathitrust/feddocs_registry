@@ -1,30 +1,31 @@
 include Registry::Series
-describe "calc_end_year" do
+Series = Registry::Series
+describe "Series.calc_end_year" do
   it "handles simple 3 digit years" do
-    expect(calc_end_year("1995", "998")).to eq("1998")
+    expect(Series.calc_end_year("1995", "998")).to eq("1998")
   end
 
   it "handles simple 2 digit years" do
-    expect(calc_end_year("1995", "98")).to eq("1998")
+    expect(Series.calc_end_year("1995", "98")).to eq("1998")
   end
 
   it "handles 3 character rollovers" do
-    expect(calc_end_year("1999", "002")).to eq("2002")
+    expect(Series.calc_end_year("1999", "002")).to eq("2002")
   end
 
   it "handles 2 character rollovers" do
-    expect(calc_end_year("1999", "02")).to eq("2002")
+    expect(Series.calc_end_year("1999", "02")).to eq("2002")
   end
 
 end
 
-describe "lookup_month" do
+describe "Series.lookup_month" do
   it "returns August for aug" do
-    expect(lookup_month('aug.')).to eq('August')
+    expect(Series.lookup_month('aug.')).to eq('August')
   end
 
   it "returns June for JE." do
-    expect(lookup_month('JE.')).to eq('June')
+    expect(Series.lookup_month('JE.')).to eq('June')
   end
 end
 

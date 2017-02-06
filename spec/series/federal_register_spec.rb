@@ -2,6 +2,25 @@ require 'json'
 FederalRegister = Registry::Series::FederalRegister
 
 describe "parse_ec" do
+  it "can parse them all" do 
+    matches = 0
+    misses = 0
+    can_canon = 0
+    cant_canon = 0
+    input = File.dirname(__FILE__)+'/data/fr_enumchrons.txt'
+    open(input, 'r').each do |line|
+      line.chomp!
+      ec = FederalRegister.parse_ec(line)
+      if ec.nil? or ec.length == 0
+        misses += 1
+        #puts "no match: "+line
+      else 
+        matches += 1
+      end
+    end
+    expect(matches).to eq(matches+misses)
+  end
+
   it "parses 'V. 48:NO. 4 (1983:JAN. 6)'" do
     expect(FederalRegister.parse_ec('V. 48:NO. 4 (1983:JAN. 6)')).to be_truthy
   end
