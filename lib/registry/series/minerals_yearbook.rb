@@ -34,22 +34,47 @@ module Registry
         vs = '(?<start_volume>\d)[-\/](?<end_volume>\d)'
         ps = '(?<start_part>\d)[-\/](?<end_part>\d)'
         div = '[\s:,;\/-]+\s?\(?'
-        p = 'PT\.?\s?(?<part>\d{1})'
+        p = 'PT[\.:]?\s?(?<part>\d{1})'
         ys = '(?<start_year>\d{4})[-\/](?<end_year>\d{2,4})'
         ar = '(AREA\sREPORTS:)?'
-        area = '(\(?(?<description>(AREA\s?RE?PO?R?TS:)?([A-Z]|\/|\s|\.|,)+)(\s\d{4})?\)?)'
+        area = '(\(?(?<description>(AREA\s?RE?PO?R?TS:)?[A-Z]{3,}.*[A-Z]\.?(\s\d{4})?)\)?)'
         app = '(?<appendix>APP(END)?I?X?\.?)'
+        stapp = '(?<statistical_appendix>STAT(ISTICAL)?\.?\sAPP(END)?I?X?\.?)'
 
         patterns = [
         #canonical
-        # Volume: 1, Number:5
+        # Year:1995, Volume:1, Part:3
+        # Year:1995-1996, Volume:1, Part:3
         %r{
-          ^Volume:(?<volume>\d+)(,\sNumber:(?<number>\d{1,2}))?$
+          ^Year:(#{y}|(?<start_year>\d{4})-(?<end_year>\d{4}))
+          (,\sVolume:(?<volume>\d))?
+          (,\sPart:(?<part>\d))?
+          (,\sDescription:(?<description>.*))?$
         }x,
 
         #simple year
         %r{
           ^#{y}$
+        }x,
+
+        # the area regex is broad enough to eat appendixes if not careful
+        # 1934 APPENDIX
+        %r{
+          ^#{y}#{div}
+          #{app}$
+        }x,
+
+        #1935/STAT. APP.
+        %r{
+          ^#{y}#{div}#{stapp}$
+        }x,
+        %r{
+          ^#{ys}#{div}#{stapp}$
+        }x,
+
+        # 932-33/app.
+        %r{
+          ^#{ys}#{div}#{app}$
         }x,
 
         # 1982 (V. 1)
@@ -68,15 +93,10 @@ module Registry
           ^V\.\s#{vs}\(#{y}\)$
         }x,
 
-        # 1934 APPENDIX
-        %r{
-          ^#{y}#{div}
-          #{app}$
-        }x,
 
         # 2009:3:1- AREA REPORTS: AFRICA AND THE MIDDLE EAST
         %r{
-          ^#{y}:(?<volume>\d):(?<part>\d)\s?-\s?
+          ^#{y}:(?<volume>\d):(?<part>\d)\s?(-\s?)?
           #{area}$
         }x,
 
@@ -86,14 +106,21 @@ module Registry
         # 2006:V. 2(DOMESTIC)
         %r{
           ^#{y}(#{div})?#{v}
-          ((#{div})?#{area}?)?$
+          ((#{div})?#{area})?$
         }x,
 
         # 1955:3 #assume volume
         # 2005:2 - AREA REPORTS: DOMESTIC
+        # 2007:3 PT. 3 (INTL:EUROPE AND CENTRAL EURASIA)
         %r{
           ^#{y}#{div}(?<volume>\d)
-          (\s?-\s?#{area})?$
+          (#{div}#{p})?
+          (\s?-?\s?#{area})?$
+        }x,
+
+        # 1978-79:1
+        %r{
+          ^#{ys}:(?<volume>\d)$
         }x,
 
         #989:V. 3:1
@@ -105,7 +132,7 @@ module Registry
         # 1968 V. 1-2
         # 1969 (V. 1-2)
         %r{
-          ^#{y}#{div}
+          ^#{y}(#{div})?
           \(?(V\.\s?)?#{vs}\)?$
         }x,
 
@@ -128,14 +155,28 @@ module Registry
 
         # 1910:PT. 1 
         %r{
-          ^#{y}(#{div})?#{p}
+          ^#{y}#{div}#{p}
           (#{div}#{area})?$
         }x,
 
         #993-94/V. 2 
         %r{
-          ^#{ys}(#{div}#{v}
+          ^#{ys}((#{div})?#{v}
                  (#{div}#{area})?)?$
+        }x,
+
+        # 2003/V. 3/NO. 4 EUROPE AND CENTRAL EURASIA
+        %r{
+          ^#{y}#{div}#{v}#{div}
+          NO\.\s(?<number>\d)
+          (#{div}#{area})?$
+        }x,
+
+        # 1978/79 (V. 3)
+        %r{
+          ^#{ys}#{div}
+          \(?#{v}\)?
+            (#{div}#{p})?$
         }x,
 
         # 1996:V. 3:PT. 2/3
@@ -146,7 +187,7 @@ module Registry
         # 995:V. 2 1995, V. 2
         %r{
           ^#{y}#{div}#{v}#{div}
-          #{y}(, #{v})$
+          #{y}(,\s#{v})?$
         }x,
 
         # 2007 V. 3 PT. 3  
@@ -179,6 +220,11 @@ module Registry
             ec['start_volume'].sub!(/^0+/, '')
             ec['end_volume'].sub!(/^0+/, '')
           end
+
+          # fix area descriptions
+          if ec['description']
+            ec['description'] = self.normalize_description(ec['description'])
+          end
         end
         ec
       end
@@ -190,20 +236,18 @@ module Registry
         end
 
         ecs = []
-        if ec['start_number']
-          (ec['start_number']..ec['end_number']).each do | n |
-            ecn = ec.clone
-            ecn['number'] = n
-            ecs << ecn
+        if ec['start_volume']
+          (ec['start_volume']..ec['end_volume']).each do | v |
+            ecv = ec.clone
+            ecv['volume'] = v
+            ecs << ecv
           end
-        elsif ec['start_month']
-          sm = MONTHS.index(Series.lookup_month(ec['start_month']))
-          em = MONTHS.index(Series.lookup_month(ec['end_month']))
-          (sm..em).each do |n|
-            ecn = ec.clone
-            ecn['number'] = n+1
-            ecn['month'] = MONTHS[n]
-            ecs << ecn
+        # should never be both multi-volume and multi-part ranges
+        elsif ec['start_part']
+          (ec['start_part']..ec['end_part']).each do | p |
+            ecp = ec.clone
+            ecp['part'] = p
+            ecs << ecp
           end
         else
           ecs << ec
@@ -219,11 +263,57 @@ module Registry
         enum_chrons
       end
 
+      # free text is terrible. the solution is just as bad
+      def self.normalize_description desc
+        #remove "AREA REPORTS" if it's not the only thing
+        if desc !~ /^AREA REPORTS$/
+          desc.sub!(/^AREA\s?RE?P(OR)?TS:?\s?/, '')
+        end
+        desc.sub!(/^INTL:/, '')
+
+        desc.sub!(/U\.?\s?S\.?\s?S\.?\s?R\.?\s?/, 'USSR')
+        desc.sub!(/AFRICA\/\s?(THE\s)?MID/, 'AFRICA AND THE MID')
+        desc.sub!(/ASIA[\/:]\s?(THE\s)?PAC.*/, 'ASIA AND THE PACIFIC')
+        desc.sub!(/^ASIA[^\/]*/, 'ASIA AND THE PACIFIC')
+        desc.sub!(/EUROPE[\/:]\s?CEN/, 'EUROPE AND CEN')
+        desc.sub!(/EUROPE\sCEN/, 'EUROPE AND CEN')
+        desc.sub!(/EUROPE[\/:]\s?USSR/, 'EUROPE AND THE USSR')
+        desc.sub!(/LATIN\sAMERICA[\/:]\s?CANADA/, 'LATIN AMERICA AND CANADA')
+        desc.sub!(/EUROPE AND CE?N?(TRA)?\.? EUR/, 'EUROPE AND CENTRAL EURASIA')
+        desc.sub!(/METALS[\/:]\s?MI/, 'METALS AND MI')
+        desc.sub!(/MID\.?\s/, 'MIDDLE ')
+        desc.sub!(/AND\sMIDDLE/, 'AND THE MIDDLE')
+        desc.sub!(/MIDDLE$/, 'MIDDLE EAST')
+        desc.sub!(/MIN[\.\s]\s? IND/, 'MINERAL IND')
+        desc.sub!(/INDUST\./, 'INDUSTRIES')
+        desc.sub!(/^AFRICA MIDDLE EAST$/, 'AFRICA AND THE MIDDLE EAST') 
+        #seriously people
+        desc.sub!(/^LATIN$/, 'LATIN AMERICA AND CANADA')
+        desc.sub!(/^WORLD ECONO$/, 'WORLD ECONOMY')
+        desc.sub!(/^EUROPE AND( CE(NTRAL?)?)?$/, 'EUROPE AND CENTRAL EURASIA')
+        desc.sub!(/^EUROPE AND CENTRAL E$/, 'EUROPE AND CENTRAL EURASIA')
+        desc
+      end
+
       def self.canonicalize ec
-        # don't think we actually want to do this
-        #if self.volumes.include? ec['volume']
-        #  canon = self.volumes[ec['volume']]
-        nil
+        #Year:,Volume:,Part:, Description
+        if ec['year'] or ec['start_year']
+          if ec['year']
+            canon = "Year:#{ec['year']}"
+          elsif ec['start_year']
+            canon = "Year:#{ec['start_year']}-#{ec['end_year']}"
+          end
+          if ec['volume']
+            canon += ", Volume:#{ec['volume']}"
+          end
+          if ec['part']
+            canon += ", Part:#{ec['part']}"
+          end
+          if ec['description']
+            canon += ", Description:#{ec['description']}"
+          end
+        end
+        canon
       end
  
       def self.load_context 
