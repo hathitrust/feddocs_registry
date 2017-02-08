@@ -394,7 +394,7 @@ module Registry
       marc.each_by_tag(tag) do | field | 
         subfield_codes = field.find_all { |subfield| subfield.code == subcode }
         if subfield_codes.count > 0
-          if org_code == "dgpo"
+          if self.org_code == "dgpo"
             #take the second one if it's from gpo?
             if subfield_codes.count > 1
               ec_strings << Normalize.enum_chron(subfield_codes[1].value)
@@ -403,6 +403,11 @@ module Registry
             ec_strings << subfield_codes.map {|sf| Normalize.enum_chron(sf.value) }
           end
         end
+      end
+      # a fix for some of George Mason's garbage
+      if self.org_code == "vifgm"
+        ec_strings.flatten!
+        ec_strings.delete('1959 DECEMBER')
       end
       ec_strings.flatten
     end

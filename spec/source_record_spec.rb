@@ -531,6 +531,20 @@ RSpec.describe Registry::SourceRecord, '#extract_enum_chron_strings' do
     sr.source = open(File.dirname(__FILE__)+'/series/data/econreport.json').read
     expect(sr.extract_enum_chron_strings).to include('PT. 1-4')
   end
+
+  it 'handles DGPO records appropriately' do
+    sr = SourceRecord.new
+    sr.org_code = "dgpo"
+    sr.source = open(File.dirname(__FILE__)+'/data/dgpo_has_ecs.json').read
+    expect(sr.extract_enum_chron_strings).to include('V. 31:NO. 3(2004:JULY)')
+  end
+
+  it "filters out some bogus enum chrons" do
+    sr = SourceRecord.new
+    sr.org_code = "vifgm"
+    sr.source = open(File.dirname(__FILE__)+'/data/vifgm_1959_december.json').read
+    expect(sr.extract_enum_chron_strings).to eq([])
+  end
 end
 
 
