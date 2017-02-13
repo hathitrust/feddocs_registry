@@ -742,7 +742,7 @@ module Registry
 
     def self.canonicalize ec
       # default order is:
-      t_order = ['year', 'volume', 'part', 'number']
+      t_order = ['year', 'volume', 'part', 'number', 'book', 'sheet']
       canon = t_order.reject {|t| ec[t].nil?}.collect {|t| t.to_s.capitalize+":"+ec[t]}.join(", ") 
       if canon == ''
         canon = nil
