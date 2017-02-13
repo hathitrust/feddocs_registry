@@ -408,6 +408,7 @@ module Registry
       # a fix for some of George Mason's garbage
       if self.org_code == "vifgm"
         ec_strings.flatten!
+        ec_strings.delete('PP. 1-702')
         ec_strings.delete('1959 DECEMBER')
       end
       ec_strings.flatten
@@ -435,44 +436,46 @@ module Registry
         # Series specific parsing 
         if !self.series.nil? and self.series != ''
           parsed_ec = eval(self.series).parse_ec ec_string
-          if parsed_ec.nil?
-            parsed_ec = {}
-          end
+        else
+          parsed_ec = SourceRecord.parse_ec ec_string
+        end
 
-          parsed_ec['string'] = ec_string
+        if parsed_ec.nil?
+          parsed_ec = {}
+        end
+
+        parsed_ec['string'] = ec_string
+        if !self.series.nil? and self.series != ''
           exploded = eval(self.series).explode(parsed_ec, self)
+        else
+          exploded = SourceRecord.explode(parsed_ec, self)
+        end
 
-          # anything we can do with it? 
-          # .explode might be able to use ec_string == '' if there is a relevant
-          # pub_date/sudoc in the MARC
-          if exploded.keys.count() > 0
-            exploded.each do | canonical, features | 
-              #series may return exploded items all referencing the same feature set.
-              #since we are changing it we need multiple copies
-              features = features.clone
-              features['string'] = ec_string
-              features['canonical'] = canonical
-              #possible to have multiple ec_strings be reduced to a single ec_string
-              if canonical.nil?
-                PP.pp exploded
-                puts "canonical:#{canonical}, ec_string: #{ec_string}"
-              end
-              ecs[Digest::SHA256.hexdigest(canonical)] ||= features 
-              ecs[Digest::SHA256.hexdigest(canonical)].merge( features )
+        # anything we can do with it? 
+        # .explode might be able to use ec_string == '' if there is a relevant
+        # pub_date/sudoc in the MARC
+        if exploded.keys.count() > 0
+          exploded.each do | canonical, features | 
+            #series may return exploded items all referencing the same feature set.
+            #since we are changing it we need multiple copies
+            features = features.clone
+            features['string'] = ec_string
+            features['canonical'] = canonical
+            #possible to have multiple ec_strings be reduced to a single ec_string
+            if canonical.nil?
+              PP.pp exploded
+              puts "canonical:#{canonical}, ec_string: #{ec_string}"
             end
-          elsif parsed_ec.keys.count == 1 and parsed_ec['string'] == ''
-            #our enumchron was '' and explode couldn't find anything elsewhere in the 
-            #MARC, so don't bother with it.
-            next
-          else #we couldn't explode it. 
-            ecs[Digest::SHA256.hexdigest(ec_string)] ||= parsed_ec
-            ecs[Digest::SHA256.hexdigest(ec_string)].merge( parsed_ec )
+            ecs[Digest::SHA256.hexdigest(canonical)] ||= features 
+            ecs[Digest::SHA256.hexdigest(canonical)].merge( features )
           end
-        else #unknown series, do nothing. todo: default enumchron processing?
-          #we got nothing, raw string with no features
-          if ec_string != '' #we don't need to track an empty string. 
-            ecs[Digest::SHA256.hexdigest(ec_string)] = {'string'=>ec_string}
-          end
+        elsif parsed_ec.keys.count == 1 and parsed_ec['string'] == ''
+          #our enumchron was '' and explode couldn't find anything elsewhere in the 
+          #MARC, so don't bother with it.
+          next
+        else #we couldn't explode it. 
+          ecs[Digest::SHA256.hexdigest(ec_string)] ||= parsed_ec
+          ecs[Digest::SHA256.hexdigest(ec_string)].merge( parsed_ec )
         end
       end
       ecs 
@@ -647,12 +650,104 @@ module Registry
       super 
     end
 
-    def self.parse_ec ec
-      nil 
+    def SourceRecord.parse_ec ec_string
+      m = nil 
+
+      # fix 3 digit years, this is more restrictive than most series specific 
+      # work. 
+      if ec_string =~ /^9\d\d$/
+        ec_string = '1'+ec_string
+      end
+
+      #tokens
+      # divider
+      div = '[\s:,;\/-]+\s?'
+
+      # volume
+      v = '(V\.\s?)?V(OLUME:)?\.?\s?(0+)?(?<volume>\d+)'
+      
+      # number
+      n = 'N(O|UMBER:)\.?\s?(0+)?(?<number>\d+)'
+
+      # part
+      # have to be careful with this due to frequent use of pages in enumchrons
+      pt = '\[?P(AR)?T:?\.?\s?(0+)?(?<part>\d+)\]?'
+
+      # year
+      y = '(YEAR:)?\[?(?<year>\d{4})\.?\]?'
+
+      # book
+      b = 'B(OO)?K:?\.?\s?(?<book>\d+)'
+
+      # sheet
+      sh = 'SHEET:?\.?\s?(?<sheet>\d+)'
+
+      # match all or nothing
+      patterns = [
+        %r{^#{v}$}xi,
+
+        #risky business
+        %r{^(?<volume>\d)$}xi, 
+
+        %r{^#{n}$}xi,
+
+        %r{^#{pt}$}xi,
+
+        %r{^#{y}$}xi,
+
+        %r{^#{b}$}xi,
+
+        %r{^#{sh}$}xi,
+
+        #compound patterns
+        %r{^#{v}#{div}#{pt}$}xi,
+
+        %r{^#{y}#{div}#{v}$}xi
+
+      ] # patterns
+
+      patterns.each do |p|
+        if !m.nil?
+          break
+        end
+        m ||= p.match(ec_string)
+      end
+
+          
+      # some cleanup
+      if !m.nil?
+        ec = Hash[ m.names.zip( m.captures ) ]
+        ec.delete_if {|k, v| v.nil? }
+      end
+      ec
     end
 
-    def self.explode ec
-      {} 
+    def self.explode ec, src=nil
+      # we would need to know something about the title to do this 
+      # accurately, so we're not really doing anything here
+      enum_chrons = {} 
+      if ec.nil? 
+        return {}
+      end
+
+      ecs = [ec]
+      ecs.each do | ec |
+        if canon = self.canonicalize(ec)
+          ec['canon'] = canon
+          enum_chrons[ec['canon']] = ec.clone
+        end
+      end
+      enum_chrons
+    end
+
+    def self.canonicalize ec
+      # default order is:
+      t_order = ['year', 'volume', 'part', 'number']
+      canon = t_order.reject {|t| ec[t].nil?}.collect {|t| t.to_s.capitalize+":"+ec[t]}.join(", ") 
+      if canon == ''
+        canon = nil
+      end
+      canon
     end
 
     def save
