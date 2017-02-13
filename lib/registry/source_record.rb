@@ -674,7 +674,7 @@ module Registry
       pt = '\[?P(AR)?T:?\.?\s?(0+)?(?<part>\d+)\]?'
 
       # year
-      y = '(YEAR:)?\[?(?<year>\d{4})\.?\]?'
+      y = '(YEAR:)?\[?(?<year>[12]\d{3})\.?\]?'
 
       # book
       b = 'B(OO)?K:?\.?\s?(?<book>\d+)'
@@ -687,7 +687,7 @@ module Registry
         %r{^#{v}$}xi,
 
         #risky business
-        %r{^(?<volume>[1-9])$}xi, 
+        %r{^(0+)?(?<volume>[1-9])$}xi, 
 
         %r{^#{n}$}xi,
 

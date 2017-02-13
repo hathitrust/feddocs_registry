@@ -645,9 +645,10 @@ RSpec.describe Registry::SourceRecord, '#parse_ec' do
     expect(SourceRecord.parse_ec('V 1')['volume']).to eq('1')
     expect(SourceRecord.parse_ec('V. 001')['volume']).to eq('1')
     # this is too ambitious for us right now
-    #expect(SourceRecord.parse_ec('1')['volume']).to eq('1')
-    #expect(SourceRecord.parse_ec('001')['volume']).to eq('1')
+    expect(SourceRecord.parse_ec('1')['volume']).to eq('1')
+    expect(SourceRecord.parse_ec('001')['volume']).to eq('1')
     expect(SourceRecord.parse_ec('Volume:1')['volume']).to eq('1')
+    expect(SourceRecord.parse_ec('0')).to be_nil
   end
 
   it "can't parse things that only look like volumes" do
@@ -691,6 +692,11 @@ RSpec.describe Registry::SourceRecord, '#parse_ec' do
     expect(SourceRecord.parse_ec('Year:1983')['year']).to eq('1983')
   end
 
+  it "can't parse things that only look like a year" do
+    expect(SourceRecord.parse_ec('NOTAYEAR: 1983')).to be_nil
+    expect(SourceRecord.parse_ec('0704')).to be_nil
+  end
+
   #Book
   it "can parse books" do
     expect(SourceRecord.parse_ec('BK. 4')['book']).to eq('4')
@@ -705,10 +711,6 @@ RSpec.describe Registry::SourceRecord, '#parse_ec' do
     expect(SourceRecord.parse_ec('Sheet:4')['sheet']).to eq('4')
   end
 
-
-  it "can't parse things that only look like a year" do
-    expect(SourceRecord.parse_ec('NOTAYEAR: 1983')).to be_nil
-  end
 
 end
 
