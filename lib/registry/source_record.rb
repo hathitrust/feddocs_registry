@@ -687,7 +687,7 @@ module Registry
         %r{^#{v}$}xi,
 
         #risky business
-        %r{^(?<volume>\d)$}xi, 
+        %r{^(?<volume>[1-9])$}xi, 
 
         %r{^#{n}$}xi,
 
