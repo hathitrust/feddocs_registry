@@ -738,3 +738,19 @@ RSpec.describe Registry::SourceRecord, '#canonicalize' do
   end
 end
 
+RSpec.describe Registry::SourceRecord, '#fix_flasus' do
+  it "fixes the 955 for flasus" do 
+    source = open(File.dirname(__FILE__)+'/data/flasus_rec.json').read
+    expect(source).to match(/"955"\s?:.*"v\.1"\s?:\s?""/)
+    src = SourceRecord.new
+    fixed = src.fix_flasus("flasus", JSON.parse(source))
+    expect(fixed.to_json).to match(/"955"\s?:.*"v"\s?:\s?"v\.1"/)
+
+    # should be called in source= 
+    src.org_code = "flasus"
+    src.source = source
+    expect(src.enum_chrons).to include("Volume:1")
+  end
+end
+
+

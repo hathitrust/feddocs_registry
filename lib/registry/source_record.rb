@@ -87,7 +87,7 @@ module Registry
     # fields are normalized/VIAFed, and identifiers extracted. 
     def source=(value)
       s = JSON.parse(value)
-      super(s)
+      super(fix_flasus(org_code, s))
       self.local_id = self.extract_local_id
       self.source_blob = value
       @@collator.normalize_viaf(s).each {|k, v| self.send("#{k}=",v) }
@@ -753,6 +753,25 @@ module Registry
     def save
       self.last_modified = Time.now.utc
       super
+    end
+
+    # FLASUS has some wonky 955s that mongo chokes on, and messes up our enumchrons
+    # org_code = string, hopefully flasus
+    # src = parsed json 
+    def fix_flasus org_code=nil, src=nil
+      org_code ||= self.org_code
+      src ||= self.source
+      if org_code == 'flasus'
+        f = src['fields'].find {|f| f['955'] }['955']['subfields']
+        v = f.select { |h| h['v'] }[0]
+        junk_sf = f.select { |h| h.keys[0] =~ /\./ }[0]
+        if !junk_sf.nil?
+          junk = junk_sf.keys[0]
+          v['v'] = junk.dup
+          f.delete_if { |h| h.keys[0] =~ /\./ }
+        end
+      end
+      src
     end
 
     def self.marc_profiles
