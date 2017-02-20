@@ -15,7 +15,7 @@ module Registry
       end
 
       def self.oclcs 
-        #[10648533, 1768670]
+        [191710879]
       end
       
       def self.parse_ec ec_string
@@ -129,7 +129,6 @@ module Registry
 
 
       # Take a parsed enumchron and expand it into its constituent parts
-      # Real simple for this series because we have the complete list and can
       # perform a lookup using edition or year. 
       # enum_chrons - { <canonical ec string> : {<parsed features>}, }
       #

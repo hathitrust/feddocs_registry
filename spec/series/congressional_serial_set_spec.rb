@@ -29,6 +29,6 @@ end
 
 describe "oclcs" do
   it "has an oclcs field" do
-    #expect(UnitedStatesReports.oclcs).to include(10648533)
+    expect(CSS.oclcs).to include(191710879)
   end
 end

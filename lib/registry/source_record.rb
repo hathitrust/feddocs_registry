@@ -640,7 +640,8 @@ module Registry
         self.series = 'CongressionalRecord'
       when self.sudocs.grep(/^#{Regexp.escape(Series::ForeignRelations.sudoc_stem)}/).count > 0
         self.series = 'ForeignRelations'
-      when self.sudocs.grep(/^#{Regexp.escape(Series::CongressionalSerialSet.sudoc_stem)}/).count > 0
+      when ((self.oclc_resolved.map{|o|o.to_i} & Series::CongressionalSerialSet.oclcs).count > 0 or 
+        self.sudocs.grep(/^#{Regexp.escape(Series::CongressionalSerialSet.sudoc_stem)}/).count > 0)
         self.series = 'CongressionalSerialSet'
       when (self.sudocs.grep(/^#{Regexp.escape(Series::EconomicReportOfThePresident.sudoc_stem)}/).count > 0 or
         (self.oclc_resolved.map{|o|o.to_i} & Series::EconomicReportOfThePresident.oclcs).count > 0)
