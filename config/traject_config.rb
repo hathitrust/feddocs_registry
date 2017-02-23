@@ -89,6 +89,8 @@ to_field "lc_callnum_display",  extract_marc("050ab")
 #physical description 300
 to_field "material_type_display", extract_marc("300")
 
+#gpo item number
+to_field "gpo_item_number", extract_marc("074a")
 
 #OCLC number
 #to_field "oclcnum_t",           oclcnum

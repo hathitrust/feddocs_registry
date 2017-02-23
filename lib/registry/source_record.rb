@@ -31,6 +31,7 @@ module Registry
     field :ec
     field :file_path, type: String
     field :formats, type: Array
+    field :gpo_item_numbers, type: Array
     field :holdings
     field :ht_item_ids
     field :in_registry, type: Boolean, default: false
@@ -92,7 +93,9 @@ module Registry
       self.source_blob = value
       @@collator.normalize_viaf(s).each {|k, v| self.send("#{k}=",v) }
       marc = MARC::Record.new_from_hash(self.source)
-      self.pub_date = @@extractor.map_record(marc)['pub_date']
+      extracted = @@extractor.map_record(marc)
+      self.pub_date = extracted['pub_date']
+      self.gpo_item_numbers = extracted['gpo_item_number']
       self.extract_identifiers marc
       self.ec = self.extract_enum_chrons marc
       self.enum_chrons = self.ec.collect do | k,fields |
@@ -195,7 +198,7 @@ module Registry
       end
     end
 
-    # Determine if this is a govdoc based on 008 and 086
+    # Determine if this is a govdoc based on 008 and 086 and 074
     # and OCLC blacklist
     # marc - ruby-marc repesentation of source
     def is_govdoc marc=nil
@@ -215,7 +218,7 @@ module Registry
           return false
         end
       end
-      f008 =~ /^.{17}u.{10}f/ or self.sudocs.count > 0 or self.extract_sudocs(marc).count > 0
+      f008 =~ /^.{17}u.{10}f/ or self.sudocs.count > 0 or self.extract_sudocs(marc).count > 0 or self.gpo_item_numbers.count > 0
     end
 
     # Extracts SuDocs

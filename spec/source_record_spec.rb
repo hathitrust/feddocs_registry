@@ -413,6 +413,14 @@ RSpec.describe Registry::SourceRecord, 'is_govdoc' do
     s.source = bad_oclc
     expect(s.is_govdoc).to be false
   end
+
+  it "uses the 074" do
+    source = open(File.dirname(__FILE__)+'/data/074_govdoc.json').read
+    s = SourceRecord.new
+    s.source = source
+    expect(s.gpo_item_numbers).to eq(['123'])
+    expect(s.is_govdoc).to be true
+  end
 end
 
   
@@ -752,5 +760,4 @@ RSpec.describe Registry::SourceRecord, '#fix_flasus' do
     expect(src.enum_chrons).to include("Volume:1")
   end
 end
-
 
