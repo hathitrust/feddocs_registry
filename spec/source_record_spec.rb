@@ -421,6 +421,15 @@ RSpec.describe Registry::SourceRecord, 'is_govdoc' do
     expect(s.gpo_item_numbers).to eq(['123'])
     expect(s.is_govdoc).to be true
   end
+
+  it "doesn't choke if there is no 074" do
+    source = open(File.dirname(__FILE__)+'/data/no_074_nongovdoc.json').read
+    s = SourceRecord.new
+    s.source = source
+    expect(s.gpo_item_numbers).to eq([])
+    expect(s.is_govdoc).to be false
+  end
+
 end
 
   
@@ -618,7 +627,7 @@ describe Registry::SourceRecord, 'source' do
 end
 
 RSpec.describe Registry::SourceRecord, '#parse_ec' do
-  it "can parse them all" do 
+  xit "can parse them all" do 
     matches = 0
     misses = 0
     input = File.dirname(__FILE__)+'/data/mono_enum_chrons.tsv'

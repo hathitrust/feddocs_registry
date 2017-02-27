@@ -95,7 +95,7 @@ module Registry
       marc = MARC::Record.new_from_hash(self.source)
       extracted = @@extractor.map_record(marc)
       self.pub_date = extracted['pub_date']
-      self.gpo_item_numbers = extracted['gpo_item_number']
+      self.gpo_item_numbers = extracted['gpo_item_number'] || []
       self.extract_identifiers marc
       self.ec = self.extract_enum_chrons marc
       self.enum_chrons = self.ec.collect do | k,fields |
