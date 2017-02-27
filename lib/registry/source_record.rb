@@ -706,6 +706,8 @@ module Registry
         #compound patterns
         %r{^#{v}#{div}#{pt}$}xi,
 
+        %r{^#{y}#{div}#{pt}$}xi,
+
         %r{^#{y}#{div}#{v}$}xi,
 
         %r{^#{v}[\(\s]\s?#{y}\)?$}xi
