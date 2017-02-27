@@ -719,6 +719,11 @@ RSpec.describe Registry::SourceRecord, '#parse_ec' do
     expect(SourceRecord.parse_ec('Sheet:4')['sheet']).to eq('4')
   end
 
+  #Volume/Year
+  it "can parse Volume/Year: 'V. 3(1974)'" do
+    expect(SourceRecord.parse_ec('V. 3(1974)')['year']).to eq('1974')
+  end
+
 
 end
 
