@@ -18,7 +18,7 @@ module Registry
         [5058415, 5302677, 22840665, 300300400]
       end
       
-      def self.parse_ec ec_string
+      def parse_ec ec_string
         #our match
         m = nil
 
@@ -259,7 +259,7 @@ module Registry
       # enum_chrons - { <canonical ec string> : {<parsed features>}, }
       #
       # Canonical string format: <volume number>, <part>, <index/abstract> 
-      def self.explode( ec, src=nil )
+      def explode( ec, src=nil )
         enum_chrons = {} 
         if ec.nil?
           return {}
@@ -271,7 +271,7 @@ module Registry
         enum_chrons
       end
 
-      def self.canonicalize ec
+      def canonicalize ec
         if !ec.nil? and ec['volume']
           ec['volume'].sub!(/^0+/,'')
           canon = "Volume:#{ec['volume']}"

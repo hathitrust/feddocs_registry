@@ -7,8 +7,9 @@ module Registry
   module Series
     module EconomicReportOfThePresident
       #include EC
-      class << self; attr_accessor :parts end
-      @parts = Hash.new {|hash, key| hash[key] = Array.new() }
+      #class << self; attr_accessor :parts end
+      #todo: make parts a constant?
+      @@parts = Hash.new {|hash, key| hash[key] = Array.new() }
       
       def self.sudoc_stem
         'Y 4.EC 7:EC 7/2/'
@@ -18,7 +19,7 @@ module Registry
         [3160302, 8762269, 8762232]
       end
       
-      def self.parse_ec ec_string
+      def parse_ec ec_string
         #C. 1 crap from beginning and end
         ec_string.sub!(/ ?C\. 1 ?/, '')
 
@@ -105,7 +106,7 @@ module Registry
       # enum_chrons - { <canonical ec string> : {<parsed features>}, }
       #
       # Canonical string format: Year:<year>, Part:<part>
-      def self.explode( ec, src)
+      def explode( ec, src)
         ec ||= {}
 
         #some of these are monographs with the year info in pub_date or sudocs
@@ -135,15 +136,15 @@ module Registry
         if ec['year'] and !ec['part'].nil?
           canon = "Year:#{ec['year']}, Part:#{ec['part']}"
           enum_chrons[canon] = ec.clone
-          @parts[ec['year']] << ec['part']
-          @parts[ec['year']].uniq!
+          @@parts[ec['year']] << ec['part']
+          @@parts[ec['year']].uniq!
         elsif ec['year'] and ec['start_part']
           for pt in ec['start_part']..ec['end_part']
             canon = "Year:#{ec['year']}, Part:#{pt}"
             enum_chrons[canon] = ec.clone
-            @parts[ec['year']] << pt 
+            @@parts[ec['year']] << pt 
           end
-          @parts[ec['year']].uniq!
+          @@parts[ec['year']].uniq!
         elsif ec['year'] #but no parts. 
           # we can't assume all of them, horrible marc
           #if @parts[ec['year']].count > 0 
@@ -175,12 +176,13 @@ module Registry
       def self.parse_file
         @no_match = 0
         @match = 0
+        src = Class.new { extend EconomicReportOfThePresident } 
         input = File.dirname(__FILE__)+'/data/econreport_enumchrons.txt'
 
         open(input, 'r').each do | line |
           line.chomp!
 
-          ec = self.parse_ec(line)
+          ec = src.parse_ec(line)
 
 
           if ec.nil? or ec.length == 0
@@ -188,7 +190,7 @@ module Registry
             #puts "no match: "+line
           else 
             #puts "match: "+self.explode(ec).to_s
-            self.explode(ec, {})
+            src.explode(ec, {})
             @match += 1
           end
 
@@ -201,15 +203,14 @@ module Registry
         return @match, @no_match
       end
 
-      def self.load_context 
+      def load_context 
         ps = open(File.dirname(__FILE__)+'/data/econreport_parts.json', 'r')
         #copy individually so we don't clobber the @parts definition 
         #i.e. no @parts = JSON.parse(ps.read)
         JSON.parse(ps.read).each do | key, parts |
-          @parts[key] = parts
+          @@parts[key] = parts
         end
       end
-      self.load_context
     end
   end
 end

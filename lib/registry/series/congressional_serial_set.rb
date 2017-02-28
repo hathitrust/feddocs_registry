@@ -18,7 +18,7 @@ module Registry
         [191710879]
       end
       
-      def self.parse_ec ec_string
+      def parse_ec ec_string
         # (1996:104TH)
         # year: congress
         yc = '(( | ?\()(YR\. )?(?<year>\d{4})(:(?<congress>[A-Z0-9]+))?( |\)|\z))'
@@ -133,7 +133,7 @@ module Registry
       # enum_chrons - { <canonical ec string> : {<parsed features>}, }
       #
       # Canonical string format: Serial Number:<serial number>, Part:<part number> 
-      def self.explode( ec, src=nil )
+      def explode( ec, src=nil )
         enum_chrons = {} 
         if ec.nil?
           return {}
@@ -154,11 +154,12 @@ module Registry
       def self.parse_file
         @no_match = 0
         @match = 0
+        src = Class.new {extend CongressionalSerialSet} 
         input = File.dirname(__FILE__)+'/data/congressional_serial_set_enumchrons.txt'
         open(input, 'r').each do | line |
           line.chomp!
 
-          ec = self.parse_ec(line)
+          ec = src.parse_ec(line)
           if ec.nil? or ec.length == 0
             @no_match += 1
             #puts "no match: "+line

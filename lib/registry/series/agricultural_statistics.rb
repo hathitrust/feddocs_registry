@@ -15,7 +15,7 @@ module Registry
         ]
       end
       
-      def self.parse_ec ec_string
+      def parse_ec ec_string
         #some junk in the front
         ec_string.gsub!(/^HD1751 . A43 /, '')
         ec_string.gsub!(/^V\. /, '')
@@ -72,7 +72,7 @@ module Registry
       # real simple for this series
       # enum_chrons - { <canonical ec string> : {<parsed features>}, }
       #
-      def self.explode( ec, src=nil )
+      def explode( ec, src=nil )
         enum_chrons = {} 
         if ec.nil? 
           return {}
@@ -108,7 +108,7 @@ module Registry
         open(input, 'r').each do | line |
           line.chomp!
 
-          ec = self.parse_ec(line)
+          ec = SourceRecord.new.extend(AgriculturalStatistics).parse_ec(line)
           if ec.nil?
             @no_match += 1
             puts "no match: "+line

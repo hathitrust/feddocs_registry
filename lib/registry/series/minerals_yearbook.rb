@@ -16,7 +16,7 @@ module Registry
         [1847412, 228509857]
       end
       
-      def self.parse_ec ec_string
+      def parse_ec ec_string
         # our match
         m = nil
 
@@ -223,13 +223,13 @@ module Registry
 
           # fix area descriptions
           if ec['description']
-            ec['description'] = self.normalize_description(ec['description'])
+            ec['description'] = normalize_description(ec['description'])
           end
         end
         ec
       end
 
-      def self.explode(ec, src=nil)
+      def explode(ec, src=nil)
         enum_chrons = {} 
         if ec.nil?
           return {}
@@ -264,7 +264,7 @@ module Registry
       end
 
       # free text is terrible. the solution is just as bad
-      def self.normalize_description desc
+      def normalize_description desc
         #remove "AREA REPORTS" if it's not the only thing
         if desc !~ /^AREA REPORTS$/
           desc.sub!(/^AREA\s?RE?P(OR)?TS:?\s?/, '')
@@ -295,7 +295,7 @@ module Registry
         desc
       end
 
-      def self.canonicalize ec
+      def canonicalize ec
         #Year:,Volume:,Part:, Description
         if ec['year'] or ec['start_year']
           if ec['year']

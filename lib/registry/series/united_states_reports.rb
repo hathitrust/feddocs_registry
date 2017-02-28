@@ -6,8 +6,7 @@ module Registry
   module Series
     module UnitedStatesReports
       include Registry::Series
-      class << self; attr_accessor :volumes end
-      @volumes = {}
+      @@volumes = {}
 
       def self.sudoc_stem
         'JU 6.8'
@@ -17,7 +16,7 @@ module Registry
         [10648533, 1768670]
       end
       
-      def self.parse_ec ec_string
+      def parse_ec ec_string
         reporters = ['DALLAS','CRANCH','WHEATON','PETERS','HOWARD','BLACK','WALLACE']
         v = 'V\.\s?(?<volume>\d+)'
         ot = '(?<october>OCT\.? (TERM)?)'
@@ -71,7 +70,7 @@ module Registry
         ec
       end
 
-      def self.explode(ec, src=nil)
+      def explode(ec, src=nil)
         enum_chrons = {} 
         if ec.nil?
           return {}
@@ -94,9 +93,9 @@ module Registry
         enum_chrons
       end
 
-      def self.canonicalize ec
-        if self.volumes.include? ec['volume']
-          canon = self.volumes[ec['volume']]
+      def canonicalize ec
+        if @@volumes.include? ec['volume']
+          canon = @@volumes[ec['volume']]
         elsif ec['volume'] 
           canon = "Volume:#{ec['volume']}"
           if ec['part']
@@ -118,7 +117,7 @@ module Registry
         pairs = File.dirname(__FILE__)+'/data/usr_volumes.tsv'
         open(pairs).each do |line|
           volume, canon = line.chomp.split(/\t/)
-          @volumes[volume] = canon
+          @@volumes[volume] = canon
         end
       end
       self.load_context

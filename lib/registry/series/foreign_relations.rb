@@ -18,7 +18,7 @@ module Registry
         #[10648533, 1768670]
       end
       
-      def self.parse_ec ec_string
+      def parse_ec ec_string
         v = 'V\.?\s?(?<volume>\d{1,2})'
         p = 'PT\.?\s?(?<part>\d{1,2})'
         div = '[\s:,;\/-]\s?'
@@ -197,7 +197,7 @@ module Registry
       # Take a parsed enumchron and expand it into its constituent parts
       # enum_chrons - { <canonical ec string> : {<parsed features>}, }
       #
-      def self.explode( ec, src=nil )
+      def explode( ec, src=nil )
         enum_chrons = {} 
         if ec.nil?
           return {}
@@ -211,7 +211,7 @@ module Registry
         enum_chrons
       end
 
-      def self.canonicalize ec
+      def canonicalize ec
         if ec['year'] or ec['start_year'] or ec['volume']
           parts = []
           if ec['start_year']

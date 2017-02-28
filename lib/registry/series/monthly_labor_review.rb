@@ -7,7 +7,7 @@ module Registry
     module MonthlyLaborReview
       
       class << self; attr_accessor :volumes end
-      @volumes = {}
+      @@volumes = {}
 
       def self.sudoc_stem
       end
@@ -16,7 +16,7 @@ module Registry
         [5345258]
       end
       
-      def self.parse_ec ec_string
+      def parse_ec ec_string
         # our match
         m = nil
 
@@ -204,7 +204,7 @@ module Registry
         ec
       end
 
-      def self.explode(ec, src=nil)
+      def explode(ec, src=nil)
         enum_chrons = {} 
         if ec.nil?
           return {}
@@ -240,14 +240,14 @@ module Registry
         enum_chrons
       end
 
-      def self.canonicalize ec
+      def canonicalize ec
         # don't think we actually want to do this
         #if self.volumes.include? ec['volume']
         #  canon = self.volumes[ec['volume']]
         if ec['volume'] 
           canon = "Volume:#{ec['volume']}"
-          if !ec['index'] and !ec['year'] and self.volumes[ec['volume']]
-            ec['year'] ||= self.volumes[ec['volume']]
+          if !ec['index'] and !ec['year'] and @@volumes[ec['volume']]
+            ec['year'] ||= @@volumes[ec['volume']]
           end
           if ec['number']
             canon += ", Number:#{ec['number']}"
@@ -278,7 +278,7 @@ module Registry
         vs = File.dirname(__FILE__)+'/data/mlr_volumes.tsv'
         open(vs).each do |line|
           volume, canon = line.chomp.split(/\t/)
-          @volumes[volume] = canon
+          @@volumes[volume] = canon
         end
       end
       self.load_context

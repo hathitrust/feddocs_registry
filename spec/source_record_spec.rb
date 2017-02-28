@@ -489,6 +489,7 @@ RSpec.describe Registry::SourceRecord, '#extract_enum_chrons' do
     sr_new = SourceRecord.new( :org_code=>"miu" )
     sr_new.series = 'FederalRegister'
     sr_new.source = line
+    expect(sr_new.series).to eq('FederalRegister')
     expect(sr_new.enum_chrons).to include("Volume:77, Number:67")
     expect(sr_new.org_code).to eq("miu")
   end
@@ -627,6 +628,10 @@ describe Registry::SourceRecord, 'source' do
 end
 
 RSpec.describe Registry::SourceRecord, '#parse_ec' do
+  before(:all) do
+    @src = SourceRecord.new
+  end
+
   xit "can parse them all" do 
     matches = 0
     misses = 0
@@ -634,15 +639,15 @@ RSpec.describe Registry::SourceRecord, '#parse_ec' do
     open(input, 'r').each do |line|
       ec_count, ec_string = line.chomp.split(/\t/)
 
-      ec = SourceRecord.parse_ec(ec_string)
+      ec = @src.parse_ec(ec_string)
       if ec.nil? or ec.length == 0
         misses += ec_count.to_i
-        #puts "no match: "+line
+        puts "no match: "+line
       else
         if !ec['description'].nil?
           #puts SourceRecord.normalize_description(ec['description'])
         end
-        res = SourceRecord.explode(ec)
+        res = @src.explode(ec)
         res.each do | canon, features |
           #puts canon
         end
@@ -656,105 +661,107 @@ RSpec.describe Registry::SourceRecord, '#parse_ec' do
 
   #Volume
   it "can parse volumes" do
-    expect(SourceRecord.parse_ec('V. 1')['volume']).to eq('1')
-    expect(SourceRecord.parse_ec('V.1')['volume']).to eq('1')
-    expect(SourceRecord.parse_ec('V1')['volume']).to eq('1')
-    expect(SourceRecord.parse_ec('V 1')['volume']).to eq('1')
-    expect(SourceRecord.parse_ec('V. 001')['volume']).to eq('1')
+    expect(@src.parse_ec('V. 1')['volume']).to eq('1')
+    expect(@src.parse_ec('V.1')['volume']).to eq('1')
+    expect(@src.parse_ec('V1')['volume']).to eq('1')
+    expect(@src.parse_ec('V 1')['volume']).to eq('1')
+    expect(@src.parse_ec('V. 001')['volume']).to eq('1')
     # this is too ambitious for us right now
-    expect(SourceRecord.parse_ec('1')['volume']).to eq('1')
-    expect(SourceRecord.parse_ec('001')['volume']).to eq('1')
-    expect(SourceRecord.parse_ec('Volume:1')['volume']).to eq('1')
-    expect(SourceRecord.parse_ec('0')).to be_nil
+    expect(@src.parse_ec('1')['volume']).to eq('1')
+    expect(@src.parse_ec('001')['volume']).to eq('1')
+    expect(@src.parse_ec('Volume:1')['volume']).to eq('1')
+    expect(@src.parse_ec('0')).to be_nil
   end
 
   it "can't parse things that only look like volumes" do
-    expect(SourceRecord.parse_ec('NOV. 1')).to be_nil
+    expect(@src.parse_ec('NOV. 1')).to be_nil
   end
 
   #Number
   it "can parse numbers" do
-    expect(SourceRecord.parse_ec('NO. 1')['number']).to eq('1')
-    expect(SourceRecord.parse_ec('NO.1')['number']).to eq('1')
-    expect(SourceRecord.parse_ec('NO1')['number']).to eq('1')
-    expect(SourceRecord.parse_ec('NO 1')['number']).to eq('1')
-    expect(SourceRecord.parse_ec('NO. 001')['number']).to eq('1')
-    expect(SourceRecord.parse_ec('NO001')['number']).to eq('1')
-    expect(SourceRecord.parse_ec('Number:1')['number']).to eq('1')
+    expect(@src.parse_ec('NO. 1')['number']).to eq('1')
+    expect(@src.parse_ec('NO.1')['number']).to eq('1')
+    expect(@src.parse_ec('NO1')['number']).to eq('1')
+    expect(@src.parse_ec('NO 1')['number']).to eq('1')
+    expect(@src.parse_ec('NO. 001')['number']).to eq('1')
+    expect(@src.parse_ec('NO001')['number']).to eq('1')
+    expect(@src.parse_ec('Number:1')['number']).to eq('1')
   end
 
   it "can't parse things that only look like numbers" do
-    expect(SourceRecord.parse_ec('NOTANO1')).to be_nil
+    expect(@src.parse_ec('NOTANO1')).to be_nil
   end
 
   #Part
   it "can parse parts" do
-    expect(SourceRecord.parse_ec('PT. 1')['part']).to eq('1')
-    expect(SourceRecord.parse_ec('PT.1')['part']).to eq('1')
-    expect(SourceRecord.parse_ec('PT1')['part']).to eq('1')
-    expect(SourceRecord.parse_ec('PT 1')['part']).to eq('1')
-    expect(SourceRecord.parse_ec('PT. 001')['part']).to eq('1')
-    expect(SourceRecord.parse_ec('PT001')['part']).to eq('1')
-    expect(SourceRecord.parse_ec('Part:1')['part']).to eq('1')
+    expect(@src.parse_ec('PT. 1')['part']).to eq('1')
+    expect(@src.parse_ec('PT.1')['part']).to eq('1')
+    expect(@src.parse_ec('PT1')['part']).to eq('1')
+    expect(@src.parse_ec('PT 1')['part']).to eq('1')
+    expect(@src.parse_ec('PT. 001')['part']).to eq('1')
+    expect(@src.parse_ec('PT001')['part']).to eq('1')
+    expect(@src.parse_ec('Part:1')['part']).to eq('1')
   end
 
   it "can't parse things that only look like part" do
-    expect(SourceRecord.parse_ec('NOTAPT')).to be_nil
+    expect(@src.parse_ec('NOTAPT')).to be_nil
   end
 
   #Year
   it "can parse years" do
-    expect(SourceRecord.parse_ec('983')['year']).to eq('1983')
-    expect(SourceRecord.parse_ec('1983')['year']).to eq('1983')
-    expect(SourceRecord.parse_ec('Year:1983')['year']).to eq('1983')
+    expect(@src.parse_ec('983')['year']).to eq('1983')
+    expect(@src.parse_ec('1983')['year']).to eq('1983')
+    expect(@src.parse_ec('Year:1983')['year']).to eq('1983')
   end
 
   it "can't parse things that only look like a year" do
-    expect(SourceRecord.parse_ec('NOTAYEAR: 1983')).to be_nil
-    expect(SourceRecord.parse_ec('0704')).to be_nil
+    expect(@src.parse_ec('NOTAYEAR: 1983')).to be_nil
+    expect(@src.parse_ec('0704')).to be_nil
   end
 
   #Book
   it "can parse books" do
-    expect(SourceRecord.parse_ec('BK. 4')['book']).to eq('4')
-    expect(SourceRecord.parse_ec('BOOK 4')['book']).to eq('4')
-    expect(SourceRecord.parse_ec('Book:4')['book']).to eq('4')
+    expect(@src.parse_ec('BK. 4')['book']).to eq('4')
+    expect(@src.parse_ec('BOOK 4')['book']).to eq('4')
+    expect(@src.parse_ec('Book:4')['book']).to eq('4')
   end
 
   #Sheet
   it "can parse sheets" do
-    expect(SourceRecord.parse_ec('SHEET. 4')['sheet']).to eq('4')
-    expect(SourceRecord.parse_ec('SHEET 4')['sheet']).to eq('4')
-    expect(SourceRecord.parse_ec('Sheet:4')['sheet']).to eq('4')
+    expect(@src.parse_ec('SHEET. 4')['sheet']).to eq('4')
+    expect(@src.parse_ec('SHEET 4')['sheet']).to eq('4')
+    expect(@src.parse_ec('Sheet:4')['sheet']).to eq('4')
   end
 
   #Year:, Part: 
   it "can parse Year:<y>, Part:<p>" do
-    expect(SourceRecord.parse_ec('Year:2001, Part:2')['part']).to eq('2')
+    expect(@src.parse_ec('Year:2001, Part:2')['part']).to eq('2')
   end
 
   #Volume/Year
   it "can parse Volume/Year: 'V. 3(1974)'" do
-    expect(SourceRecord.parse_ec('V. 3(1974)')['year']).to eq('1974')
-    expect(SourceRecord.parse_ec('Year:1974, Volume:3')['year']).to eq('1974')
+    expect(@src.parse_ec('V. 3(1974)')['year']).to eq('1974')
+    expect(@src.parse_ec('Year:1974, Volume:3')['year']).to eq('1974')
   end
 
-
+  after(:all) do
+    @src.delete
+  end
 end
 
 RSpec.describe Registry::SourceRecord, '#explode' do
   it "does nothing" do 
-    parsed = SourceRecord.parse_ec('1978')
+    parsed = SourceRecord.new.parse_ec('1978')
     PP.pp parsed
-    PP.pp SourceRecord.explode(parsed)
-    PP.pp SourceRecord.canonicalize(parsed)
-    expect(SourceRecord.explode(parsed).count).to eq(1)
+    PP.pp SourceRecord.new.explode(parsed)
+    PP.pp SourceRecord.new.canonicalize(parsed)
+    expect(SourceRecord.new.explode(parsed).count).to eq(1)
   end
 end
 
 RSpec.describe Registry::SourceRecord, '#canonicalize' do
   it "returns nil if ec can't be parsed" do
-    expect(SourceRecord.canonicalize({})).to be_nil
+    expect(SourceRecord.new.canonicalize({})).to be_nil
   end
 
   # Year:<year>, Volume:<volume>, Part:<part>, Number:<number>
@@ -762,7 +769,7 @@ RSpec.describe Registry::SourceRecord, '#canonicalize' do
     ec = {'number'=>'2',
           'volume'=>'3',
           'year'=>'1956'}    
-    expect(SourceRecord.canonicalize(ec)).to eq('Year:1956, Volume:3, Number:2')
+    expect(SourceRecord.new.canonicalize(ec)).to eq('Year:1956, Volume:3, Number:2')
   end
 end
 

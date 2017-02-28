@@ -33,7 +33,7 @@ module Registry
         70285150]
       end
       
-      def self.parse_ec ec_string
+      def parse_ec ec_string
         ec_string.sub!(/^C. 1 /, '')
 
         #canonical
@@ -151,7 +151,7 @@ module Registry
 
       #take a parsed enumchron and expand it into its constituent parts
       # enum_chrons - { <canonical ec string> : {<parsed features>}, }
-      def self.explode( ec, src=nil )
+      def explode( ec, src=nil )
         enum_chrons = {} 
         if ec.nil? 
           return {}
@@ -176,11 +176,12 @@ module Registry
       def self.parse_file
         @no_match = 0
         @match = 0
+        src = Class.new {extend FederalRegister}
         input = File.dirname(__FILE__)+'/data/fr_enumchrons.txt'
         open(input, 'r').each do | line |
           line.chomp!
 
-          ec = FederalRegister.parse_ec(line)
+          ec = src.parse_ec(line)
           if ec.nil?
             @no_match += 1
             #puts "no match: "+line

@@ -20,7 +20,7 @@ module Registry
          ]
       end
       
-      def self.parse_ec ec_string
+      def parse_ec ec_string
         #sometimes has junk in the front
         ec_string.gsub!(/^KF50 \. U5 /, '')
         ec_string.gsub!(/^[A-Z] V\./, 'V.')
@@ -165,7 +165,7 @@ module Registry
       # take a parsed enumchron and expand it into its constituent parts
       # enum_chrons - { <canonical ec string> : {<parsed features>}, }
       #
-      def self.explode( ec, src=nil )
+      def explode( ec, src=nil )
         enum_chrons = {} 
         if ec.nil? 
           return {}
@@ -185,11 +185,12 @@ module Registry
       def self.parse_file
         @no_match = 0
         @match = 0
+        src = Class.new {extend StatutesAtLarge}
         input = File.dirname(__FILE__)+'/data/statutes_enumchrons.txt'
         open(input, 'r').each do | line |
           line.chomp!
 
-          ec = self.parse_ec(line)
+          ec = src.parse_ec(line)
           if ec.nil?
             @no_match += 1
             #puts "no match: "+line

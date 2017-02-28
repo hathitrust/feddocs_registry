@@ -97,6 +97,7 @@ module Registry
       self.pub_date = extracted['pub_date']
       self.gpo_item_numbers = extracted['gpo_item_number'] || []
       self.extract_identifiers marc
+      self.series = self.series #important to do this before extracting enumchrons
       self.ec = self.extract_enum_chrons marc
       self.enum_chrons = self.ec.collect do | k,fields |
         if !fields['canonical'].nil?
@@ -423,6 +424,8 @@ module Registry
     # ecs - {<hashed canonical ec string> : {<parsed features>}, }
     #
     def extract_enum_chrons(marc=nil, org_code=nil, ec_strings=nil)
+      #make sure we've set series
+      self.series
       ecs = {}
       org_code ||= self.org_code
       
@@ -437,22 +440,14 @@ module Registry
       ec_strings.uniq.each do | ec_string | 
           
         # Series specific parsing 
-        if !self.series.nil? and self.series != ''
-          parsed_ec = eval(self.series).parse_ec ec_string
-        else
-          parsed_ec = SourceRecord.parse_ec ec_string
-        end
+        parsed_ec = self.parse_ec ec_string
 
         if parsed_ec.nil?
           parsed_ec = {}
         end
 
         parsed_ec['string'] = ec_string
-        if !self.series.nil? and self.series != ''
-          exploded = eval(self.series).explode(parsed_ec, self)
-        else
-          exploded = SourceRecord.explode(parsed_ec, self)
-        end
+        exploded = self.explode(parsed_ec, self)
 
         # anything we can do with it? 
         # .explode might be able to use ec_string == '' if there is a relevant
@@ -507,9 +502,9 @@ module Registry
         if self.series.nil? or self.series == ''
           ecs << ec_string
         else
-          parsed_ec = eval(self.series).parse_ec ec_string
+          parsed_ec = self.parse_ec ec_string
           if !parsed_ec.nil?
-            exploded = eval(self.series).explode(parsed_ec, self)
+            exploded = self.explode(parsed_ec, self)
             if exploded.keys.count() > 0
               exploded.each do | canonical, features |
                 ecs << canonical
@@ -622,39 +617,43 @@ module Registry
       #try to set it 
       case
       when (self.oclc_resolved.map{|o|o.to_i} & Series::FederalRegister.oclcs).count > 0
-        self.series = 'FederalRegister'
+        @series = 'FederalRegister'
       when (self.oclc_resolved.map{|o|o.to_i} & Series::StatutesAtLarge.oclcs).count > 0
-        self.series = 'StatutesAtLarge'
+        @series = 'StatutesAtLarge'
       when (self.oclc_resolved.map{|o|o.to_i} & Series::AgriculturalStatistics.oclcs).count > 0
-        self.series = 'AgriculturalStatistics'
+        @series = 'AgriculturalStatistics'
       when (self.oclc_resolved.map{|o|o.to_i} & Series::MonthlyLaborReview.oclcs).count > 0
-        self.series = 'MonthlyLaborReview'
+        @series = 'MonthlyLaborReview'
       when (self.oclc_resolved.map{|o|o.to_i} & Series::MineralsYearbook.oclcs).count > 0
-        self.series = 'MineralsYearbook'
+        @series = 'MineralsYearbook'
       when (self.oclc_resolved.map{|o|o.to_i} & Series::StatisticalAbstract.oclcs).count > 0
-        self.series = 'StatisticalAbstract'
+        @series = 'StatisticalAbstract'
       when ((self.oclc_resolved.map{|o|o.to_i} & Series::UnitedStatesReports.oclcs).count > 0 or
         self.sudocs.grep(/^#{Regexp.escape(Series::UnitedStatesReports.sudoc_stem)}/).count > 0)
-        #self.series = 'UnitedStatesReports'
-        self.series = 'UnitedStatesReports'
+        @series = 'UnitedStatesReports'
       when self.sudocs.grep(/^#{Regexp.escape(Series::CivilRightsCommission.sudoc_stem)}/).count > 0
-        self.series = 'CivilRightsCommission'
+        @series = 'CivilRightsCommission'
       when (self.oclc_resolved.map{|o|o.to_i} & Series::CongressionalRecord.oclcs).count > 0
-        self.series = 'CongressionalRecord'
+        @series = 'CongressionalRecord'
       when self.sudocs.grep(/^#{Regexp.escape(Series::ForeignRelations.sudoc_stem)}/).count > 0
-        self.series = 'ForeignRelations'
+        @series = 'ForeignRelations'
       when ((self.oclc_resolved.map{|o|o.to_i} & Series::CongressionalSerialSet.oclcs).count > 0 or 
         self.sudocs.grep(/^#{Regexp.escape(Series::CongressionalSerialSet.sudoc_stem)}/).count > 0)
-        self.series = 'CongressionalSerialSet'
+        @series = 'CongressionalSerialSet'
       when (self.sudocs.grep(/^#{Regexp.escape(Series::EconomicReportOfThePresident.sudoc_stem)}/).count > 0 or
         (self.oclc_resolved.map{|o|o.to_i} & Series::EconomicReportOfThePresident.oclcs).count > 0)
-        self.series = 'EconomicReportOfThePresident'
+        @series = 'EconomicReportOfThePresident'
+      end
+      if @series 
+        self.extend(Module.const_get("Registry::Series::"+@series))
+        load_context
       end
       #get whatever we got
       super 
+      @series
     end
 
-    def SourceRecord.parse_ec ec_string
+    def parse_ec ec_string
       m = nil 
 
       # fix 3 digit years, this is more restrictive than most series specific 
@@ -730,7 +729,7 @@ module Registry
       ec
     end
 
-    def self.explode ec, src=nil
+    def explode ec, src=nil
       # we would need to know something about the title to do this 
       # accurately, so we're not really doing anything here
       enum_chrons = {} 
@@ -748,7 +747,7 @@ module Registry
       enum_chrons
     end
 
-    def self.canonicalize ec
+    def canonicalize ec
       # default order is:
       t_order = ['year', 'volume', 'part', 'number', 'book', 'sheet']
       canon = t_order.reject {|t| ec[t].nil?}.collect {|t| t.to_s.capitalize+":"+ec[t]}.join(", ") 
@@ -756,6 +755,9 @@ module Registry
         canon = nil
       end
       canon
+    end
+
+    def load_context 
     end
 
     def save
