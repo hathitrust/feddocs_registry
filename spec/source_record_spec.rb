@@ -744,6 +744,11 @@ RSpec.describe Registry::SourceRecord, '#parse_ec' do
     expect(@src.parse_ec('Year:1974, Volume:3')['year']).to eq('1974')
   end
 
+  #Volume/Number
+  it "can parse Volume/Number: 'V. 3, NO. 2'" do
+    expect(@src.parse_ec('V. 3, NO. 2')['number']).to eq('2')
+  end
+
   after(:all) do
     @src.delete
   end

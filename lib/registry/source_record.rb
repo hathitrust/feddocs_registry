@@ -709,7 +709,9 @@ module Registry
 
         %r{^#{y}#{div}#{v}$}xi,
 
-        %r{^#{v}[\(\s]\s?#{y}\)?$}xi
+        %r{^#{v}[\(\s]\s?#{y}\)?$}xi,
+
+        %r{^#{v}#{div}#{n}#}xi
 
       ] # patterns
 
