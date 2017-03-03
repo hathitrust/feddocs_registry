@@ -586,7 +586,7 @@ module Registry
                            enumchron_display:ec,
                            deprecated_timestamp:{"$exists":0}).no_timeout.each do |reg|
         # just trash it if this is the only source
-        if reg.source_record_ids.count == 1
+        if reg.source_record_ids.uniq.count == 1
          reg.deprecate( reason_str )
         # replace old cluster with new
         else

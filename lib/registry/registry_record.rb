@@ -166,6 +166,11 @@ module Registry
     end
 
     def save
+      #make sure our source records are uniq and that we have 1
+      self.source_record_ids = self.source_record_ids.uniq
+      if self.source_record_ids.count == 0
+        raise "No source records for this Reg Rec"
+      end
       self.last_modified = Time.now.utc
       super
     end
