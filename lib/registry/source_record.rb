@@ -610,7 +610,7 @@ module Registry
         regrec = RegistryRecord.new([self.source_id], ec, reason_str)
       end
       if regrec.source_record_ids.count == 0
-        raise
+        raise "No source record ids! source_id: #{self.source_id}"
       end
       regrec.save
     end
