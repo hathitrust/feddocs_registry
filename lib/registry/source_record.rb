@@ -609,6 +609,9 @@ module Registry
       else
         regrec = RegistryRecord.new([self.source_id], ec, reason_str)
       end
+      if regrec.source_record_ids.count == 0
+        raise
+      end
       regrec.save
     end
      
