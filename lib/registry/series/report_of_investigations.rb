@@ -29,14 +29,14 @@ module Registry
         div = '[\s:,;\/-]+\s?\(?'
         n = 'N(umber|O)\.?'+div+'(?<number>\d{4})'
         y = 'Y(ear|R)\.?\s?(?<year>\d{4})'
-        ns = 'NO\.?\s?(?<start_number>\d{4})-(?<end_number>\d{4})'
+        ns = 'NO\.?\s?(?<start_number>[2-9]\d{3})-(?<end_number>\d{4})'
         # volumes are really numbers
         v = 'V(olume:)?\.?\s?(?<number>\d+)'
-        vs = 'V?\.?\s?(?<start_number>\d{4})-(?<end_number>\d{4})'
+        vs = 'V?\.?\s?(?<start_number>[2-9]\d{3})-(?<end_number>\d{4})'
 
         patterns = [
         #canonical
-        # Year:1995, Number:8551
+        # Number:8551
         %r{
           ^(Year:(?<year>\d{4}))?
           ((,\s)?#{n})?$
@@ -82,7 +82,7 @@ module Registry
 
         # 2575 (1924) 
         %r{
-          ^(?<number>\d{4})\s
+          ^(?<number>[2-9]\d{3})\s
           \((?<year>19\d\d)\)$
         }x,
 
@@ -96,7 +96,7 @@ module Registry
 
         # 8510-8525 (1981)
         %r{
-          ^(?<start_number>\d{4})-
+          ^(?<start_number>[2-9]\d{3})-
           (?<end_number>\d{4})\s
           \((?<year>19\d\d)\)$
         }x,
@@ -105,11 +105,16 @@ module Registry
         # 7955-7964 (1974-75)
         #NO. 5377-5390 YR. 1957-58
         %r{
-          ^(NO\.\s)?(?<start_number>\d{4})-
+          ^(NO\.\s)?(?<start_number>[2-9]\d{3})-
           (?<end_number>\d{4})\s
           (YR\.\s)?
           \(?(?<start_year>19\d{2})-
           (?<end_year>\d{2,4})\)?$
+        }x,
+
+        # 1919-1921
+        %r{
+          ^(?<start_year>19\d\d)-(?<end_year>\d{2,4})$
         }x,
 
         # 6630
@@ -168,13 +173,8 @@ module Registry
       end
 
       def canonicalize ec
-        # Year:1945-1946, Number:8560
-        # Year:1950, Number 9000
-        if ec['year'] and ec['number']
-          canon = "Year:#{ec['year']}, Number:#{ec['number']}"
-        elsif ec['year']
-          canon = "Year:#{ec['year']}"
-        elsif ec['number']
+        # Number:8560
+        if ec['number']
           canon = "Number:#{ec['number']}"
         end
         canon

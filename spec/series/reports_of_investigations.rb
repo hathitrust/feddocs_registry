@@ -15,11 +15,11 @@ describe "ReportsOfInvestigations" do
         ec = src.parse_ec(line)
         if ec.nil? or ec.length == 0
           misses += 1
-          puts "no match: "+line
+          #puts "no match: "+line
         else
           res = src.explode(ec)
           res.each do | canon, features |
-            #puts canon
+            puts canon
           end
           matches += 1
         end
@@ -27,6 +27,10 @@ describe "ReportsOfInvestigations" do
       puts "Reports of Investigations Record match: #{matches}"
       puts "Reports of Investigations Record no match: #{misses}"
       expect(matches).to eq(matches+misses)
+    end
+
+    it "doesn't confuse years for numbers" do
+      expect(src.parse_ec('1919-1921')['start_year']).to eq('1919')
     end
 
     it "parses 'NO. 7936-7950'" do
@@ -85,7 +89,7 @@ describe "ReportsOfInvestigations" do
     end
 
     it "turns a parsed ec into a canonical string" do
-      expect(src.canonicalize(src.parse_ec('NO. 7936 YR. 1974'))).to eq('Year:1974, Number:7936')
+      expect(src.canonicalize(src.parse_ec('NO. 7936 YR. 1974'))).to eq('Number:7936')
     end
 
   end
@@ -98,7 +102,7 @@ describe "ReportsOfInvestigations" do
     it "turns a parsed ec into a canonical string (multi year)" do
       parsed = src.parse_ec('7936-7938 (1974-75)')
       exploded = src.explode(parsed)
-      expect(exploded.keys[0]).to eq('Year:1974-1975, Number:7936')
+      expect(exploded.keys[0]).to eq('Number:7936')
     end
 
   end
