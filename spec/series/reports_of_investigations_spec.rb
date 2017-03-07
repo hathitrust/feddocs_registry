@@ -19,7 +19,7 @@ describe "ReportsOfInvestigations" do
         else
           res = src.explode(ec)
           res.each do | canon, features |
-            puts canon
+            #puts canon
           end
           matches += 1
         end

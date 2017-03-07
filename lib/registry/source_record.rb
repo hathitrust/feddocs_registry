@@ -646,6 +646,8 @@ module Registry
       when (self.sudocs.grep(/^#{Regexp.escape(Series::EconomicReportOfThePresident.sudoc_stem)}/).count > 0 or
         (self.oclc_resolved.map{|o|o.to_i} & Series::EconomicReportOfThePresident.oclcs).count > 0)
         @series = 'EconomicReportOfThePresident'
+      when (self.oclc_resolved.map{|o|o.to_i} & Series::ReportsOfInvestigations.oclcs).count > 0
+        @series = 'ReportsOfInvestigations'
       end
       if @series 
         self.extend(Module.const_get("Registry::Series::"+@series))

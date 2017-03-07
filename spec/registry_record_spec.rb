@@ -138,9 +138,9 @@ end
 RSpec.describe RR, "#merge" do
   before(:all) do 
     @old_ids = [
-                "d1110c28-fa35-411c-9af9-e573a351378e",
-                "c728b935-6606-460a-bd8d-3a03385eab45",
-                "4e64308f-a07b-453e-b647-29ebffae5a6d"
+                "ada3c4a3-57dc-4f7e-9d54-bd61c0d52eaf",
+                "8a2e3921-fa17-4bba-8db5-80e34a3667c9",
+                "a363f4ef-4a5a-4574-b979-7fcf170c4004"
                ]
     @res = RR::merge( @old_ids, "new enumchron", "testing the merge" )
   end
