@@ -88,7 +88,7 @@ module Registry
         self.source_record_ids.uniq!
         self.source_org_codes.uniq!
         if !source_record.series.nil? and source_record.series != ''
-          self.series = source_record.series
+          self.series = source_record.series.gsub(/([A-Z])/, ' \1').strip
         end
       end
       self.set_ht_availability() 

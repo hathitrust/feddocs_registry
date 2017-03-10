@@ -5,6 +5,7 @@ Dotenv.load
 Mongoid.load!("config/mongoid.yml")
 
 RR = Registry::RegistryRecord
+SourceRecord = Registry::SourceRecord
 
 RSpec.describe RR, "#initialize" do
   before(:all) do
@@ -117,6 +118,14 @@ RSpec.describe RR, "add_source" do
     @orig.add_source(@pd_sr)
     expect(@orig.ht_availability).to eq('Limited View')
   end 
+
+  it "applies the correct series name" do
+    # making sure a bug was fixed. It wasn't expanding the name in the add_source method
+    @src.source = open(File.dirname(__FILE__)+'/series/data/econreport.json').read
+    expect(@src.series).to eq('EconomicReportOfThePresident')
+    @orig.add_source(@src)
+    expect(@orig['series']).to eq("Economic Report Of The President")
+  end
 
   after(:all) do
     @new_rec.delete
