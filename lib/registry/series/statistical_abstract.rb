@@ -49,12 +49,19 @@ module Registry
         end
 
         #sometimes years get duplicated
-        ec_string.gsub!(/(?<y>\d{4}) \k<y>/, '\k<y>')
+        ec_string.gsub!(/(?<y>\d{4}) \(?\k<y>\)?/, '\k<y>')
 
+        # canonical form
+        m ||= /^Edition:(?<edition>\d{1,3}), Year:(?<year>\d{4})$/.match(ec_string)
+        m ||= /^Edition:(?<edition>\d{1,3}), Year:(?<start_year>\d{4})-(?<end_year>\d{4})$/.match(ec_string)
+        m ||= /^Edition:(?<start_edition>\d{1,3})-(?<end_edition>\d{1,3}), Year:(?<year>\d{4})$/.match(ec_string)
+      
         #simple year
         #2008 /* 257 */
         #(2008)
+        #Year:2008
         m ||= /^\(?(?<year>\d{4})\)?$/.match(ec_string)
+        m ||= /^Year:(?<year>\d{4})$/.match(ec_string)
 
         #edition prefix /* 316 */
         #101ST 1980

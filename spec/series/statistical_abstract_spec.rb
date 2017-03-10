@@ -16,7 +16,7 @@ describe "StatisticalAbstract" do
         ec = src.parse_ec(line)
         if ec.nil? or ec.length == 0
           misses += 1
-          #puts "no match: "+line
+          puts "no match: "+line
         else 
           matches += 1
         end
@@ -24,8 +24,16 @@ describe "StatisticalAbstract" do
       expect(matches).to eq(matches+misses)
     end
 
+    it "can parse its canonical form" do
+      expect(src.parse_ec('Edition:62, Year:1940')['year']).to eq('1940')
+    end
+
     it "can handle a single year" do
       expect(src.parse_ec('1980')['year']).to eq('1980')
+    end
+
+    it "parses a double year" do
+      expect(src.parse_ec('989 (1989)')['year']).to eq('1989')
     end
 
     it "fixes 3 digit years" do
@@ -95,6 +103,8 @@ describe "StatisticalAbstract" do
 
   end
 
+=begin 
+  #we don't need this any more
   describe "parse_file" do
     it "parses a file of enumchrons" do 
       match, no_match = StatisticalAbstract.parse_file
@@ -102,6 +112,7 @@ describe "StatisticalAbstract" do
       #expect(match).to eq(1566) #actual number in test file is 1566
     end
   end
+=end
 
   describe "oclcs" do
     it "has an oclcs field" do
