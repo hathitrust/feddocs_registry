@@ -23,7 +23,7 @@ module Registry
         ec_string.gsub!(/^A V\./, 'V.')
         ec_string.gsub!(/^: /, '')
         ec_string.gsub!(/^C\. \d+ V/, 'V')
-        ec_string.gsub!(/^C\. \d+ /, '')
+        ec_string.gsub!(/^C\. \d+ ?/, '')
 
         #space before trailing ) is always a typo
         ec_string.gsub!(/ \)/, ')')
