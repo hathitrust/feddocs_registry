@@ -9,7 +9,6 @@ before_install:
 before_script:
   - cp 'config/mongoid_sample.yml' 'config/mongoid.yml'
   - sleep 10
-  - mongo testing
 services:
   - mongodb
 
