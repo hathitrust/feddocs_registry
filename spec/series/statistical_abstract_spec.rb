@@ -84,6 +84,11 @@ describe "StatisticalAbstract" do
 
     it "removes copy information" do
       expect(src.parse_ec("C. 2 V. 86 1965")['year']).to eq('1965')
+      expect(src.parse_ec("C. 1 2000")['year']).to eq('2000')
+    end
+
+    it "parses 'V. 128'" do
+      expect(src.parse_ec('V. 128')['edition']).to eq('128')
     end
 
   end

@@ -23,6 +23,7 @@ module Registry
         ec_string.gsub!(/^A V\./, 'V.')
         ec_string.gsub!(/^: /, '')
         ec_string.gsub!(/^C\. \d+ V/, 'V')
+        ec_string.gsub!(/^C\. \d+ /, '')
 
         #space before trailing ) is always a typo
         ec_string.gsub!(/ \)/, ')')
@@ -70,12 +71,16 @@ module Registry
         #101ST ED. (1980)
         m ||= /^(?<edition>\d{1,3})(TH|ST|ND|RD)? (ED\.)? ?\(?(?<year>\d{4})\)?$/.match(ec_string)
 
+        # V. 120
+        m ||= /^V\. ?(?<edition>\d{1,3})$/.match(ec_string)
+
         # edition/volume prefix then year /* 177 */
         # V. 2007
         # V. 81 1960
         # V. 81 (1960)
         # V. 81 (960)
         m ||= /^V\. ?(NO\.? )?(?<edition>\d{1,3})? \(?(?<year>\d{3,4})\)?$/.match(ec_string)
+
 
         # just edition/volume /* 55 */
         m ||= /^(V\.? ? )?(?<edition>\d{1,3})$/.match(ec_string)
