@@ -102,6 +102,7 @@ module Registry
       self.source_org_codes = @sources.collect {|s| s.org_code}
       self.source_org_codes.uniq!
       @@collator.extract_fields(@sources).each_with_index {|(k,v),i| self[k] = v}
+      self.save
     end
 
     # Splits registry record into two or more successor records.
