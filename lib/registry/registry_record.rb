@@ -99,6 +99,8 @@ module Registry
     # Typically performed after a source record has been added or updated. 
     def recollate 
       @sources = SourceRecord.where(:source_id.in => self.source_record_ids)
+      self.source_org_codes = @sources.collect {|s| s.org_code}
+      self.source_org_codes.uniq!
       @@collator.extract_fields(@sources).each_with_index {|(k,v),i| self[k] = v}
     end
 
