@@ -369,6 +369,15 @@ RSpec.describe Registry::SourceRecord, 'extract_sudocs' do
     expect(s.extract_sudocs(@marc_fs)).to eq(["I 19.79:EC 7/OK/2005"])
   end
 
+  it "ignores Illinois docs" do
+    s = SourceRecord.new
+    ildoc = open(File.dirname(__FILE__)+"/data/il_doc.json").read
+    ilmarc = MARC::Record.new_from_hash(JSON.parse(ildoc))
+    expect(s.extract_sudocs(ilmarc)).not_to include('IL/DNR 52.9:')
+    s.source = ildoc
+    expect(s.is_govdoc).to eq(false)
+  end
+
   it "ignores non-SuDocs, uses non-SuDocs to filter out bogus" do
     s = SourceRecord.new
     s.extract_sudocs(@marc_non)

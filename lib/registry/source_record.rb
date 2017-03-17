@@ -254,7 +254,7 @@ module Registry
             
           #it looks like one and it isn't telling us it isn't
           #bad MARC but too many to ignore
-          elsif field.indicator1.strip == '' and field['a'] =~ /:/ and field['2'].nil? 
+          elsif field.indicator1.strip == '' and field['a'] =~ /:/ and field['a'] !~ /^IL/ and field['2'].nil? 
             self.sudocs << field['a'].chomp
             self.invalid_sudocs << field['a'].chomp
 
