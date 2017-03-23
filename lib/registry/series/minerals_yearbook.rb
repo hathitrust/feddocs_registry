@@ -13,7 +13,7 @@ module Registry
       end
 
       def self.oclcs 
-        [1847412, 228509857]
+        [1847412, 228509857, 48997937]
       end
       
       def parse_ec ec_string
