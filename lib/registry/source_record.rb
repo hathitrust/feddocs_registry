@@ -682,7 +682,7 @@ module Registry
       pt = '\[?P(AR)?T:?\.?\s?(0+)?(?<part>\d+)\]?'
 
       # year
-      y = '(YEAR:)?\[?(?<year>[12]\d{3})\.?\]?'
+      y = '(YEAR:)?\[?(?<year>(1[8-9]|20)\d{2})\.?\]?'
 
       # book
       b = 'B(OO)?K:?\.?\s?(?<book>\d+)'

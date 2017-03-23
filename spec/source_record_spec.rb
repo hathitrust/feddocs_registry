@@ -726,6 +726,7 @@ RSpec.describe Registry::SourceRecord, '#parse_ec' do
   it "can't parse things that only look like a year" do
     expect(@src.parse_ec('NOTAYEAR: 1983')).to be_nil
     expect(@src.parse_ec('0704')).to be_nil
+    expect(@src.parse_ec('2573')).to be_nil
   end
 
   #Book
