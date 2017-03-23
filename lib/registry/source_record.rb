@@ -779,6 +779,8 @@ module Registry
       org_code ||= self.org_code
       src ||= self.source
       if org_code == 'flasus'
+
+        # some 955s end up with keys of 'v.1'
         f = src['fields'].find {|f| f['955'] }['955']['subfields']
         v = f.select { |h| h['v'] }[0]
         junk_sf = f.select { |h| h.keys[0] =~ /\./ }[0]
@@ -787,6 +789,11 @@ module Registry
           v['v'] = junk.dup
           f.delete_if { |h| h.keys[0] =~ /\./ }
         end
+
+        # some subfield keys are simply '$' which causes problems.
+        # faster to do a conversion to a string than back into source
+        src_str = src.to_json.gsub(/\{\s?"\$"\s?:/, '{"dollar":')
+        src = JSON.parse(src_str)
       end
       src
     end

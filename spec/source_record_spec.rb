@@ -800,6 +800,13 @@ RSpec.describe Registry::SourceRecord, '#fix_flasus' do
     src.org_code = "flasus"
     src.source = source
     expect(src.enum_chrons).to include("Volume:1")
+  end 
+
+  it "fixes all fields for flasus" do
+    source = open(File.dirname(__FILE__)+'/data/flasus_garbage.json').read
+    src = SourceRecord.new
+    fixed = src.fix_flasus("flasus", JSON.parse(source))
+    expect(fixed.to_json).to match(/"dollar":/)
   end
 end
 
