@@ -648,6 +648,8 @@ module Registry
         @series = 'EconomicReportOfThePresident'
       when (self.oclc_resolved.map{|o|o.to_i} & Series::ReportsOfInvestigations.oclcs).count > 0
         @series = 'ReportsOfInvestigations'
+      when (self.oclc_resolved.map{|o|o.to_i} & Series::DecisionsOfTheCourtOfVeteransAppeals.oclcs).count > 0
+        @series = 'DecisionsOfTheCourtOfVeteransAppeals'
       end
       if @series 
         self.extend(Module.const_get("Registry::Series::"+@series))
