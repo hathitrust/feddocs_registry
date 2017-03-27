@@ -29,6 +29,22 @@ describe "Series.lookup_month" do
   end
 end
 
+describe "Series.correct_year" do
+  it "handles 21st century" do 
+    expect(Series.correct_year("005")).to eq('2005')
+  end
+
+  it "handles 19th centruy" do
+    expect(Series.correct_year(895)).to eq('1895')
+  end
+
+  # todo: not entirely sure what we should do with these.
+  # Should we return nil?
+  it "handles bogus centuries" do
+    expect(Series.correct_year(650)).to eq('2650')
+  end
+end
+
 describe "all Series" do
   Registry::Series.constants.each do | s |
     s = "Registry::Series::#{s.to_s}"

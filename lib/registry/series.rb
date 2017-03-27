@@ -13,13 +13,20 @@ module Registry
           end_year = start_year[0,2]+end_year
         end
       elsif /^\d\d\d$/.match(end_year)
-        if end_year.to_i < 700 #add a 2; 1699 and 2699 are both wrong, but...
-          end_year = '2'+end_year
-        else
-          end_year = '1'+end_year
-        end
+        end_year = correct_year(end_year)
       end
       end_year
+    end
+
+    def self.correct_year year
+      year = year.to_s
+      #add a 2; 1699 and 2699 are both wrong, but...
+      if year.to_i < 700 
+        year = '2' + year
+      elsif year.to_i < 1000
+        year = '1'+year
+      end
+      year
     end
 
     # a lot of terrible abbreviations for months
