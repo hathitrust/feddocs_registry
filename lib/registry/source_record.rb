@@ -734,6 +734,12 @@ module Registry
       if !m.nil?
         ec = Hash[ m.names.zip( m.captures ) ]
         ec.delete_if {|k, v| v.nil? }
+        
+        # year unlikely. Probably don't know what we think we know.
+        # From the regex, year can't be < 1800
+        if ec['year'].to_i > (Time.now.year + 5)
+          ec = nil
+        end
       end
       ec
     end
