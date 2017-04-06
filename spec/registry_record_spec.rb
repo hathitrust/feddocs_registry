@@ -201,6 +201,18 @@ RSpec.describe RR, "#deprecate" do
   end
 end
 
+RSpec.describe RR, "is_monograph?" do
+  it "returns true if one or more source records is a monograph bib" do
+    rec = RR.where(oclcnum_t:447925).first
+    expect(rec.is_monograph?).to be true
+  end
+
+  it "returns false if none of the source records are a monograph bib" do
+    rec = RR.where(oclcnum_t:243871545).first
+    expect(rec.is_monograph?).to be false
+  end
+end
+
 RSpec.describe RR, "#split" do
   @new_recs = []
   before(:all) do

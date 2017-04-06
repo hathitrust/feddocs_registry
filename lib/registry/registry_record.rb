@@ -168,6 +168,12 @@ module Registry
       return @sources
     end
 
+    # If any of the source records are for monograph bibs
+    # return true
+    def is_monograph?
+      self.sources.select {|s| s.source['leader'] =~ /^.{7}m/}.count > 0 
+    end
+
     def save
       #make sure our source records are uniq and that we have 1
       self.source_record_ids = self.source_record_ids.uniq
