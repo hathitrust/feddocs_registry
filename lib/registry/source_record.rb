@@ -7,7 +7,8 @@ require 'registry/collator'
 require 'registry/series'
 require 'yaml'
 require 'digest'
-require 'blacklist'
+require 'oclc_filter/blacklist'
+require 'oclc_filter/whitelist'
 
 Dir[File.dirname(__FILE__) + "/series/*.rb"].each {|file| require file}
 
