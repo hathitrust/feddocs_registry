@@ -423,6 +423,13 @@ RSpec.describe Registry::SourceRecord, 'is_govdoc' do
     expect(s.is_govdoc).to be false
   end
 
+  it "uses OCLC whitelist" do
+    good_oclc = File.read(File.expand_path(File.dirname(__FILE__))+'/data/whitelisted_oclc.json').chomp
+    s = SourceRecord.new
+    s.source = good_oclc
+    expect(s.is_govdoc).to be true
+  end
+
   it "uses the 074" do
     source = open(File.dirname(__FILE__)+'/data/074_govdoc.json').read
     s = SourceRecord.new

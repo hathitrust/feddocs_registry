@@ -216,7 +216,9 @@ module Registry
       self.extract_identifiers( marc )
       #check the blacklist
       self.oclc_resolved.each do |o|
-        if Blacklist.oclcs.include? o
+        if Whitelist.oclcs.include? o
+          return true
+        elsif Blacklist.oclcs.include? o
           return false
         end
       end
