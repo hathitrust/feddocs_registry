@@ -270,8 +270,13 @@ module Registry
       self.non_sudocs.uniq!
       self.invalid_sudocs.uniq!
       self.sudocs.uniq!
-      self.sudocs = self.sudocs - self.non_sudocs
+      self.sudocs = (self.sudocs - self.non_sudocs).map {|s| fix_sudoc s }
       self.sudocs
+    end
+
+    # takes a SuDoc string and tries to repair it if mangled
+    def fix_sudoc sstring
+      sstring.sub(/^II0 +a/, '')
     end
 
     def extract_oclcs marc=nil

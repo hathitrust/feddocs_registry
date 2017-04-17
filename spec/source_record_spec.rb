@@ -355,6 +355,8 @@ RSpec.describe Registry::SourceRecord, 'extract_sudocs' do
     @marc_non = MARC::Record.new_from_hash(JSON.parse(non))
     fed_state = File.read(File.expand_path(File.dirname(__FILE__))+'/data/fed_state_sudoc.json').chomp
     @marc_fs = MARC::Record.new_from_hash(JSON.parse(fed_state))
+    mangled = File.read(File.expand_path(File.dirname(__FILE__))+'/data/ht_pd_record.json').chomp
+    @marc_mang = MARC::Record.new_from_hash(JSON.parse(mangled))
   end
 
   #not much we can do about it
@@ -390,6 +392,14 @@ RSpec.describe Registry::SourceRecord, 'extract_sudocs' do
     s.extract_sudocs(@marc_fs)
     expect(s.non_sudocs).to include('W 1700.9 E 19 2005')
     expect(s.invalid_sudocs).to include('W 1700.9 E 19 2005')
+  end
+
+  it "fixes mangled sudocs" do
+    #e.g. "II0 aC 13.44:137"
+    s = SourceRecord.new
+    sudocs = s.extract_sudocs(@marc_mang)
+    expect(s.sudocs).not_to include("II0 aC 13.44:137")
+    expect(s.sudocs).to include("C 13.44:137")
   end
 
 end
