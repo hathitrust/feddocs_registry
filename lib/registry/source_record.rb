@@ -98,6 +98,7 @@ module Registry
       self.pub_date = extracted['pub_date']
       self.gpo_item_numbers = extracted['gpo_item_number'] || []
       self.publisher_headings = extracted['publisher_heading'] || []
+      self.author_headings = extracted['author_heading'] || []
       self.extract_identifiers marc
       self.series = self.series #important to do this before extracting enumchrons
       self.ec = self.extract_enum_chrons marc

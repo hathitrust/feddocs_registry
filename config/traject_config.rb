@@ -61,6 +61,7 @@ end
 #author
 
 to_field "author_t",            extract_marc("100abcdgqu:110abcdgnu:111acdegjnqu")
+to_field "author_heading",            extract_marc("100abcdgqu:110abcdgnu:111acdegjnqu", :separator => nil)
 to_field "author_addl_t",       extract_marc("700abcdegqu:710abcdegnu:711acdegjnqu:720a:505r:245c:191abcdegqu")
 to_field "author_display",      extract_marc("100abcdq:110abcdgnu:111acdegjnqu")
 to_field "author_display_facet",      extract_marc("100abcdq:110abcdgnu:111acdegjnqu")
