@@ -5,7 +5,7 @@ describe "StatisticalAbstract" do
   let(:src) { Class.new { extend StatisticalAbstract } }
 
   describe "parse_ec" do
-    it "can parse them all" do 
+    xit "can parse them all" do 
       matches = 0
       misses = 0
       can_canon = 0

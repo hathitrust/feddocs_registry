@@ -111,7 +111,7 @@ module Registry
           ec = SourceRecord.new.extend(AgriculturalStatistics).parse_ec(line)
           if ec.nil?
             @no_match += 1
-            puts "no match: "+line
+            #puts "no match: "+line
           else 
             #puts "match: "+self.explode(ec).to_s
             @match += 1
@@ -119,8 +119,8 @@ module Registry
 
         end
 
-        puts "AgStats match: #{@match}"
-        puts "AgStats no match: #{@no_match}"
+        #puts "AgStats match: #{@match}"
+        #puts "AgStats no match: #{@no_match}"
         return @match, @no_match
       end
 

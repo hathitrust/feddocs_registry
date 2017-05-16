@@ -199,7 +199,7 @@ module Registry
         #parts_out = open(File.dirname(__FILE__)+'/data/econreport_parts.json', 'w')
         #parts_out.puts @parts.to_json
         #puts "Economic Reports match: #{@match}"
-        puts "Economic Reports no match: #{@no_match}"
+        #puts "Economic Reports no match: #{@no_match}"
         return @match, @no_match
       end
 

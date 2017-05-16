@@ -5,7 +5,7 @@ describe "FederalRegister" do
   let(:src) { Class.new { extend FederalRegister } } 
 
   describe "parse_ec" do
-    it "can parse them all" do 
+    xit "can parse them all" do 
       matches = 0
       misses = 0
       can_canon = 0

@@ -6,7 +6,7 @@ describe "ForeignRelations" do
   let(:src) { Class.new { extend FR }} 
 
   describe "parse_ec" do
-    it "can parse them all" do 
+    xit "can parse them all" do 
       matches = 0
       misses = 0
       input = File.dirname(__FILE__)+'/data/foreign_relations_enumchrons.txt'

@@ -170,8 +170,8 @@ module Registry
 
         end
 
-        puts "Congressional Serial Set match: #{@match}"
-        puts "Congressional Serial Set no match: #{@no_match}"
+        #puts "Congressional Serial Set match: #{@match}"
+        #puts "Congressional Serial Set no match: #{@no_match}"
         return @match, @no_match
       end
 

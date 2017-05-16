@@ -6,7 +6,7 @@ describe "UnitedStatesReports" do
   let(:src) { Class.new { extend USR } }
 
   describe "parse_ec" do
-    it "can parse them all" do 
+    xit "can parse them all" do 
       volumes = Hash.new {|h,k| h[k] = {}}
       matches = 0
       misses = 0

@@ -191,8 +191,8 @@ module Registry
 
         end
 
-        puts "Fed Reg match: #{@match}"
-        puts "Fed Reg no match: #{@no_match}"
+        #puts "Fed Reg match: #{@match}"
+        #puts "Fed Reg no match: #{@no_match}"
         return @match, @no_match
       end
 

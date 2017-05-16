@@ -6,7 +6,7 @@ describe "MineralsYearbook" do
   let(:src) { Class.new { extend MY } }
 
   describe "parse_ec" do
-    it "can parse them all" do 
+    xit "can parse them all" do 
       matches = 0
       misses = 0
       input = File.dirname(__FILE__)+'/data/minerals_yearbook_enumchrons.txt'

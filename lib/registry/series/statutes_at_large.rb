@@ -201,8 +201,8 @@ module Registry
 
         end
 
-        puts "Statutes at Large match: #{@match}"
-        puts "Statutes at Large no match: #{@no_match}"
+        #puts "Statutes at Large match: #{@match}"
+        #puts "Statutes at Large no match: #{@no_match}"
         return @match, @no_match
       end
 
