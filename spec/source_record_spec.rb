@@ -494,9 +494,9 @@ RSpec.describe Registry::SourceRecord, '#extract_identifiers' do
       expect(old_lccn - rec.lccn_normalized ).to eq([])
       #expect(old_sudocs - rec.sudocs ).to eq([])
       if old_sudocs != rec.sudocs
-        PP.pp rec.source_id
-        PP.pp rec.sudocs
-        PP.pp old_sudocs
+        #PP.pp rec.source_id
+        #PP.pp rec.sudocs
+        #PP.pp old_sudocs
       end
       expect(old_issn - rec.issn_normalized ).to eq([])
       expect(old_isbn - rec.isbns_normalized ).to eq([])
@@ -799,9 +799,9 @@ end
 RSpec.describe Registry::SourceRecord, '#explode' do
   it "does nothing" do 
     parsed = SourceRecord.new.parse_ec('1978')
-    PP.pp parsed
-    PP.pp SourceRecord.new.explode(parsed)
-    PP.pp SourceRecord.new.canonicalize(parsed)
+    #PP.pp parsed
+    #PP.pp SourceRecord.new.explode(parsed)
+    #PP.pp SourceRecord.new.canonicalize(parsed)
     expect(SourceRecord.new.explode(parsed).count).to eq(1)
   end
 end
