@@ -138,6 +138,16 @@ RSpec.describe Registry::SourceRecord do
 
 end
 
+RSpec.describe Registry::SourceRecord, "#get_author_lccn" do
+
+  it "identifies authorities for corporate author" do
+    sr = SourceRecord.new
+    sr.source = open(File.dirname(__FILE__)+"/data/whitelisted_oclc.json").read
+    expect(sr.author_lccn).to eq('https://lccn.loc.gov/n79086751')
+  end
+end
+
+
 RSpec.describe Registry::SourceRecord, "#extract_local_id" do
   before(:all) do
     #zero filled integer

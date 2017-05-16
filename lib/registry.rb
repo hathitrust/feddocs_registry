@@ -4,3 +4,4 @@ require File.dirname(__FILE__) + '/registry/series'
 require File.dirname(__FILE__) + '/registry/collator'
 require File.dirname(__FILE__) + '/registry/version'
 
+require 'nauth'

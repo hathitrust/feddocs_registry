@@ -13,6 +13,12 @@ author_viaf_ids
 	type: array of integers
 	VIAF look up for author_headings
 
+author_lccn
+-----------
+  type:String
+  URL for name authority for the author.
+  e.g. https://lccn.loc.gov/n79086751
+
 author_addl_headings
 --------------------
 	type: array of strings

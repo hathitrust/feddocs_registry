@@ -9,6 +9,8 @@ require 'yaml'
 require 'digest'
 require 'oclc_filter/blacklist'
 require 'oclc_filter/whitelist'
+require 'nauth/authority'
+Authority = Nauth::Authority
 
 Dir[File.dirname(__FILE__) + "/series/*.rb"].each {|file| require file}
 
@@ -23,6 +25,7 @@ module Registry
     field :author_headings
     field :author_normalized
     field :author_viaf_ids
+    field :author_lccn, type:String, default:''
     field :author_addl_viaf_ids
     field :author_addl_headings
     field :author_addl_normalized
@@ -102,6 +105,12 @@ module Registry
       self.author_headings = extracted['author_t'] || []
       self.author_parts = extracted['author_parts'] || []
       self.extract_identifiers marc
+      if extracted['author_lccn_lookup'].nil?
+        self.author_lccn = ''
+      else
+        auth = self.get_author_lccn extracted['author_lccn_lookup'][0].chomp('.')
+        self.author_lccn = auth
+      end
       self.series = self.series #important to do this before extracting enumchrons
       self.ec = self.extract_enum_chrons marc
       self.enum_chrons = self.ec.collect do | k,fields |
@@ -816,6 +825,20 @@ module Registry
         src = JSON.parse(src_str)
       end
       src
+    end
+
+    def get_author_lccn name
+      if name.nil? or name == ""
+        return ""
+      end
+      Mongoid.override_database("nauth")
+      auth = Authority.find_by(name:name)
+      if !auth.nil?
+        return auth.sameAs
+      else
+        return ''
+      end
+      Mongoid.override_database(nil)
     end
 
     def self.marc_profiles
