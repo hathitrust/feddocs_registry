@@ -30,17 +30,31 @@ RSpec.describe RC, "#extract_fields" do
     @regrec = Registry::RegistryRecord.where(:source_record_ids.with_size => 6).first
     @collator = RC.new('config/traject_config.rb')
     @collected_fields = @collator.extract_fields @regrec.sources 
+    @alsrc = Registry::SourceRecord.new()
+    @alsrc.source = open(File.dirname(__FILE__)+"/data/whitelisted_oclc.json").read
+    @alsrc.save
+    @alreg = Registry::RegistryRecord.new([@alsrc.source_id], '', 'testing')
+
   end
 
   it "collects all the fields from all source records" do
     all_fields = []
+    #todo: bad test!
     @regrec.sources.each do | key, value |
       all_fields << key
     end
     expect(all_fields.uniq.count).to be < @collected_fields.keys.count
   end
 
-      
+  it "collects author_lccns" do 
+    expect(@alreg.author_lccns.count).to be > 0
+    expect(@alreg.author_lccns).to eq(['https://lccn.loc.gov/n79086751'])
+  end    
+
+  after(:all) do
+    @alsrc.remove
+    @alreg.remove
+  end
 end
   
 

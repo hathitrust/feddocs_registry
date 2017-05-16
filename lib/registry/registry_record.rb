@@ -24,6 +24,7 @@ module Registry
     field :ht_ids_lv
     field :ht_availability
     field :subject_t
+    field :author_lccns, type: Array
 
     @@collator = Collator.new(__dir__+'/../../config/traject_config.rb')
 

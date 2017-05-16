@@ -31,7 +31,7 @@ module Registry
       fields[:isbn_t] = sources.collect{|s| s.isbns_normalized}.flatten.uniq
       fields[:issn_t] = sources.collect{|s| s.issn_normalized}.flatten.uniq
       fields[:lccn_t] = sources.collect{|s| s.lccn_normalized}.flatten.uniq
-
+      fields[:author_lccns] = sources.collect{|s| s.author_lccn}.flatten.uniq
       sources.each do | rec | 
     
         if rec.ht_availability == 'Full View'

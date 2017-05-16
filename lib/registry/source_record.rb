@@ -828,17 +828,12 @@ module Registry
     end
 
     def get_author_lccn name
-      if name.nil? or name == ""
-        return ""
-      end
-      Mongoid.override_database("nauth")
-      auth = Authority.find_by(name:name)
+      auth = Authority.with(client:"nauth") {|klass| klass.find_by(name:name) rescue nil }
       if !auth.nil?
         return auth.sameAs
       else
         return ''
       end
-      Mongoid.override_database(nil)
     end
 
     def self.marc_profiles
