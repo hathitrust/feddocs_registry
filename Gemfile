@@ -17,5 +17,6 @@ gem 'celluloid'
 gem 'mysql2'
 
 gem 'rake'
+gem 'flog'
 
 gemspec

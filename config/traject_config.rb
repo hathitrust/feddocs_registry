@@ -66,7 +66,8 @@ to_field "author_addl_t",       extract_marc("700abcdegqu:710abcdegnu:711acdegjn
 to_field "author_display",      extract_marc("100abcdq:110abcdgnu:111acdegjnqu")
 to_field "author_display_facet",      extract_marc("100abcdq:110abcdgnu:111acdegjnqu")
 to_field "author_sort",         marc_sortable_author
-to_field "author_lccn_lookup", extract_marc("110abnd")
+to_field "author_lccn_lookup", extract_marc("100abcd:110abnd")
+to_field "added_entry_lccn_lookup", extract_marc("700abcd:710abnd")
 
 #not needed
 to_field "author_facet",        extract_marc("100abcdq:110abcdgnu:111acdenqu:700abcdq:710abcdgnu:711acdenqu", :trim_punctuation => true)

@@ -51,6 +51,14 @@ RSpec.describe RC, "#extract_fields" do
     expect(@alreg.author_lccns).to eq(['https://lccn.loc.gov/n79086751'])
   end    
 
+  it "collects added entry authorities" do
+    sr = Registry::SourceRecord.new
+    sr.source = open(File.dirname(__FILE__)+"/data/dgpo_has_ecs.json").read
+    sr.save
+    reg = Registry::RegistryRecord.new([sr.source_id], '' ,'testing')
+    expect(sr.added_entry_lccns).to include('https://lccn.loc.gov/n80126064')
+  end
+
   after(:all) do
     @alsrc.remove
     @alreg.remove

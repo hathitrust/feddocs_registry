@@ -138,14 +138,21 @@ RSpec.describe Registry::SourceRecord do
 
 end
 
-RSpec.describe Registry::SourceRecord, "#get_author_lccn" do
+RSpec.describe Registry::SourceRecord, "#get_lccns" do
 
-  it "identifies authorities for corporate author" do
+  it "identifies authorities for author headings" do
     sr = SourceRecord.new
     sr.source = open(File.dirname(__FILE__)+"/data/whitelisted_oclc.json").read
-    expect(sr.author_lccn).to eq('https://lccn.loc.gov/n79086751')
+    expect(sr.author_lccns).to include('https://lccn.loc.gov/n79086751')
+  end
+
+  it "identifies authorities for added entry names" do
+    sr = SourceRecord.new
+    sr.source = open(File.dirname(__FILE__)+"/data/dgpo_has_ecs.json").read
+    expect(sr.added_entry_lccns).to include('https://lccn.loc.gov/n80126064')
   end
 end
+
 
 
 RSpec.describe Registry::SourceRecord, "#extract_local_id" do

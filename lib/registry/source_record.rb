@@ -25,7 +25,8 @@ module Registry
     field :author_headings
     field :author_normalized
     field :author_viaf_ids
-    field :author_lccn, type:String, default:''
+    field :author_lccns, type:Array
+    field :added_entry_lccns, type: Array
     field :author_addl_viaf_ids
     field :author_addl_headings
     field :author_addl_normalized
@@ -106,10 +107,14 @@ module Registry
       self.author_parts = extracted['author_parts'] || []
       self.extract_identifiers marc
       if extracted['author_lccn_lookup'].nil?
-        self.author_lccn = ''
+        self.author_lccns = []
       else
-        auth = self.get_author_lccn extracted['author_lccn_lookup'][0].chomp('.')
-        self.author_lccn = auth
+        self.author_lccns = self.get_lccns extracted['author_lccn_lookup']
+      end
+      if extracted['added_entry_lccn_lookup'].nil?
+        self.added_entry_lccns = []
+      else
+        self.added_entry_lccns = self.get_lccns extracted['added_entry_lccn_lookup']
       end
       self.series = self.series #important to do this before extracting enumchrons
       self.ec = self.extract_enum_chrons marc
@@ -827,13 +832,19 @@ module Registry
       src
     end
 
-    def get_author_lccn name
-      auth = Authority.with(client:"nauth") {|klass| klass.find_by(name:name) rescue nil }
-      if !auth.nil?
-        return auth.sameAs
-      else
-        return ''
+    def get_lccns names
+      lccns = []
+      if names.nil?
+        return lccns
       end
+      names.each do |n| 
+        lccns << Authority.with(client:"nauth") do |klass| 
+          auth = klass.search(n)
+          auth.sameAs if !auth.nil?
+        end
+      end
+      lccns.delete(nil)
+      lccns.uniq
     end
 
     def self.marc_profiles
