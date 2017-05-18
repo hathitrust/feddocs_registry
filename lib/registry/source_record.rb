@@ -99,23 +99,15 @@ module Registry
       self.source_blob = value
       @@collator.normalize_viaf(s).each {|k, v| self.send("#{k}=",v) }
       marc = MARC::Record.new_from_hash(self.source)
-      extracted = @@extractor.map_record(marc)
-      self.pub_date = extracted['pub_date']
-      self.gpo_item_numbers = extracted['gpo_item_number'] || []
-      self.publisher_headings = extracted['publisher_heading'] || []
-      self.author_headings = extracted['author_t'] || []
-      self.author_parts = extracted['author_parts'] || []
+      @extracted = @@extractor.map_record(marc)
+      self.pub_date = @extracted['pub_date']
+      self.gpo_item_numbers = @extracted['gpo_item_number'] || []
+      self.publisher_headings = @extracted['publisher_heading'] || []
+      self.author_headings = @extracted['author_t'] || []
+      self.author_parts = @extracted['author_parts'] || []
       self.extract_identifiers marc
-      if extracted['author_lccn_lookup'].nil?
-        self.author_lccns = []
-      else
-        self.author_lccns = self.get_lccns extracted['author_lccn_lookup']
-      end
-      if extracted['added_entry_lccn_lookup'].nil?
-        self.added_entry_lccns = []
-      else
-        self.added_entry_lccns = self.get_lccns extracted['added_entry_lccn_lookup']
-      end
+      self.author_lccns
+      self.added_entry_lccns
       self.series = self.series #important to do this before extracting enumchrons
       self.ec = self.extract_enum_chrons marc
       self.enum_chrons = self.ec.collect do | k,fields |
@@ -830,6 +822,30 @@ module Registry
         src = JSON.parse(src_str)
       end
       src
+    end
+
+    def author_lccns 
+      @extracted ||= self.extracted
+      if @extracted['author_lccn_lookup'].nil?
+        self.author_lccns = []
+      else
+        self.author_lccns = self.get_lccns @extracted['author_lccn_lookup']
+      end
+    end
+
+    def added_entry_lccns
+      @extracted ||= self.extracted
+      if @extracted['added_entry_lccn_lookup'].nil?
+        self.added_entry_lccns = []
+      else
+        self.added_entry_lccns = self.get_lccns @extracted['added_entry_lccn_lookup']
+      end
+    end
+
+    def extracted marc=nil
+      marc ||= MARC::Record.new_from_hash(self.source)
+      @extracted = @@extractor.map_record(marc)
+      @extracted
     end
 
     def get_lccns names
