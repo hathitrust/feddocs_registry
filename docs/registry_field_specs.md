@@ -27,6 +27,20 @@ registry_id
 	Registry Records' ancestors field. Preferrence over MongoDb's default
 	_id field is largely an accident of implementation history. 
 
+author_lccns
+-----------
+	type:Array of strings
+	URLs for name authorities for the author.
+	MARC 100 and 110
+	e.g. https://lccn.loc.gov/n79086751
+
+added_entry_lccns
+--------------------
+	type: array of strings
+ 	URLs for name authorities
+	MARC 700 and 710
+
+
 series
 ------
 	type: String

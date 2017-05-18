@@ -13,16 +13,18 @@ author_viaf_ids
 	type: array of integers
 	VIAF look up for author_headings
 
-author_lccn
+author_lccns
 -----------
-  type:String
-  URL for name authority for the author.
-  e.g. https://lccn.loc.gov/n79086751
+	type:Array of strings
+	URLs for name authorities for the author.
+	MARC 100 and 110
+	e.g. https://lccn.loc.gov/n79086751
 
-author_addl_headings
+added_entry_lccns
 --------------------
 	type: array of strings
-	MARC 710
+ 	URLs for name authorities
+	MARC 700 and 710
 
 author_addl_viaf_ids
 --------------------
