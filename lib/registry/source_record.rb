@@ -825,6 +825,7 @@ module Registry
     end
 
     def author_lccns 
+      return @author_lccns unless @author_lccns.nil?
       @extracted ||= self.extracted
       if @extracted['author_lccn_lookup'].nil?
         self.author_lccns = []
@@ -834,6 +835,7 @@ module Registry
     end
 
     def added_entry_lccns
+      return @author_lccns unless @added_entry_lccns.nil?
       @extracted ||= self.extracted
       if @extracted['added_entry_lccn_lookup'].nil?
         self.added_entry_lccns = []
