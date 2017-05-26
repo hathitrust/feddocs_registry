@@ -138,6 +138,34 @@ RSpec.describe Registry::SourceRecord do
 
 end
 
+RSpec.describe Registry::SourceRecord, '#extracted_field' do
+  before(:all) do
+    @sr = SourceRecord.new
+    @sr.source = open(File.dirname(__FILE__)+"/data/dgpo_has_ecs.json").read
+    @sr.save
+  end
+
+  it "extracts 856s into electronic_resources" do
+    expect(@sr.electronic_versions).to include('http://purl.access.gpo.gov/GPO/LPS40802')
+    expect(@sr.electronic_resources).to include('electronic resource no indicator')
+    expect(@sr.electronic_resources).to include('electronic resource')
+    expect(@sr.related_electronic_resources).to include('related electronic resource')
+  end
+
+  it "saves dynamically extracted fields" do
+    copy = SourceRecord.find_by(source_id: @sr.source_id)
+    expect(copy.electronic_versions).to include('http://purl.access.gpo.gov/GPO/LPS40802')
+    expect(copy.electronic_resources).to include('electronic resource no indicator')
+    expect(copy.electronic_resources).to include('electronic resource')
+    expect(copy.related_electronic_resources).to include('related electronic resource')
+  end
+
+  after(:all) do
+    @sr.delete
+  end
+end
+
+
 RSpec.describe Registry::SourceRecord, "#get_lccns" do
 
   it "identifies authorities for author headings" do
@@ -848,4 +876,5 @@ RSpec.describe Registry::SourceRecord, '#fix_flasus' do
     expect(fixed.to_json).to match(/"dollar":/)
   end
 end
+
 

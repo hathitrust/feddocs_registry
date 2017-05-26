@@ -26,6 +26,7 @@ module Registry
     field :subject_t
     field :author_lccns, type: Array
     field :added_entry_lccns, type: Array
+    field :electronic_resources, type: Array
 
     @@collator = Collator.new(__dir__+'/../../config/traject_config.rb')
 

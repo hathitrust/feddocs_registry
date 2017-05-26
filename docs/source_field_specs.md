@@ -50,6 +50,21 @@ deprecated_reason
 	type: String, null if not deprecated
 	Reason for deprecation
 
+electronic_resources
+--------------------
+  type: Array of strings(URLs)
+  Electronic resources extracted from the 856|4[\*0]|
+
+electronic_versions
+-------------------
+  type: Array of strings(URLs)
+  Electronic versions extracted from 856|41|
+
+related_electronic_resources
+-------------------
+  type: Array of strings(URLs)
+  Related electronic resources extracted from 856|42|
+
 enum_chrons
 -----------
   type: array of strings. array containing a single string of 0 length if no

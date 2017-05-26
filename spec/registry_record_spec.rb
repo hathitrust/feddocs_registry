@@ -17,6 +17,17 @@ RSpec.describe RR, "#initialize" do
     ec = 'ec A'
     @new_rec = RR.new(cluster, ec, 'testing')
     @new_rec.save()
+
+    @dgpo_src = Registry::SourceRecord.new
+    @dgpo_src.source = open(File.dirname(__FILE__)+"/data/dgpo_has_ecs.json").read
+    @dgpo_src.save
+    @dgpo_reg = Registry::RegistryRecord.new([@dgpo_src.source_id], '' ,'testing')
+
+  end
+
+  after(:all) do
+    @dgpo_src.delete
+    @dgpo_reg.delete
   end
 
   it "creates a new registry record" do
@@ -40,6 +51,9 @@ RSpec.describe RR, "#initialize" do
     expect(@new_rec.ht_availability).to eq("Not In HathiTrust") 
   end
 
+  it "collects electronic_resources" do
+    expect(@dgpo_reg.electronic_resources).to include('electronic resource')
+  end
 
 end
 

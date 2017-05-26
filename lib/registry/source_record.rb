@@ -33,6 +33,7 @@ module Registry
     field :cataloging_agency
     field :deprecated_reason, type: String
     field :deprecated_timestamp, type: DateTime
+    field :electronic_resources, type: Array
     field :enum_chrons
     field :ec
     field :file_path, type: String
@@ -106,6 +107,7 @@ module Registry
       self.author_headings = @extracted['author_t'] || []
       self.author_parts = @extracted['author_parts'] || []
       self.extract_identifiers marc
+      self.electronic_resources
       self.author_lccns
       self.added_entry_lccns
       self.series = self.series #important to do this before extracting enumchrons
@@ -823,6 +825,21 @@ module Registry
       end
       src
     end
+
+    # Default accessor for some but not all attributes
+    # Sets to [] if not found in extracted.
+    def extracted_field field=__callee__
+      return self.instance_variable_get("@#{field}") unless self.instance_variable_get("@#{field}").nil?
+      @extracted ||= self.extracted
+      if @extracted[field.to_s].nil?
+        self.instance_variable_set("@#{field}",[])
+      else
+        self.instance_variable_set("@#{field}",@extracted[field.to_s])
+      end
+    end
+    alias_method :electronic_versions, :extracted_field
+    alias_method :related_electronic_resources, :extracted_field
+    alias_method :electronic_resources, :extracted_field
 
     def author_lccns 
       return @author_lccns unless @author_lccns.nil?

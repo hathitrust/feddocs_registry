@@ -110,6 +110,10 @@ to_field "enumchron_display",   extract_marc("ecd")
 to_field "subject_t",           extract_marc("600:610:611:630:650:651avxyz:653aa:654abcvyz:655abcvxyz:690abcdxyz:691abxyz:692abxyz:693abxyz:656akvxyz:657avxyz:652axyz:658abcd")
 to_field "subject_topic_facet",           extract_marc("600:610:611:630:650:651avxyz:653aa:654abcvyz:655abcvxyz:690abcdxyz:691abxyz:692abxyz:693abxyz:656akvxyz:657avxyz:652axyz:658abcd")
 
+#electronic_resources
+to_field "electronic_resources", extract_marc("856|4 |u:856|40|u")
+to_field "electronic_versions", extract_marc("856|41|u")
+to_field "related_electronic_resources", extract_marc("856|42|u")
 
 #format
 to_field "format",              marc_formats
