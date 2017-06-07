@@ -42,7 +42,6 @@ RSpec.describe SourceRecord do
     sr = SourceRecord.new
     sr.org_code = "dgpo"
     sr.source = rec
-    sr.source_blob = rec
     #expect(sr.source['fields'].select {|f| f.keys[0] == '040'}[0]['040']['subfields'].select {|sf| sf.keys[0] == 'dollarsign'}.count).to be > 0 
     expect{sr.save}.to raise_error(BSON::String::IllegalKey)
   end
@@ -368,10 +367,12 @@ end
 RSpec.describe Registry::SourceRecord, '#ht_availability' do 
   before(:all) do
     @non_ht_rec = SourceRecord.where(:org_code.ne => "miaahdl").first
-    @ht_pd = SourceRecord.where(:org_code => "miaahdl", 
-                                :source_blob => /.r.:.pd./).first
-    @ht_ic = SourceRecord.where(:org_code => "miaahdl", 
-                                :source_blob => /.r.:.ic./).first
+    @ht_pd = SourceRecord.new
+    @ht_pd.org_code = "miaahdl"
+    @ht_pd.source = open(File.dirname(__FILE__)+"/data/ht_pd_record.json").read
+    @ht_ic = SourceRecord.new
+    @ht_ic.org_code = "miaahdl"
+    @ht_ic.source = open(File.dirname(__FILE__)+"/data/ht_ic_record.json").read
   end
 
   it "detects correct HT availability" do

@@ -87,13 +87,11 @@ RSpec.describe RR, "add_source" do
     @ic_sr.org_code = "miaahdl"
     ic_line = open(File.dirname(__FILE__)+'/data/ht_ic_record.json').read
     @ic_sr.source = ic_line
-    @ic_sr.source_blob = ic_line
     @ic_sr.save
     @pd_sr = SourceRecord.new
     @pd_sr.org_code = "miaahdl"
     pd_line = open(File.dirname(__FILE__)+'/data/ht_pd_record.json').read
     @pd_sr.source = pd_line
-    @pd_sr.source_blob = pd_line
     @pd_sr.save
     @orig = RR.new([], '', '')
   end
@@ -127,7 +125,7 @@ RSpec.describe RR, "add_source" do
     # "Full View" over writes "Limited" so if it remains 
     # Full View after changing the source to limited and adding
     # then it's not recollating 
-    @pd_sr.source = @pd_sr.source_blob.gsub(/"r":"pd"/,'"r":"ic"')
+    @pd_sr.source = @ic_sr.source.to_json
     @pd_sr.save
     @orig.add_source(@pd_sr)
     expect(@orig.ht_availability).to eq('Limited View')

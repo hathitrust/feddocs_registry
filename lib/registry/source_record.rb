@@ -58,7 +58,6 @@ module Registry
     field :publisher_viaf_ids
     field :series, type: String
     field :source
-    field :source_blob, type: String
     field :source_id, type: String
     field :sudocs
     field :invalid_sudocs # bad MARC, not necessarily bad SuDoc
@@ -97,21 +96,20 @@ module Registry
       s = JSON.parse(value)
       super(fix_flasus(org_code, s))
       self.local_id = self.extract_local_id
-      self.source_blob = value
       @@collator.normalize_viaf(s).each {|k, v| self.send("#{k}=",v) }
-      marc = MARC::Record.new_from_hash(self.source)
-      @extracted = @@extractor.map_record(marc)
+      @marc = MARC::Record.new_from_hash(self.source)
+      @extracted = @@extractor.map_record @marc
       self.pub_date = @extracted['pub_date']
       self.gpo_item_numbers = @extracted['gpo_item_number'] || []
       self.publisher_headings = @extracted['publisher_heading'] || []
       self.author_headings = @extracted['author_t'] || []
       self.author_parts = @extracted['author_parts'] || []
-      self.extract_identifiers marc
+      self.extract_identifiers @marc
       self.electronic_resources
       self.author_lccns
       self.added_entry_lccns
       self.series = self.series #important to do this before extracting enumchrons
-      self.ec = self.extract_enum_chrons marc
+      self.ec = self.extract_enum_chrons @marc
       self.enum_chrons = self.ec.collect do | k,fields |
         if !fields['canonical'].nil?
           fields['canonical']
@@ -123,7 +121,7 @@ module Registry
         self.enum_chrons << ""
       end
       if self.org_code == 'miaahdl'
-        self.extract_holdings marc
+        self.extract_holdings @marc
       end
     end
 
@@ -202,11 +200,14 @@ module Registry
     #
     def ht_availability
       if self.org_code == 'miaahdl'
-        if self.source_blob =~ /"r" ?: ?"pd"/
-          return 'Full View'
-        else
-          return 'Limited View'
+        @marc ||= MARC::Record.new_from_hash(self.source)
+        availability = 'Limited View'
+        @marc.each_by_tag('974') do | field |
+          if field['r'] == "pd"
+            availability = 'Full View'
+          end
         end
+        availability
       else
         return nil
       end
