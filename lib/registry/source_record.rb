@@ -671,6 +671,8 @@ module Registry
         @series = 'ReportsOfInvestigations'
       when (self.oclc_resolved.map{|o|o.to_i} & Series::DecisionsOfTheCourtOfVeteransAppeals.oclcs).count > 0
         @series = 'DecisionsOfTheCourtOfVeteransAppeals'
+      when (self.oclc_resolved.map{|o|o.to_i} & Series::JournalOfTheNationalCancerInstitute.oclcs).count > 0
+        @series = 'JournalOfTheNationalCancerInstitute'
       end
       if @series 
         self.extend(Module.const_get("Registry::Series::"+@series))
