@@ -27,6 +27,7 @@ module Registry
     field :author_lccns, type: Array
     field :added_entry_lccns, type: Array
     field :electronic_resources, type: Array
+    field :print_holdings_t, type: Array
 
     @@collator = Collator.new(__dir__+'/../../config/traject_config.rb')
     @@db_conn = Mysql2::Client.new(:host => ENV['db_host'], 
@@ -235,18 +236,17 @@ module Registry
     
     def print_holdings(oclcs=nil)
       oclcs ||= self.oclcnum_t
-      members = []
+      self.print_holdings_t = []
       if oclcs.count > 0
         get_holdings = "SELECT DISTINCT(member_id) from holdings_memberitem 
                         WHERE oclc IN(#{@@db_conn.escape(oclcs.join(','))})"
         @results = @@db_conn.query(get_holdings)
         @results.each do |row|
-          members << row['member_id']
+          self.print_holdings_t << row['member_id']
         end
       end
-      members.uniq
+      self.print_holdings_t.uniq 
     end  
-    alias_method :print_holdings_t, :print_holdings
   end
 
 end
