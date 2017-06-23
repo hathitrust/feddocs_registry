@@ -64,6 +64,7 @@ module Registry
       self.registry_id ||= SecureRandom.uuid()
       self.enumchron_display = enum_chron
       self.set_ht_availability()
+      self.print_holdings
     end  
 
     # Sets HT availability based on ht_ids_fv and ht_ids_lv fields
