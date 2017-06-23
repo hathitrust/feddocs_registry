@@ -29,6 +29,13 @@ module Registry
     field :electronic_resources, type: Array
 
     @@collator = Collator.new(__dir__+'/../../config/traject_config.rb')
+    @@db_conn = Mysql2::Client.new(:host => ENV['db_host'], 
+                              :username => ENV['db_user'],
+                              :password => ENV['db_pw'],
+                              :database => ENV['db_name'],
+                              :reconnect => true
+                             )
+
 
     # Creates RegistryRecord. 
     # 
@@ -225,6 +232,21 @@ module Registry
       end
       return rec
     end
+    
+    def print_holdings(oclcs=nil)
+      oclcs ||= self.oclcnum_t
+      members = []
+      if oclcs.count > 0
+        get_holdings = "SELECT DISTINCT(member_id) from holdings_memberitem 
+                        WHERE oclc IN(#{@@db_conn.escape(oclcs.join(','))})"
+        @results = @@db_conn.query(get_holdings)
+        @results.each do |row|
+          members << row['member_id']
+        end
+      end
+      members.uniq
+    end  
+    alias_method :print_holdings_t, :print_holdings
   end
 
 end

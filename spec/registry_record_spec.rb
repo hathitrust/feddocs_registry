@@ -268,7 +268,17 @@ RSpec.describe RR, "#split" do
   it "updates with the correct enumchron" do
     expect(@new_recs.last.enumchron_display).to eq("ec C")
   end
+
 end
 
+RSpec.describe RR, "#print_holdings" do
+  before(:all) do
+    @rec = RR.where(:source_record_ids.with_size => 6).first
+    @rec.oclcnum_t = [10210704]
+  end
 
-
+  it "retrieves member ids from the print holdings database" do
+    expect(@rec.print_holdings([10210704]).count).to eq(15)
+    expect(@rec.print_holdings([10210704])).to include("umich")
+  end
+end
