@@ -64,7 +64,8 @@ module Registry
       self.registry_id ||= SecureRandom.uuid()
       self.enumchron_display = enum_chron
       self.set_ht_availability()
-      if self.print_holdings_t.nil? or self.print_holdings_t.count == 0
+      if (self.print_holdings_t.nil? or self.print_holdings_t.count == 0) and
+        self.oclcnum_t.count > 0
         self.print_holdings
       end
     end  
