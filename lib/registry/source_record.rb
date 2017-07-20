@@ -866,6 +866,16 @@ module Registry
       end
     end
 
+    def report_numbers
+      return @report_numbers unless @report_numbers.nil?
+      @extracted ||= self.extracted
+      if @extracted['report_numbers'].nil?
+        self.report_numbers = []
+      else
+        self.report_numbers = @extracted['report_numbers']
+      end
+    end
+
     def extracted marc=nil
       marc ||= MARC::Record.new_from_hash(self.source)
       @extracted = @@extractor.map_record(marc)
