@@ -142,9 +142,12 @@ RSpec.describe Registry::SourceRecord, '#extracted_field' do
     @sr = SourceRecord.new
     @sr.source = open(File.dirname(__FILE__)+"/data/dgpo_has_ecs.json").read
     @sr.save
+    @sr.electronic_versions = nil
+    @sr.electronic_resources = nil
   end
 
   it "extracts 856s into electronic_resources" do
+    expect(@sr.electronic_versions).to include('http://purl.access.gpo.gov/GPO/LPS40802')
     expect(@sr.electronic_versions).to include('http://purl.access.gpo.gov/GPO/LPS40802')
     expect(@sr.electronic_resources).to include('electronic resource no indicator')
     expect(@sr.electronic_resources).to include('electronic resource')
@@ -153,10 +156,10 @@ RSpec.describe Registry::SourceRecord, '#extracted_field' do
 
   it "saves dynamically extracted fields" do
     copy = SourceRecord.find_by(source_id: @sr.source_id)
-    expect(copy.electronic_versions).to include('http://purl.access.gpo.gov/GPO/LPS40802')
-    expect(copy.electronic_resources).to include('electronic resource no indicator')
-    expect(copy.electronic_resources).to include('electronic resource')
-    expect(copy.related_electronic_resources).to include('related electronic resource')
+    expect(copy['electronic_resources']).to include('electronic resource no indicator')
+    expect(copy['electronic_resources']).to include('electronic resource')
+    expect(copy['electronic_versions']).to include('http://purl.access.gpo.gov/GPO/LPS40802')
+    expect(copy['related_electronic_resources']).to include('related electronic resource')
   end
 
   after(:all) do
@@ -701,6 +704,7 @@ describe Registry::SourceRecord, 'source' do
     @src.save
     diffsrc = SourceRecord.where(source_id:@src.source_id).first
     expect(diffsrc.attributes[:series]).to eq('UnitedStatesReports')
+    expect(diffsrc['series']).to eq('UnitedStatesReports')
   end
 
   after(:each) do

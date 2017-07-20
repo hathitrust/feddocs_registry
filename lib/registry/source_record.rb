@@ -34,6 +34,7 @@ module Registry
     field :deprecated_reason, type: String
     field :deprecated_timestamp, type: DateTime
     field :electronic_resources, type: Array
+    field :electronic_versions, type: Array
     field :enum_chrons
     field :ec
     field :file_path, type: String
@@ -108,6 +109,8 @@ module Registry
       self.report_numbers = @extracted['report_numbers'] || []
       self.extract_identifiers @marc
       self.electronic_resources
+      self.related_electronic_resources
+      self.electronic_versions
       self.author_lccns
       self.added_entry_lccns
       self.series = self.series #important to do this before extracting enumchrons
@@ -834,12 +837,14 @@ module Registry
     # Default accessor for some but not all attributes
     # Sets to [] if not found in extracted.
     def extracted_field field=__callee__
-      return self.instance_variable_get("@#{field}") unless self.instance_variable_get("@#{field}").nil?
+      return self[field.to_sym] unless self[field.to_sym].nil?
       @extracted ||= self.extracted
       if @extracted[field.to_s].nil?
-        self.instance_variable_set("@#{field}",[])
+        #self.instance_variable_set("@#{field}",[])
+        self[field.to_sym] = []
       else
-        self.instance_variable_set("@#{field}",@extracted[field.to_s])
+        self[field.to_sym] = @extracted[field.to_s]
+        #self.instance_variable_set("@#{field}",@extracted[field.to_s])
       end
     end
     alias_method :electronic_versions, :extracted_field
