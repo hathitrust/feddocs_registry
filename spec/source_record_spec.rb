@@ -180,7 +180,13 @@ RSpec.describe Registry::SourceRecord, "#get_lccns" do
   end
 end
 
-
+RSpec.describe Registry::SourceRecord, "#report_numbers" do
+  it "pulls report_numbers from the 088" do
+    sr = SourceRecord.new(org_code:"miu")
+    sr.source = open(File.dirname(__FILE__)+'/data/osti_record.json').read
+    expect(sr.report_numbers).to eq(['la-ur-02-5859'])
+  end
+end
 
 RSpec.describe Registry::SourceRecord, "#extract_local_id" do
   before(:all) do

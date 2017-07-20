@@ -271,6 +271,25 @@ RSpec.describe RR, "#split" do
 
 end
 
+RSpec.describe RR, "#report_numbers" do
+  before(:all) do
+    @src = SourceRecord.new(:org_code=>"miu")
+    @src.source = open(File.dirname(__FILE__)+'/data/osti_record.json').read
+    @src.save
+    @rec = RR.new([@src.source_id],'','')
+  end
+
+  it "collects report_numbers from source recs" do
+    expect(@src.report_numbers).to eq(['la-ur-02-5859'])
+    expect(@rec.report_numbers).to eq(['la-ur-02-5859'])
+  end
+
+  after(:all) do
+    @rec.delete
+    @src.delete
+  end
+end
+
 RSpec.describe RR, "#print_holdings" do
   before(:all) do
     @rec = RR.where(:source_record_ids.with_size => 6).first

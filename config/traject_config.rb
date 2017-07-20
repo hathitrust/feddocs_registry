@@ -115,6 +115,9 @@ to_field "electronic_resources", extract_marc("856|4 |u:856|40|u")
 to_field "electronic_versions", extract_marc("856|41|u")
 to_field "related_electronic_resources", extract_marc("856|42|u")
 
+# report numbers, esp. for OSTI
+to_field "report_numbers", extract_marc("088a")
+
 #format
 to_field "format",              marc_formats
 

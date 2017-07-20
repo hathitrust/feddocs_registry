@@ -56,6 +56,7 @@ module Registry
     field :publisher_headings
     field :publisher_normalized
     field :publisher_viaf_ids
+    field :report_numbers, type: Array
     field :series, type: String
     field :source
     field :source_id, type: String
@@ -104,6 +105,7 @@ module Registry
       self.publisher_headings = @extracted['publisher_heading'] || []
       self.author_headings = @extracted['author_t'] || []
       self.author_parts = @extracted['author_parts'] || []
+      self.report_numbers = @extracted['report_numbers'] || []
       self.extract_identifiers @marc
       self.electronic_resources
       self.author_lccns
