@@ -13,7 +13,7 @@ gem 'oclc_filter', :git => 'https://github.com/HTGovdocs/oclc_filter.git'
 gem 'nauth', :git => 'https://github.com/HTGovdocs/nauth.git'
 gem 'library_stdnums', '~> 1.0.2'
 gem 'celluloid'
-gem 'google-api-client', '0.11.1'
+gem 'google-api-client', '0.11.2'
 
 gem 'mysql2'
 

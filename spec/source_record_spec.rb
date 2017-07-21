@@ -141,9 +141,9 @@ RSpec.describe Registry::SourceRecord, '#extracted_field' do
   before(:all) do
     @sr = SourceRecord.new
     @sr.source = open(File.dirname(__FILE__)+"/data/dgpo_has_ecs.json").read
-    @sr.save
     @sr.electronic_versions = nil
     @sr.electronic_resources = nil
+    @sr.save
   end
 
   it "extracts 856s into electronic_resources" do
@@ -155,6 +155,9 @@ RSpec.describe Registry::SourceRecord, '#extracted_field' do
   end
 
   it "saves dynamically extracted fields" do
+    @sr.electronic_resources
+    @sr.electronic_versions
+    @sr.save
     copy = SourceRecord.find_by(source_id: @sr.source_id)
     expect(copy['electronic_resources']).to include('electronic resource no indicator')
     expect(copy['electronic_resources']).to include('electronic resource')
