@@ -14,9 +14,9 @@ gem 'nauth', :git => 'https://github.com/HTGovdocs/nauth.git'
 gem 'library_stdnums', '~> 1.0.2'
 gem 'celluloid'
 gem 'google-api-client', '0.11.2'
-
 gem 'mysql2'
 
+gem 'rspec-benchmark'
 gem 'rake'
 gem 'flog'
 

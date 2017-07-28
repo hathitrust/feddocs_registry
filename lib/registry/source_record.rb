@@ -154,13 +154,13 @@ module Registry
       self.isbns_normalized ||= []
       self.formats ||= []
     
-      marc ||= MARC::Record.new_from_hash(self.source)
-      self.extract_oclcs marc 
-      self.extract_sudocs marc
-      self.extract_lccns marc
-      self.extract_issns marc
-      self.extract_isbns marc
-      self.formats = Traject::Macros::MarcFormatClassifier.new(marc).formats
+      @marc ||= MARC::Record.new_from_hash(self.source)
+      self.extract_oclcs @marc 
+      self.extract_sudocs @marc
+      self.extract_lccns @marc
+      self.extract_issns @marc
+      self.extract_isbns @marc
+      self.formats = Traject::Macros::MarcFormatClassifier.new(@marc).formats
     
       self.oclc_resolved = self.resolve_oclc(self.oclc_alleged).uniq
     end #extract_identifiers
@@ -222,16 +222,17 @@ module Registry
     # and OCLC blacklist
     # marc - ruby-marc repesentation of source
     def is_govdoc marc=nil
-      marc ||= MARC::Record.new_from_hash(self.source)
+      @marc = marc unless marc.nil?
+      @marc ||= MARC::Record.new_from_hash(self.source)
      
       #if fields.nil? #rare but happens let rescue handle it
-      field_008 = marc['008'] 
+      field_008 = @marc['008'] 
       if field_008.nil?
         f008 = ''
       else
         f008 = field_008.value
       end
-      self.extract_identifiers( marc )
+      self.extract_identifiers( @marc )
       #check the blacklist
       self.oclc_resolved.each do |o|
         if Whitelist.oclcs.include? o
@@ -240,19 +241,20 @@ module Registry
           return false
         end
       end
-      f008 =~ /^.{17}u.{10}f/ or self.sudocs.count > 0 or self.extract_sudocs(marc).count > 0 or self.gpo_item_numbers.count > 0
+      f008 =~ /^.{17}u.{10}f/ or self.sudocs.count > 0 or self.extract_sudocs(@marc).count > 0 or self.gpo_item_numbers.count > 0
     end
 
     # Extracts SuDocs
     #
     # marc - ruby-marc representation of source
     def extract_sudocs marc=nil
-      marc ||= MARC::Record.new_from_hash(self.source)
+      @marc = marc unless marc.nil?
+      @marc ||= MARC::Record.new_from_hash(self.source)
       self.sudocs = []
       self.invalid_sudocs = [] #curiosity
       self.non_sudocs = [] 
 
-      marc.each_by_tag('086') do | field |
+      @marc.each_by_tag('086') do | field |
         # Supposed to be in 086/ind1=0, but some records are dumb. 
         if field['a'] 
           # $2 says its not a sudoc
@@ -298,10 +300,11 @@ module Registry
     end
 
     def extract_oclcs marc=nil
-      marc ||= MARC::Record.new_from_hash(self.source)
+      @marc = marc unless marc.nil?
+      @marc ||= MARC::Record.new_from_hash(self.source)
       self.oclc_alleged = []
       #035a and 035z
-      marc.each_by_tag('035') do | field |
+      @marc.each_by_tag('035') do | field |
         if field['a'] and OCLCPAT.match(field['a'])
           oclc = $1.to_i
           if oclc
@@ -312,7 +315,7 @@ module Registry
 
       #OCLC prefix in 001
       #or contributor told us to look there
-      marc.each_by_tag('001') do | field |
+      @marc.each_by_tag('001') do | field |
         if OCLCPAT.match(field.value) or
           (@@contrib_001[self.org_code] and field.value =~ /^(\d+)$/x)
           self.oclc_alleged << $1.to_i
@@ -321,7 +324,7 @@ module Registry
       
       #Indiana told us 955$o. Not likely, but...
       if self.org_code == "inu"
-        marc.each_by_tag('955') do | field |
+        @marc.each_by_tag('955') do | field |
           field.subfields.each do | sf | 
             if sf.code == 'o' and sf.value =~ /(\d+)/
               self.oclc_alleged << $1.to_i
@@ -332,7 +335,7 @@ module Registry
 
       #We don't care about different physical forms so
       #776s are valid too.
-      marc.each_by_tag('776') do | field |
+      @marc.each_by_tag('776') do | field |
         subfield_ws = field.find_all {|subfield| subfield.code == 'w'}
         subfield_ws.each do | sub | 
           if OCLCPAT.match(sub.value)
@@ -350,10 +353,11 @@ module Registry
     #######
     # LCCN
     def extract_lccns marc=nil
-      marc ||= MARC::Record.new_from_hash(self.source)
+      @marc = marc unless marc.nil?
+      @marc ||= MARC::Record.new_from_hash(self.source)
       self.lccn_normalized = []
 
-      marc.each_by_tag('010') do | field |
+      @marc.each_by_tag('010') do | field |
         if field['a'] and field['a'] != ''
           self.lccn_normalized << StdNum::LCCN.normalize(field['a'].downcase) 
         end
@@ -365,10 +369,11 @@ module Registry
     ########
     # ISSN
     def extract_issns marc=nil
-      marc ||= MARC::Record.new_from_hash(self.source)
+      @marc = marc unless marc.nil?
+      @marc ||= MARC::Record.new_from_hash(self.source)
       self.issn_normalized = []
       
-      marc.each_by_tag('022') do | field |
+      @marc.each_by_tag('022') do | field |
         if field['a'] and field['a'] != ''
           self.issn_normalized << StdNum::ISSN.normalize(field['a'])
         end
@@ -376,7 +381,7 @@ module Registry
 
       #We don't care about different physical forms so
       #776s are valid too.
-      marc.each_by_tag('776') do | field |
+      @marc.each_by_tag('776') do | field |
         subfield_xs = field.find_all {|subfield| subfield.code == 'x'}
         subfield_xs.each do | sub | 
           self.issn_normalized << StdNum::ISSN.normalize(sub.value)
@@ -390,10 +395,11 @@ module Registry
     #######
     # ISBN
     def extract_isbns marc=nil
-      marc ||= MARC::Record.new_from_hash(self.source)
+      @marc = marc unless marc.nil?
+      @marc ||= MARC::Record.new_from_hash(self.source)
       self.isbns_normalized = []
 
-      marc.each_by_tag('020') do | field |
+      @marc.each_by_tag('020') do | field |
         if field['a'] and field['a'] != ''
           self.isbns << field['a']
           isbn = StdNum::ISBN.normalize(field['a'])
@@ -405,7 +411,7 @@ module Registry
       
       #We don't care about different physical forms so
       #776s are valid too.
-      marc.each_by_tag('776') do | field |
+      @marc.each_by_tag('776') do | field |
         subfield_zs = field.find_all {|subfield| subfield.code == 'z'}
         subfield_zs.each do | sub | 
           self.isbns_normalized << StdNum::ISBN.normalize(sub.value)
@@ -420,9 +426,10 @@ module Registry
     #Finds the correct marc field and returns and array of enumchrons
     def extract_enum_chron_strings marc=nil
       ec_strings = []
-      marc ||= MARC::Record.new_from_hash(self.source)
+      @marc = marc unless marc.nil?
+      @marc ||= MARC::Record.new_from_hash(self.source)
       tag, subcode = @@marc_profiles[self.org_code]['enum_chrons'].split(/ /)
-      marc.each_by_tag(tag) do | field | 
+      @marc.each_by_tag(tag) do | field | 
         subfield_codes = field.find_all { |subfield| subfield.code == subcode }
         if subfield_codes.count > 0
           if self.org_code == "dgpo"
@@ -454,9 +461,10 @@ module Registry
       self.series
       ecs = {}
       org_code ||= self.org_code
+      @marc = marc unless marc.nil?
       
       if ec_strings.nil?
-        ec_strings = self.extract_enum_chron_strings marc
+        ec_strings = self.extract_enum_chron_strings @marc
       end
       if ec_strings == []
         ec_strings = ['']
@@ -516,8 +524,9 @@ module Registry
     def extract_holdings marc=nil
       self.holdings = {}
       self.ht_item_ids = [] 
-      marc ||= MARC::Record.new_from_hash(self.source)
-      marc.each_by_tag('974') do |field|
+      @marc = marc unless marc.nil?
+      @marc ||= MARC::Record.new_from_hash(self.source)
+      @marc.each_by_tag('974') do |field|
         self.ht_item_ids << field['u']
         z = field['z']
         z ||= ''
@@ -882,8 +891,9 @@ module Registry
     end
 
     def extracted marc=nil
-      marc ||= MARC::Record.new_from_hash(self.source)
-      @extracted = @@extractor.map_record(marc)
+      @marc = marc unless marc.nil?
+      @marc ||= MARC::Record.new_from_hash(self.source)
+      @extracted = @@extractor.map_record(@marc)
       @extracted
     end
 

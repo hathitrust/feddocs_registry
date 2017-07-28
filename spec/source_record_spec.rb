@@ -122,6 +122,23 @@ RSpec.describe Registry::SourceRecord do
     expect(sr.formats).to eq(["Book","Print"])
   end
 
+  it "performs reasonably well" do
+    line = open(File.dirname(__FILE__)+'/data/ht_record_different_3_items.json').read
+    call_count = 0
+    name = :new_from_hash
+    TracePoint.trace(:call) do |t|
+      call_count += 1 if t.method_id == name
+    end
+    sr = SourceRecord.new
+    sr.org_code = "miaahdl"
+    sr.source = line
+    sr.is_monograph?
+    sr.is_govdoc
+    sr.extract_local_id
+    expect(call_count).to eq(1)
+    expect{sr.source = line}.to perform_under(25).ms
+  end
+
 =begin
   it "won't allow duplicate local_id/org_codes" do
     sr = SourceRecord.new
