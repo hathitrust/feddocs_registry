@@ -7,8 +7,8 @@ require 'registry/collator'
 require 'registry/series'
 require 'yaml'
 require 'digest'
-require 'oclc_filter/blacklist'
-require 'oclc_filter/whitelist'
+require 'filter/blacklist'
+require 'filter/whitelist'
 require 'nauth/authority'
 Authority = Nauth::Authority
 
