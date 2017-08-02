@@ -9,6 +9,7 @@ require 'yaml'
 require 'digest'
 require 'filter/blacklist'
 require 'filter/whitelist'
+require 'filter/authority_list'
 require 'nauth/authority'
 Authority = Nauth::Authority
 
@@ -242,6 +243,16 @@ module Registry
         end
       end
       f008 =~ /^.{17}u.{10}f/ or self.sudocs.count > 0 or self.extract_sudocs(@marc).count > 0 or self.gpo_item_numbers.count > 0
+    end
+
+    # Check author_lccns against the list of approved authors
+    def has_approved_author?
+      self.author_lccns.each do |lccn|
+        if AuthorityList.lccns.include? lccn
+          return true
+        end
+      end
+      return false
     end
 
     # Extracts SuDocs

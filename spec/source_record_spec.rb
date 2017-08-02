@@ -908,4 +908,18 @@ RSpec.describe Registry::SourceRecord, '#fix_flasus' do
   end
 end
 
+RSpec.describe Registry::SourceRecord, '#has_approved_author?' do
+  before(:all) do
+    @src = SourceRecord.new
+    @src.org_code = "miaahdl"
+    @src.source = open(File.dirname(__FILE__)+'/data/author_gd.json').read
+  end
+
+  it "tells us it has an approved author" do
+    expect(@src.is_govdoc).to be_falsey
+    expect(@src.has_approved_author?).to be_truthy
+  end
+
+end
+
 
