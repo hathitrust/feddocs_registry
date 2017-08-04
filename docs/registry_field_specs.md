@@ -53,6 +53,11 @@ series
 	module names expanded with whitespace so as to be a bit friendlier for human
 	display. e.g. CivilRightsCommission vs Civil Rights Commission. todo
 
+print_holdings_t
+----------------
+  type: array of strings
+  member ids taken from the print holdings database, queried using OCLCs. 
+
 source_record_ids
 -----------------
 	type: array of strings
@@ -107,4 +112,19 @@ ht_availability
 	type: String
 	Whether or not this item can be found in HathiTrust. Options are "Full View",
 	"Limited View", and "Not In HathiTrust"	
-  
+ 
+electronic_resources
+--------------------
+  type: array of strings
+  Pulled from 856, indicators 4 or 40
+
+electronic_versions
+-------------------
+  type: array of strings
+  Pulled from 856, indicators 41
+
+related_electronic_resources
+----------------------------
+  type: array of strings
+  Pulled from 856, indicators 42  
+
