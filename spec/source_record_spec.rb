@@ -489,7 +489,6 @@ RSpec.describe Registry::SourceRecord, 'is_govdoc' do
     @marc = MARC::Record.new_from_hash(JSON.parse(@fed_state))
     @innd = File.read(File.expand_path(File.dirname(__FILE__))+'/data/innd_record.json').chomp
     @innd_marc = MARC::Record.new_from_hash(JSON.parse(@innd))
-
   end
 
   it "detects govdociness" do
@@ -532,6 +531,14 @@ RSpec.describe Registry::SourceRecord, 'is_govdoc' do
     s.source = source
     expect(s.gpo_item_numbers).to eq([])
     expect(s.is_govdoc).to be false
+  end
+
+  it "uses the authority list" do
+    ao = open(File.dirname(__FILE__)+'/data/auth_only.json').read
+    auth_only = SourceRecord.new
+    auth_only.org_code = "miaahdl"
+    auth_only.source = ao
+    expect(auth_only.is_govdoc).to be_truthy
   end
 
 end
@@ -916,7 +923,7 @@ RSpec.describe Registry::SourceRecord, '#has_approved_author?' do
   end
 
   it "tells us it has an approved author" do
-    expect(@src.is_govdoc).to be_falsey
+    #expect(@src.is_govdoc).to be_falsey
     expect(@src.has_approved_author?).to be_truthy
   end
 
