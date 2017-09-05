@@ -65,6 +65,7 @@ module Registry
     field :sudocs
     field :invalid_sudocs # bad MARC, not necessarily bad SuDoc
     field :non_sudocs
+    attr_accessor :marc
 
     #this stuff is extra ugly
     Dotenv.load

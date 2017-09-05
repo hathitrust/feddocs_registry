@@ -65,6 +65,12 @@ RSpec.describe Registry::SourceRecord do
     expect(sr.pub_date).to eq([1965])
   end
 
+  it "sets a marc field" do
+    sr = SourceRecord.new
+    sr.source = @raw_source
+    expect(sr.marc['008'].value).to eq('690605s1965    dcu           000 0 eng  ')
+  end
+
   it "timestamps on save" do
     sr = SourceRecord.new
     sr.save 
