@@ -59,7 +59,7 @@ module Registry
     field :publisher_normalized
     field :publisher_viaf_ids
     field :report_numbers, type: Array
-    field :series, type: String
+    field :series, type: Array, default: []
     field :source
     field :source_id, type: String
     field :sudocs
@@ -546,7 +546,7 @@ module Registry
 
         #possible to parse/explode one enumchron into many for select series
         ecs = []
-        if self.series.nil? or self.series == ''
+        if self.series.nil? or self.series == []
           ecs << ec_string
         else
           parsed_ec = self.parse_ec ec_string
@@ -664,44 +664,46 @@ module Registry
      
     # Uses oclc_resolved to identify a series title (and appropriate module)
     def series
+      @series ||= []
       #try to set it 
       case
       when (self.oclc_resolved.map{|o|o.to_i} & Series::FederalRegister.oclcs).count > 0
-        @series = 'FederalRegister'
+        @series << 'FederalRegister'
       when (self.oclc_resolved.map{|o|o.to_i} & Series::StatutesAtLarge.oclcs).count > 0
-        @series = 'StatutesAtLarge'
+        @series << 'StatutesAtLarge'
       when (self.oclc_resolved.map{|o|o.to_i} & Series::AgriculturalStatistics.oclcs).count > 0
-        @series = 'AgriculturalStatistics'
+        @series << 'AgriculturalStatistics'
       when (self.oclc_resolved.map{|o|o.to_i} & Series::MonthlyLaborReview.oclcs).count > 0
-        @series = 'MonthlyLaborReview'
+        @series << 'MonthlyLaborReview'
       when (self.oclc_resolved.map{|o|o.to_i} & Series::MineralsYearbook.oclcs).count > 0
-        @series = 'MineralsYearbook'
+        @series << 'MineralsYearbook'
       when (self.oclc_resolved.map{|o|o.to_i} & Series::StatisticalAbstract.oclcs).count > 0
-        @series = 'StatisticalAbstract'
+        @series << 'StatisticalAbstract'
       when ((self.oclc_resolved.map{|o|o.to_i} & Series::UnitedStatesReports.oclcs).count > 0 or
         self.sudocs.grep(/^#{::Regexp.escape(Series::UnitedStatesReports.sudoc_stem)}/).count > 0)
-        @series = 'UnitedStatesReports'
+        @series << 'UnitedStatesReports'
       when self.sudocs.grep(/^#{::Regexp.escape(Series::CivilRightsCommission.sudoc_stem)}/).count > 0
-        @series = 'CivilRightsCommission'
+        @series << 'CivilRightsCommission'
       when (self.oclc_resolved.map{|o|o.to_i} & Series::CongressionalRecord.oclcs).count > 0
-        @series = 'CongressionalRecord'
+        @series << 'CongressionalRecord'
       when self.sudocs.grep(/^#{::Regexp.escape(Series::ForeignRelations.sudoc_stem)}/).count > 0
-        @series = 'ForeignRelations'
+        @series << 'ForeignRelations'
       when ((self.oclc_resolved.map{|o|o.to_i} & Series::CongressionalSerialSet.oclcs).count > 0 or 
         self.sudocs.grep(/^#{::Regexp.escape(Series::CongressionalSerialSet.sudoc_stem)}/).count > 0)
-        @series = 'CongressionalSerialSet'
+        @series << 'CongressionalSerialSet'
       when (self.sudocs.grep(/^#{::Regexp.escape(Series::EconomicReportOfThePresident.sudoc_stem)}/).count > 0 or
         (self.oclc_resolved.map{|o|o.to_i} & Series::EconomicReportOfThePresident.oclcs).count > 0)
-        @series = 'EconomicReportOfThePresident'
+        @series << 'EconomicReportOfThePresident'
       when (self.oclc_resolved.map{|o|o.to_i} & Series::ReportsOfInvestigations.oclcs).count > 0
-        @series = 'ReportsOfInvestigations'
+        @series << 'ReportsOfInvestigations'
       when (self.oclc_resolved.map{|o|o.to_i} & Series::DecisionsOfTheCourtOfVeteransAppeals.oclcs).count > 0
-        @series = 'DecisionsOfTheCourtOfVeteransAppeals'
+        @series << 'DecisionsOfTheCourtOfVeteransAppeals'
       when (self.oclc_resolved.map{|o|o.to_i} & Series::JournalOfTheNationalCancerInstitute.oclcs).count > 0
-        @series = 'JournalOfTheNationalCancerInstitute'
+        @series << 'JournalOfTheNationalCancerInstitute'
       end
-      if @series 
-        self.extend(Module.const_get("Registry::Series::"+@series))
+      if !@series.nil? and @series.count > 0 
+	@series.uniq!
+        self.extend(Module.const_get("Registry::Series::"+@series.first))
         load_context
       end
       #get whatever we got

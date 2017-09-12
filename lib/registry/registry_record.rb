@@ -14,7 +14,7 @@ module Registry
     field :ancestors, type: Array
     field :deprecated_reason, type: String
     field :deprecated_timestamp, type: DateTime
-    field :series, type: String
+    field :series, type: Array, default: []
     field :source_record_ids, type: Array
     field :source_org_codes, type: Array
     field :creation_notes, type: String
@@ -54,10 +54,11 @@ module Registry
       @@collator.extract_fields(@sources).each_with_index {|(k,v),i| self[k] = v}
         
       @sources.each do |s|
-        if !s.series.nil? and s.series != ''
-          self.series = s.series.gsub(/([A-Z])/, ' \1').strip
+        if !s.series.nil? and s.series.count > 0
+          self.series = s.series.map {|s| s.gsub(/([A-Z])/, ' \1').strip}
         end
       end
+      self.series.uniq!
 
       self.ancestors = ancestors
       self.creation_notes = notes
@@ -102,8 +103,9 @@ module Registry
         end
         self.source_record_ids.uniq!
         self.source_org_codes.uniq!
-        if !source_record.series.nil? and source_record.series != ''
-          self.series = source_record.series.gsub(/([A-Z])/, ' \1').strip
+        if !source_record.series.nil? and source_record.series.count > 0 
+          self.series = source_record.series.map {|s| s.gsub(/([A-Z])/, ' \1').strip}
+	  self.series.uniq!
         end
       end
       self.set_ht_availability() 

@@ -11,8 +11,8 @@ RSpec.describe SourceRecord do
   it "detects series" do
     sr = SourceRecord.where({oclc_resolved:1768512, org_code:{"$ne":"miaahdl"}, enum_chrons:/V. \d/}).first
     
-    expect(sr.series).to eq('FederalRegister')
-    sr.series = 'FederalRegister'
+    expect(sr.series).to include('FederalRegister')
+    sr.series << 'FederalRegister'
     #expect(sr.enum_chrons).to include('Volume: 77, Number: 96')
   end
 
@@ -21,7 +21,7 @@ RSpec.describe SourceRecord do
     new_sr = SourceRecord.new
     new_sr.org_code = sr.org_code
     new_sr.source = sr.source.to_json
-    expect(new_sr.series).to eq('StatutesAtLarge')
+    expect(new_sr.series).to include('StatutesAtLarge')
     expect(new_sr.enum_chrons).to include('Volume:123, Part:1')
     #puts new_sr.ec
   end
@@ -30,7 +30,7 @@ RSpec.describe SourceRecord do
     sr = SourceRecord.new
     sr.org_code = "miaahdl"
     sr.source = File.read(File.dirname(__FILE__)+'/data/ht_pd_record.json').chomp
-    expect(sr.series).to be_nil 
+    expect(sr.series.count).to be(0)
     expect(sr.enum_chrons).to include('Volume:1')
   end
 
@@ -604,9 +604,9 @@ RSpec.describe Registry::SourceRecord, '#extract_enum_chrons' do
     sr = SourceRecord.where({oclc_resolved:1768512, org_code:{"$ne":"miaahdl"}, enum_chrons:/V. \d/}).first
     line = sr.source.to_json
     sr_new = SourceRecord.new( :org_code=>"miu" )
-    sr_new.series = 'FederalRegister'
+    sr_new.series = ['FederalRegister']
     sr_new.source = line
-    expect(sr_new.series).to eq('FederalRegister')
+    expect(sr_new.series).to include('FederalRegister')
     expect(sr_new.enum_chrons).to include("Volume:77, Number:67")
     expect(sr_new.org_code).to eq("miu")
   end
@@ -615,7 +615,7 @@ RSpec.describe Registry::SourceRecord, '#extract_enum_chrons' do
     sr = SourceRecord.new
     sr.org_code = "miaahdl"
     sr.source = open(File.dirname(__FILE__)+'/series/data/econreport.json').read
-    expect(sr.series).to eq('EconomicReportOfThePresident')
+    expect(sr.series).to include('EconomicReportOfThePresident')
     expect(sr.enum_chrons).to include('Year:1966, Part:3')
   end
 
@@ -733,11 +733,11 @@ describe Registry::SourceRecord, 'source' do
   end
 
   it 'saves the series information' do
-    expect(@src.series).to eq('UnitedStatesReports')
+    expect(@src.series).to include('UnitedStatesReports')
     @src.save
     diffsrc = SourceRecord.where(source_id:@src.source_id).first
-    expect(diffsrc.attributes[:series]).to eq('UnitedStatesReports')
-    expect(diffsrc['series']).to eq('UnitedStatesReports')
+    expect(diffsrc.attributes[:series]).to include('UnitedStatesReports')
+    expect(diffsrc['series']).to include('UnitedStatesReports')
   end
 
   after(:each) do

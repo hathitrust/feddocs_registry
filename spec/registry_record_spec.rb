@@ -134,9 +134,10 @@ RSpec.describe RR, "add_source" do
   it "applies the correct series name" do
     # making sure a bug was fixed. It wasn't expanding the name in the add_source method
     @src.source = open(File.dirname(__FILE__)+'/series/data/econreport.json').read
-    expect(@src.series).to eq('EconomicReportOfThePresident')
+    expect(@src.series).to include('EconomicReportOfThePresident')
+    expect(@src.series).to eq(['EconomicReportOfThePresident'])
     @orig.add_source(@src)
-    expect(@orig['series']).to eq("Economic Report Of The President")
+    expect(@orig['series']).to include("Economic Report Of The President")
   end
 
   after(:all) do
@@ -297,7 +298,7 @@ RSpec.describe RR, "#print_holdings" do
   end
 
   it "retrieves member ids from the print holdings database" do
-    expect(@rec.print_holdings([10210704]).count).to eq(15)
+    expect(@rec.print_holdings([10210704]).count).to eq(13)
     expect(@rec.print_holdings([10210704])).to include("umich")
   end
 
