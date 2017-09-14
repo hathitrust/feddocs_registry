@@ -666,43 +666,59 @@ module Registry
     def series
       @series ||= []
       #try to set it 
-      case
-      when (self.oclc_resolved.map{|o|o.to_i} & Series::FederalRegister.oclcs).count > 0
+      if (self.oclc_resolved.map{|o|o.to_i} & Series::FederalRegister.oclcs).count > 0
         @series << 'FederalRegister'
-      when (self.oclc_resolved.map{|o|o.to_i} & Series::StatutesAtLarge.oclcs).count > 0
+      end
+      if (self.oclc_resolved.map{|o|o.to_i} & Series::StatutesAtLarge.oclcs).count > 0
         @series << 'StatutesAtLarge'
-      when (self.oclc_resolved.map{|o|o.to_i} & Series::AgriculturalStatistics.oclcs).count > 0
+      end
+      if (self.oclc_resolved.map{|o|o.to_i} & Series::AgriculturalStatistics.oclcs).count > 0
         @series << 'AgriculturalStatistics'
-      when (self.oclc_resolved.map{|o|o.to_i} & Series::MonthlyLaborReview.oclcs).count > 0
+      end
+      if (self.oclc_resolved.map{|o|o.to_i} & Series::MonthlyLaborReview.oclcs).count > 0
         @series << 'MonthlyLaborReview'
-      when (self.oclc_resolved.map{|o|o.to_i} & Series::MineralsYearbook.oclcs).count > 0
+      end
+      if (self.oclc_resolved.map{|o|o.to_i} & Series::MineralsYearbook.oclcs).count > 0
         @series << 'MineralsYearbook'
-      when (self.oclc_resolved.map{|o|o.to_i} & Series::StatisticalAbstract.oclcs).count > 0
+      end
+      if (self.oclc_resolved.map{|o|o.to_i} & Series::StatisticalAbstract.oclcs).count > 0
         @series << 'StatisticalAbstract'
-      when ((self.oclc_resolved.map{|o|o.to_i} & Series::UnitedStatesReports.oclcs).count > 0 or
+      end
+      if ((self.oclc_resolved.map{|o|o.to_i} & Series::UnitedStatesReports.oclcs).count > 0 or
         self.sudocs.grep(/^#{::Regexp.escape(Series::UnitedStatesReports.sudoc_stem)}/).count > 0)
         @series << 'UnitedStatesReports'
-      when self.sudocs.grep(/^#{::Regexp.escape(Series::CivilRightsCommission.sudoc_stem)}/).count > 0
+      end
+      if self.sudocs.grep(/^#{::Regexp.escape(Series::CivilRightsCommission.sudoc_stem)}/).count > 0
         @series << 'CivilRightsCommission'
-      when (self.oclc_resolved.map{|o|o.to_i} & Series::CongressionalRecord.oclcs).count > 0
+      end
+      if (self.oclc_resolved.map{|o|o.to_i} & Series::CongressionalRecord.oclcs).count > 0
         @series << 'CongressionalRecord'
-      when self.sudocs.grep(/^#{::Regexp.escape(Series::ForeignRelations.sudoc_stem)}/).count > 0
+      end
+      if self.sudocs.grep(/^#{::Regexp.escape(Series::ForeignRelations.sudoc_stem)}/).count > 0
         @series << 'ForeignRelations'
-      when ((self.oclc_resolved.map{|o|o.to_i} & Series::CongressionalSerialSet.oclcs).count > 0 or 
+      end
+      if ((self.oclc_resolved.map{|o|o.to_i} & Series::CongressionalSerialSet.oclcs).count > 0 or 
         self.sudocs.grep(/^#{::Regexp.escape(Series::CongressionalSerialSet.sudoc_stem)}/).count > 0)
         @series << 'CongressionalSerialSet'
-      when (self.sudocs.grep(/^#{::Regexp.escape(Series::EconomicReportOfThePresident.sudoc_stem)}/).count > 0 or
+      end
+      if (self.sudocs.grep(/^#{::Regexp.escape(Series::EconomicReportOfThePresident.sudoc_stem)}/).count > 0 or
         (self.oclc_resolved.map{|o|o.to_i} & Series::EconomicReportOfThePresident.oclcs).count > 0)
         @series << 'EconomicReportOfThePresident'
-      when (self.oclc_resolved.map{|o|o.to_i} & Series::ReportsOfInvestigations.oclcs).count > 0
+      end
+      if (self.oclc_resolved.map{|o|o.to_i} & Series::ReportsOfInvestigations.oclcs).count > 0
         @series << 'ReportsOfInvestigations'
-      when (self.oclc_resolved.map{|o|o.to_i} & Series::DecisionsOfTheCourtOfVeteransAppeals.oclcs).count > 0
+      end
+      if (self.oclc_resolved.map{|o|o.to_i} & Series::DecisionsOfTheCourtOfVeteransAppeals.oclcs).count > 0
         @series << 'DecisionsOfTheCourtOfVeteransAppeals'
-      when (self.oclc_resolved.map{|o|o.to_i} & Series::JournalOfTheNationalCancerInstitute.oclcs).count > 0
+      end
+      if (self.oclc_resolved.map{|o|o.to_i} & Series::JournalOfTheNationalCancerInstitute.oclcs).count > 0
         @series << 'JournalOfTheNationalCancerInstitute'
       end
+      if (self.oclc_resolved.map{|o|o.to_i} & Series::CancerTreatmentReport.oclcs).count > 0
+        @series << 'CancerTreatmentReport'
+      end
       if !@series.nil? and @series.count > 0 
-	@series.uniq!
+        @series.uniq!
         self.extend(Module.const_get("Registry::Series::"+@series.first))
         load_context
       end

@@ -932,7 +932,21 @@ RSpec.describe Registry::SourceRecord, '#has_approved_author?' do
     #expect(@src.is_govdoc).to be_falsey
     expect(@src.has_approved_author?).to be_truthy
   end
-
 end
 
+# We can detect all of the series
+RSpec.describe Registry::SourceRecord, '#series' do 
+  before(:each) do
+    @src = SourceRecord.new
+  end
+  
+  it "detects Cancer Treatment Reports" do
+    @src.org_code = "miaahdl"
+    @src.source = open(File.dirname(__FILE__)+'/series/data/ctr.json').read
+    expect(@src.series).to eq(['CancerTreatmentReport'])
+  end
 
+  after(:each) do
+    @src.delete
+  end
+end
