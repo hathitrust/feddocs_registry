@@ -203,13 +203,13 @@ publisher_viaf_ids
 
 series
 ------
-	type: String
-	A string identifying the series module name responsible for
+	type: array of strings
+	An array of strings identifying the series module name responsible for
 	enumeration/chronology processing. This is NOT a series title although it may be
 	similar. Some are not series at all, but a collection of similar/related
 	documents that can be processed together, e.g. Civil Rights Commission. This
-	should become an (ordered) array of strings, because documents may be members of
-	multiple series. todo
+	has become an (ordered) array of strings, because documents may be members of
+	multiple series. The first series in the array is used for enumchron parsing. 
 
 source
 ------

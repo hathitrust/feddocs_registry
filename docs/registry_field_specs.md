@@ -43,15 +43,16 @@ added_entry_lccns
 
 series
 ------
-	type: String
-	A string identifying the series module name responsible for
+	type: Array of strings
+	An array containing strings identifying the series module name responsible for
 	enumeration/chronology processing. This is NOT a series title although it may be
 	similar. Some are not series at all, but a collection of similar/related
 	documents that can be processed together, e.g. Civil Rights Commission. This
-	should become an (ordered) array of strings, because documents may be members of
-	multiple series. Unlike Source Records, series for Registry Records are the
-	module names expanded with whitespace so as to be a bit friendlier for human
-	display. e.g. CivilRightsCommission vs Civil Rights Commission. todo
+	was originally a single string but has become an (ordered) array of strings, 
+  because documents may be members of multiple series. Unlike Source Records, 
+  series for Registry Records are the module names expanded with whitespace so 
+  as to be a bit friendlier for human display. e.g. CivilRightsCommission vs 
+  Civil Rights Commission. 
 
 print_holdings_t
 ----------------
