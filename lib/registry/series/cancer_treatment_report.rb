@@ -348,10 +348,10 @@ module Registry
         if ec['start_year']
           canon << "Years:#{ec['start_year']}-#{ec['end_year']}"
         end
-        if ec['month']
+        if ec['month'] and !ec['number']
           canon << "Month:#{ec['month']}"
         end
-        if ec['start_month']
+        if ec['start_month'] and !ec['number']
           canon << "Months:#{ec['start_month']}-#{ec['end_month']}"
         end
         if canon.length > 0

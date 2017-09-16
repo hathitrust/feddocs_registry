@@ -944,6 +944,11 @@ RSpec.describe Registry::SourceRecord, '#series' do
     @src.org_code = "miaahdl"
     @src.source = open(File.dirname(__FILE__)+'/series/data/ctr.json').read
     expect(@src.series).to eq(['CancerTreatmentReport'])
+    @src['series'] << 'filler'
+    @src.save
+    copy = SourceRecord.find_by(series:"filler")
+    expect(copy).to be_truthy
+    expect(copy['series']).to eq(['CancerTreatmentReport', 'filler'])
   end
 
   after(:each) do
