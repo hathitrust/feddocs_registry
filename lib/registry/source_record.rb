@@ -717,6 +717,10 @@ module Registry
       if (self.oclc_resolved.map{|o|o.to_i} & Series::CancerTreatmentReport.oclcs).count > 0
         @series << 'CancerTreatmentReport'
       end
+      if (self.oclc_resolved.map{|o|o.to_i} & Series::VitalStatistics.oclcs).count > 0
+        @series << 'VitalStatistics'
+      end
+
       if !@series.nil? and @series.count > 0 
         @series.uniq!
         self.extend(Module.const_get("Registry::Series::"+@series.first))
