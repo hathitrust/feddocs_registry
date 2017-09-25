@@ -37,6 +37,9 @@ module Registry
         #  V. 112:PP. 2787-3823 (1998) PT. 5
         m ||= /^V\. (?<volume>\d+)[\/:,]PP\. (?<start_page>\d{1,4})-(?<end_page>\d{4}) \((?<year>\d{4})\) P(AR)?T\.? (?<part>\d{1,2})$/.match(ec_string)
 
+        # V. 61PT. 4 1947 /* 133 */
+        m ||= /^V\. (?<volume>\d+)PT\. (?<part>\d{1,2}) (?<year>\d{4})$/.match(ec_string)
+
         # V. 32 PT. 1 1901/02-1902/03
         m ||= /^V\. (?<volume>\d+)[\/:, ]P(AR)?T\.? (?<part>\d{1,2}) (?<start_year>\d{4})\/\d\d-(?<end_year>\d{4})\/\d\d$/.match(ec_string)
 
