@@ -160,6 +160,19 @@ RSpec.describe Registry::SourceRecord do
 
 end
 
+RSpec.describe Registry::SourceRecord, '#resolve_oclc' do
+
+  it "resolves OCLCs for records with multiple OCLCs" do
+    sr = SourceRecord.new
+    sr.org_code = "iaas"
+    sr.source = open(File.dirname(__FILE__)+"/data/oclc_resolution.json").read
+    #the second oclc number is bogus but will resolve to 227681. We should hang onto
+    #1198154
+    expect(sr.oclc_alleged).to eq([1198154, 244155])
+    expect(sr.oclc_resolved).to eq([1198154, 227681])
+  end
+end
+
 RSpec.describe Registry::SourceRecord, '#extracted_field' do
   before(:all) do
     @sr = SourceRecord.new
@@ -944,11 +957,6 @@ RSpec.describe Registry::SourceRecord, '#series' do
     @src.org_code = "miaahdl"
     @src.source = open(File.dirname(__FILE__)+'/series/data/ctr.json').read
     expect(@src.series).to eq(['CancerTreatmentReport'])
-    @src['series'] << 'filler'
-    @src.save
-    copy = SourceRecord.find_by(series:"filler")
-    expect(copy).to be_truthy
-    expect(copy['series']).to eq(['CancerTreatmentReport', 'filler'])
   end
 
   it "detects Vital Statistics" do

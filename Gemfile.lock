@@ -20,6 +20,14 @@ GIT
     normalize (0.4)
 
 GIT
+  remote: https://github.com/HTGovdocs/oclc_authoritative.git
+  revision: 134e51b3fec3f02170cc69a081587cc4585bf698
+  specs:
+    oclc_authoritative (0.1)
+      dotenv
+      mongoid
+
+GIT
   remote: https://github.com/HTGovdocs/viaf.git
   revision: 86e5062d7eb16278aa16c6372f98be6addafe262
   specs:
@@ -206,6 +214,7 @@ DEPENDENCIES
   mysql2
   nauth!
   normalize!
+  oclc_authoritative!
   rake
   registry!
   rspec
@@ -214,4 +223,4 @@ DEPENDENCIES
   viaf!
 
 BUNDLED WITH
-   1.10.6
+   1.15.4

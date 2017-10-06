@@ -11,11 +11,14 @@ require 'filter/blacklist'
 require 'filter/whitelist'
 require 'filter/authority_list'
 require 'nauth/authority'
+require 'oclc_authoritative'
+include OclcAuthoritative
 Authority = Nauth::Authority
 
 Dir[File.dirname(__FILE__) + "/series/*.rb"].each {|file| require file}
 
 module Registry
+ 
   class SourceRecord
     include Mongoid::Document
     include Mongoid::Attributes::Dynamic
@@ -164,25 +167,8 @@ module Registry
       self.extract_isbns @marc
       self.formats = Traject::Macros::MarcFormatClassifier.new(@marc).formats
     
-      self.oclc_resolved = self.resolve_oclc(self.oclc_alleged).uniq
+      self.oclc_resolved = oclc_alleged.map{|o| resolve_oclc(o) }.flatten.uniq
     end #extract_identifiers
-
-    # Hit the oclc_authoritative collection for OCLC resolution. 
-    # oclc_authoritative is a copy of /l1/govdocs/data/x2.all
-    # Bit of a kludge.
-    def resolve_oclc oclcs
-      resolved = []
-      oclcs.each do | oa |
-        @@mc[:oclc_authoritative].find(:duplicates => oa).each do | ores | #1?
-          resolved << ores[:oclc].to_i
-        end
-      end
-
-      if resolved.count == 0
-        resolved = oclcs
-      end
-      return resolved 
-    end
 
     # Extract the contributing institutions id for this record. 
     # Enables update/replacement of source records. 
