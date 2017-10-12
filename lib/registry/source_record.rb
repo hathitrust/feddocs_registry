@@ -229,7 +229,7 @@ module Registry
           return false
         end
       end
-      f008 =~ /^.{17}u.{10}f/ or self.sudocs.count > 0 or self.extract_sudocs(@marc).count > 0 or self.gpo_item_numbers.count > 0 or self.has_approved_author?
+      /^.{17}u.{10}f/ === f008 or self.sudocs.count > 0 or self.extract_sudocs(@marc).count > 0 or self.gpo_item_numbers.count > 0 or self.has_approved_author?
     end
 
     # Check author_lccns against the list of approved authors

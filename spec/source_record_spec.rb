@@ -560,6 +560,14 @@ RSpec.describe Registry::SourceRecord, 'is_govdoc' do
     expect(auth_only.is_govdoc).to be_truthy
   end
 
+  it "returns true/false not 0 or nil" do
+    gd = SourceRecord.new
+    gd.org_code = "miaahdl"
+    gd.source = open(File.dirname(__FILE__)+'/data/ht_pd_record.json').read
+    expect(gd.is_govdoc).to be(true)
+    expect(gd.is_govdoc).to_not be(0)
+  end
+
 end
 
   
