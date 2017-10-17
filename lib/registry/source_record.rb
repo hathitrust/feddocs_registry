@@ -97,7 +97,6 @@ module Registry
       s = JSON.parse(value)
       super(fix_flasus(org_code, s))
       self.local_id = self.extract_local_id
-      @@collator.normalize_viaf(s).each {|k, v| self.send("#{k}=",v) }
       @marc = MARC::Record.new_from_hash(self.source)
       @extracted = @@extractor.map_record @marc
       self.pub_date = @extracted['pub_date']
@@ -351,9 +350,11 @@ module Registry
 
       @marc.each_by_tag('010') do | field |
         if field['a'] and field['a'] != ''
-          self.lccn_normalized << StdNum::LCCN.normalize(field['a'].downcase) 
+          field_a = field['a'].sub(/^@@/,'')
+          self.lccn_normalized << StdNum::LCCN.normalize(field_a.downcase) 
         end
       end
+      self.lccn_normalized.delete(nil)
       self.lccn_normalized.uniq!
       return self.lccn_normalized
     end
@@ -379,7 +380,7 @@ module Registry
           self.issn_normalized << StdNum::ISSN.normalize(sub.value)
         end
       end
-
+      self.issn_normalized.delete(nil)
       self.issn_normalized.uniq!
       return self.issn_normalized
     end 
@@ -409,7 +410,7 @@ module Registry
           self.isbns_normalized << StdNum::ISBN.normalize(sub.value)
         end
       end
-
+      self.isbns_normalized.delete(nil)
       self.isbns_normalized.uniq!
       return self.isbns_normalized
     end

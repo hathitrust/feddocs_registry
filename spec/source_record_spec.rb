@@ -108,13 +108,6 @@ RSpec.describe Registry::SourceRecord do
     sr.deprecate('rspec test')
   end
 
-  it "sets empty lccn_normalized" do
-    sr = SourceRecord.new
-    sr.org_code = "miaahdl"
-    sr.source = open(File.dirname(__FILE__)+'/data/bad_lccn.json').read
-    expect(sr.lccn_normalized).to eq([])
-  end
-
   it "extracts oclc number from 001, 035, 776" do
     sr = SourceRecord.new
     sr.source = @raw_source
@@ -946,6 +939,29 @@ RSpec.describe Registry::SourceRecord, '#fix_flasus' do
     expect(fixed.to_json).to match(/"dollar":/)
   end
 end
+
+RSpec.describe Registry::SourceRecord, '#extract_lccns' do
+  it "handles bad prefixes in lccns" do 
+    sr = SourceRecord.new
+    sr.org_code = "miaahdl"
+    sr.source = open(File.dirname(__FILE__)+'/data/bad_identifiers.json').read
+    marc = MARC::Record.new_from_hash(sr.source)
+    expect(SourceRecord.new().extract_lccns(marc)).to eq(["2004394700"])
+    expect(sr.lccn_normalized).to eq(["2004394700"])
+  end
+end
+
+RSpec.describe Registry::SourceRecord, '#extract_issns' do
+  it "returns [] if garbage issns" do 
+    sr = SourceRecord.new
+    sr.org_code = "miaahdl"
+    sr.source = open(File.dirname(__FILE__)+'/data/bad_identifiers.json').read
+    marc = MARC::Record.new_from_hash(sr.source)
+    expect(SourceRecord.new().extract_issns(marc)).to eq([])
+    expect(sr.issn_normalized).to eq([])
+  end
+end
+
 
 RSpec.describe Registry::SourceRecord, '#has_approved_author?' do
   before(:all) do
