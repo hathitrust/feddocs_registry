@@ -18,10 +18,6 @@ RSpec.describe RC, "#initialize" do
     expect(@collator.extractor).not_to be_nil
   end
 
-  it "has a viafer" do 
-    expect(@collator.viaf).not_to be_nil
-  end
-
 end
 
 RSpec.describe RC, "#extract_fields" do

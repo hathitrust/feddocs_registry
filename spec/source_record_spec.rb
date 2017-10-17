@@ -99,7 +99,6 @@ RSpec.describe Registry::SourceRecord do
     sr.save
     sr_id = sr.source_id
     copy = SourceRecord.find_by(:source_id => sr_id) 
-    expect(copy.author_viaf_ids).to eq([151244789])
     expect(copy.author_normalized).to eq(["UNITED STATES CONGRESS SENATE COMMITTEE ON RULES AND ADMINISTRATION SUBCOMMITTEE ON SMITHSONIAN INSTITUTION"])
     expect(copy.lccn_normalized).to eq(["65062399"])
     expect(copy.sudocs).to eq(["Y 4.R 86/2:SM 6/965"])
@@ -108,6 +107,13 @@ RSpec.describe Registry::SourceRecord do
     expect(copy.author_parts).to include("United States.")
 
     sr.deprecate('rspec test')
+  end
+
+  it "sets empty lccn_normalized" do
+    sr = SourceRecord.new
+    sr.org_code = "miaahdl"
+    sr.source = open(File.dirname(__FILE__)+'/data/bad_lccn.json').read
+    expect(sr.lccn_normalized).to eq([])
   end
 
   it "extracts oclc number from 001, 035, 776" do
@@ -142,7 +148,7 @@ RSpec.describe Registry::SourceRecord do
     sr.is_govdoc
     sr.extract_local_id
     expect(call_count).to eq(1)
-    expect{sr.source = line}.to perform_under(25).ms
+    expect{sr.source = line}.to perform_under(2).ms
   end
 
 =begin

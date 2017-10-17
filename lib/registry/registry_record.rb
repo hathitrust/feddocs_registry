@@ -3,6 +3,7 @@ require 'securerandom'
 require 'pp'
 require 'registry/source_record'
 require 'registry/collator'
+require 'mysql2'
 
 module Registry
   class RegistryRecord

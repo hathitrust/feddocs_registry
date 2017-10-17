@@ -8,7 +8,7 @@ gem 'marc'
 
 gem 'traject', :git => 'https://github.com/traject/traject.git'
 gem 'normalize', :git => 'https://github.com/HTGovdocs/normalize.git'
-gem 'viaf', :git => 'https://github.com/HTGovdocs/viaf.git'
+#gem 'viaf', :git => 'https://github.com/HTGovdocs/viaf.git'
 gem 'filter', :git => 'https://github.com/HTGovdocs/filter.git'
 gem 'nauth', :git => 'https://github.com/HTGovdocs/nauth.git'
 gem 'oclc_authoritative', :git => 'https://github.com/HTGovdocs/oclc_authoritative.git'

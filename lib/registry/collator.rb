@@ -3,7 +3,6 @@ require 'marc'
 require 'traject'
 require 'traject/indexer/settings'
 require 'securerandom'
-require 'viaf'
 require 'normalize'
 
 module Registry
@@ -15,7 +14,6 @@ module Registry
     def initialize(traject_config)
       @extractor = Traject::Indexer.new
       @extractor.load_config_file(traject_config)
-      @viaf = Viaf.new()
     end
 
     # Extracts and normalizes fields from SourceRecords using traject config. 
@@ -65,6 +63,7 @@ module Registry
 
     # Normalizes 110/260 fields and tries to find viaf_ids
     def normalize_viaf source
+=begin
       #what we are building (kind of a dumb structure, but it's going into solr)
       normalized_fields = {'publisher_viaf_ids'=>[], 'publisher_headings'=>[], 'publisher_normalized'=>[],
                            'author_viaf_ids'=>[], 'author_headings'=>[], 'author_normalized'=>[],
@@ -101,7 +100,8 @@ module Registry
       end #each match for [260,110,710]
       
       return normalized_fields
-
+=end
+      {}
     end
      
   end #class Collator
