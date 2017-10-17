@@ -3,16 +3,6 @@ author_headings
 	type: array of strings
 	MARC 110
 
-author_normalized
------------------
-	type: array of strings
-	author_headings run through Normalize.corporate
-
-author_viaf_ids
----------------
-	type: array of integers
-	VIAF look up for author_headings
-
 author_lccns
 -----------
 	type:Array of strings
@@ -25,16 +15,6 @@ added_entry_lccns
 	type: array of strings
  	URLs for name authorities
 	MARC 700 and 710
-
-author_addl_viaf_ids
---------------------
-	type: array of integers
-	VIAF look up for author_addl_headings
-
-author_addl_normalized
-----------------------
-	type: array of strings
-	author_addl_headings run through Normalize.corporate
 
 cataloging_agency
 -----------------
@@ -190,16 +170,6 @@ publisher_headings
 ------------------
   type: array of strings 
   MARC 260
-
-publisher_normalized 
---------------------
-	type: array of strings
-	Normalized publisher headings. 
-
-publisher_viaf_ids
-------------------
-	type: array of integers
-	VIAF look up for publisher_normalized
 
 series
 ------

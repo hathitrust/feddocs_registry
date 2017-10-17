@@ -27,13 +27,9 @@ module Registry
 
     field :author_parts
     field :author_headings
-    field :author_normalized
-    field :author_viaf_ids
     field :author_lccns, type:Array
     field :added_entry_lccns, type: Array
-    field :author_addl_viaf_ids
     field :author_addl_headings
-    field :author_addl_normalized
     field :cataloging_agency
     field :deprecated_reason, type: String
     field :deprecated_timestamp, type: DateTime
@@ -59,8 +55,6 @@ module Registry
     field :org_code, type: String, default: "miaahdl"
     field :pub_date
     field :publisher_headings
-    field :publisher_normalized
-    field :publisher_viaf_ids
     field :report_numbers, type: Array
     field :series, type: Array, default: []
     field :source

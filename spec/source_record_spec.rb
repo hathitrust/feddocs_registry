@@ -99,7 +99,6 @@ RSpec.describe Registry::SourceRecord do
     sr.save
     sr_id = sr.source_id
     copy = SourceRecord.find_by(:source_id => sr_id) 
-    expect(copy.author_normalized).to eq(["UNITED STATES CONGRESS SENATE COMMITTEE ON RULES AND ADMINISTRATION SUBCOMMITTEE ON SMITHSONIAN INSTITUTION"])
     expect(copy.lccn_normalized).to eq(["65062399"])
     expect(copy.sudocs).to eq(["Y 4.R 86/2:SM 6/965"])
     expect(copy.publisher_headings).to include("U.S. Govt. Print. Off.,")
