@@ -91,8 +91,7 @@ module Registry
       self.source_id ||= SecureRandom.uuid()
     end
 
-    # On assignment of source json string, record is parsed, author/publisher 
-    # fields are normalized/VIAFed, and identifiers extracted. 
+    # On assignment of source json string, record is parsed, and identifiers extracted. 
     def source=(value)
       s = JSON.parse(value)
       super(fix_flasus(org_code, s))
