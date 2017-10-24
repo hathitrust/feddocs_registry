@@ -126,7 +126,7 @@ RSpec.describe Registry::SourceRecord do
     expect(sr.formats).to eq(["Book","Print"])
   end
 
-  it "performs reasonably well" do
+  xit "performs reasonably well" do
     line = open(File.dirname(__FILE__)+'/data/ht_record_different_3_items.json').read
     call_count = 0
     name = :new_from_hash
@@ -328,14 +328,29 @@ RSpec.describe Registry::SourceRecord, "#add_to_registry" do
   end
 
   it "deprecates old enum_chrons" do 
-    deleted_ecs = @old_ecs - @repl_rec.enum_chrons
+    old_rec = SourceRecord.new
+    old_rec.org_code = "miaahdl"
+    old_rec.source = open(File.dirname(__FILE__)+'/data/ht_record_3_items.json').read
+    old_rec.save
+    old_ecs = old_rec.enum_chrons
+
+    repl_rec = old_rec
+    repl_rec.org_code = "miaahdl"
+    repl_rec.source = open(File.dirname(__FILE__)+'/data/ht_record_different_3_items.json').read
+    repl_rec.save
+
+    deleted_ecs = old_ecs - repl_rec.enum_chrons
     expect(deleted_ecs.count).to be > 0
-    @repl_rec.update_in_registry
+    repl_rec.update_in_registry
     deleted_ecs.each do | ec | 
       expect(RegistryRecord.where(source_record_ids:@old_rec.source_id,
                             enumchron_display:ec,
                             deprecated_timestamp:{"$exists":0}).count).to eq(0)
     end
+    RegistryRecord.where(:source_record_ids.in => [old_rec.source_id,
+                                                  repl_rec.source_id]).each {|r| r.delete}
+    old_rec.delete
+    repl_rec.delete
   end
 
   it "adds new enum_chrons" do
@@ -578,7 +593,7 @@ RSpec.describe Registry::SourceRecord, '#extract_identifiers' do
     count = 0
     SourceRecord.all.each do |rec|
       count += 1
-      if count > 200 #arbitrary
+      if count > 20 #arbitrary
         break
       end
       old_oclc_alleged = rec.oclc_alleged
@@ -589,12 +604,6 @@ RSpec.describe Registry::SourceRecord, '#extract_identifiers' do
       rec.extract_identifiers
       expect(old_oclc_alleged - rec.oclc_alleged).to eq([])
       expect(old_lccn - rec.lccn_normalized ).to eq([])
-      #expect(old_sudocs - rec.sudocs ).to eq([])
-      if old_sudocs != rec.sudocs
-        #PP.pp rec.source_id
-        #PP.pp rec.sudocs
-        #PP.pp old_sudocs
-      end
       expect(old_issn - rec.issn_normalized ).to eq([])
       expect(old_isbn - rec.isbns_normalized ).to eq([])
     end
@@ -945,6 +954,7 @@ RSpec.describe Registry::SourceRecord, '#extract_lccns' do
     sr = SourceRecord.new
     sr.org_code = "miaahdl"
     sr.source = open(File.dirname(__FILE__)+'/data/bad_identifiers.json').read
+    expect(sr.extract_lccns).to eq(["2004394700"])
     marc = MARC::Record.new_from_hash(sr.source)
     expect(SourceRecord.new().extract_lccns(marc)).to eq(["2004394700"])
     expect(sr.lccn_normalized).to eq(["2004394700"])
@@ -956,6 +966,7 @@ RSpec.describe Registry::SourceRecord, '#extract_issns' do
     sr = SourceRecord.new
     sr.org_code = "miaahdl"
     sr.source = open(File.dirname(__FILE__)+'/data/bad_identifiers.json').read
+    expect(sr.extract_issns).to eq([])
     marc = MARC::Record.new_from_hash(sr.source)
     expect(SourceRecord.new().extract_issns(marc)).to eq([])
     expect(sr.issn_normalized).to eq([])
@@ -1003,3 +1014,21 @@ RSpec.describe Registry::SourceRecord, '#series' do
     @src.delete
   end
 end
+
+RSpec.describe Registry::SourceRecord, '#marc' do
+  it "creates a MARC attribute from source" do
+    source = open(File.dirname(__FILE__)+'/series/data/ctr.json').read
+    s = SourceRecord.new(org_code:"miaahdl",source:source)
+    expect(s.marc['008']).to_not be_nil
+  end
+
+  it "creates a MARC attribute from a saved source" do
+    source = open(File.dirname(__FILE__)+'/series/data/ctr.json').read
+    s = SourceRecord.new(org_code:"miaahdl",source:source)
+    s.save
+    existing_src = SourceRecord.where(source_id:s.source_id).first
+    expect(existing_src.marc['008']).to_not be_nil
+    s.delete
+  end
+end
+
