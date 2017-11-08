@@ -155,12 +155,11 @@ module Registry
       self.isbns_normalized ||= []
       self.formats ||= []
     
-      #@marc ||= MARC::Record.new_from_hash(self.source)
-      self.extract_oclcs marc 
-      self.extract_sudocs marc
-      self.extract_lccns marc
-      self.extract_issns marc
-      self.extract_isbns marc
+      self.extract_oclcs 
+      self.extract_sudocs
+      self.extract_lccns
+      self.extract_issns
+      self.extract_isbns
       self.formats = Traject::Macros::MarcFormatClassifier.new(marc).formats
     
       self.oclc_resolved = oclc_alleged.map{|o| resolve_oclc(o) }.flatten.uniq
@@ -189,9 +188,8 @@ module Registry
     #
     def ht_availability
       if self.org_code == 'miaahdl'
-        @marc ||= MARC::Record.new_from_hash(self.source)
         availability = 'Limited View'
-        @marc.each_by_tag('974') do | field |
+        marc.each_by_tag('974') do | field |
           if field['r'] == "pd"
             availability = 'Full View'
           end
@@ -293,7 +291,6 @@ module Registry
 
     def extract_oclcs m=nil
       @marc = m unless m.nil?
-      @marc ||= MARC::Record.new_from_hash(self.source)
       self.oclc_alleged = []
       #035a and 035z
       marc.each_by_tag('035') do | field |
@@ -307,7 +304,7 @@ module Registry
 
       #OCLC prefix in 001
       #or contributor told us to look there
-      @marc.each_by_tag('001') do | field |
+      marc.each_by_tag('001') do | field |
         if OCLCPAT.match(field.value) or
           (@@contrib_001[self.org_code] and field.value =~ /^(\d+)$/x)
           self.oclc_alleged << $1.to_i
@@ -316,7 +313,7 @@ module Registry
       
       #Indiana told us 955$o. Not likely, but...
       if self.org_code == "inu"
-        @marc.each_by_tag('955') do | field |
+        marc.each_by_tag('955') do | field |
           field.subfields.each do | sf | 
             if sf.code == 'o' and sf.value =~ /(\d+)/
               self.oclc_alleged << $1.to_i
@@ -327,7 +324,7 @@ module Registry
 
       #We don't care about different physical forms so
       #776s are valid too.
-      @marc.each_by_tag('776') do | field |
+      marc.each_by_tag('776') do | field |
         subfield_ws = field.find_all {|subfield| subfield.code == 'w'}
         subfield_ws.each do | sub | 
           if OCLCPAT.match(sub.value)
@@ -510,12 +507,11 @@ module Registry
     # holdings = {<ec_string> :[<each holding>]
     # ht_item_ids = [<holding id>]
     # todo: refactor with extract_enum_chrons. A lot of duplicate code/work being done
-    def extract_holdings marc=nil
+    def extract_holdings m=nil
       self.holdings = {}
       self.ht_item_ids = [] 
-      @marc = marc unless marc.nil?
-      @marc ||= MARC::Record.new_from_hash(self.source)
-      @marc.each_by_tag('974') do |field|
+      @marc = m unless m.nil?
+      marc.each_by_tag('974') do |field|
         self.ht_item_ids << field['u']
         z = field['z']
         z ||= ''
@@ -904,10 +900,9 @@ module Registry
       end
     end
 
-    def extracted marc=nil
-      @marc = marc unless marc.nil?
-      @marc ||= MARC::Record.new_from_hash(self.source)
-      @extracted = @@extractor.map_record(@marc)
+    def extracted m=nil
+      @marc = m unless m.nil?
+      @extracted = @@extractor.map_record(marc)
       @extracted
     end
 
