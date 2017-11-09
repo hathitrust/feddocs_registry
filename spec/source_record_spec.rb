@@ -716,6 +716,16 @@ RSpec.describe Registry::SourceRecord, '#extract_enum_chron_strings' do
     sr.source = open(File.dirname(__FILE__)+'/data/vifgm_1959_december.json').read
     expect(sr.extract_enum_chron_strings).to eq([])
   end
+
+  it "filters out enum chrons that are actually sudocs" do
+    sr = SourceRecord.new
+    sr.org_code = "flasus"
+    sr.source = open(File.dirname(__FILE__)+'/data/sudoc_enumchron.json').read
+    PP.pp sr.sudocs
+    PP.pp sr.ec
+    expect(sr.extract_enum_chron_strings).to eq([])
+  end
+
 end
 
 

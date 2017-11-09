@@ -436,7 +436,19 @@ module Registry
         ec_strings.delete('PP. 1-702')
         ec_strings.delete('1959 DECEMBER')
       end
-      ec_strings.flatten
+      #filter out sudocs 
+      remove_sudocs_from_enumchrons self.sudocs, ec_strings.flatten 
+    end
+
+    # occassionally SuDocs end up in the enumchron fields.
+    # Remove them
+    def remove_sudocs_from_enumchrons sudocs, ecs
+      ecs.each do | e |
+        if sudocs.map{|s| s.gsub(/ /,'')}.include? e.gsub(/ /,'')
+          ecs.delete(e)
+        end
+      end
+      ecs
     end
 
     #######
