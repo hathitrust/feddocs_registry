@@ -68,20 +68,3 @@ RSpec.describe RC, "#extract_fields" do
   end
 end
 
-
-RSpec.describe RC, "extractor" do
-  before(:all) do
-    @coll = RC.new('config/traject_config.rb')
-    s1, s2 = open(File.dirname(__FILE__)+"/data/title_trimming.ndj").read.split("\n")
-    @marc1 = MARC::Record.new_from_hash(JSON.parse(s1))
-    @marc2 = MARC::Record.new_from_hash(JSON.parse(s2))
-  end
-
-  it "trims punctuation for the title field" do
-    s1_title = @coll.extractor.map_record(@marc1)['title_display']
-    s2_title = @coll.extractor.map_record(@marc2)['title_display']
-    expect(s1_title[0].upcase).to eq(s2_title[0])
-  end
-end
-  
-

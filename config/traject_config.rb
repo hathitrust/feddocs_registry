@@ -1,5 +1,6 @@
 require 'pp'
 require 'library_stdnums'
+require_relative '../lib/registry/normalize'
 
 # A sample traject configration, save as say `traject_config.rb`, then
 # run `traject -c traject_config.rb marc_file.marc` to index to
@@ -27,17 +28,13 @@ settings do
   provide "marc_source.type", "json"
 end
 
-def normalize_title str
-  str.sub(/\)\.\Z/, ')').sub(/ +/, ' ')
-end
-
 #everything
 to_field "text",  extract_all_marc_values
 
 #title
 to_field "title",             extract_marc("245a")
 to_field "title_display",       extract_marc("245a", :trim_punctuation => true) do |rec, acc|
-  acc.map! {|s| normalize_title(s)}
+  acc.map! {|s| Normalize.normalize_title(s)}
 end
 
 to_field "subtitle_t",          extract_marc("245b")
