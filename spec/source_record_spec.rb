@@ -29,7 +29,7 @@ RSpec.describe SourceRecord do
   it "performs default parsing if it doesn't have a series" do
     sr = SourceRecord.new
     sr.org_code = "miaahdl"
-    sr.source = File.read(File.dirname(__FILE__)+'/data/ht_pd_record.json').chomp
+    sr.source = open(File.dirname(__FILE__)+'/data/ht_pd_record.json').read
     expect(sr.series.count).to be(0)
     expect(sr.enum_chrons).to include('Volume:1')
   end
@@ -37,7 +37,7 @@ RSpec.describe SourceRecord do
   it "chokes when there is '$' in MARC subfield names" do
     #Mongo doesn't like $ in field names. Occasionally, these show up when
     #MARC subfields get messed up. (GPO). This should throw an error.
-    rec = File.read(File.expand_path(File.dirname(__FILE__))+'/data/dollarsign.json').chomp
+    rec = open(File.dirname(__FILE__)+'/data/dollarsign.json').read
     marc = MARC::Record.new_from_hash(JSON.parse(rec))
     sr = SourceRecord.new
     sr.org_code = "dgpo"
@@ -50,7 +50,7 @@ end
 
 RSpec.describe Registry::SourceRecord do
   before(:each) do
-    @raw_source = "{\"leader\":\"00878cam a2200241   4500\",\"fields\":[{\"001\":\"ocm00000038 \"},{\"003\":\"OCoLC\"},{\"005\":\"20080408033517.8\"},{\"008\":\"690605s1965    dcu           000 0 eng  \"},{\"010\":{\"ind1\":\" \",\"ind2\":\" \",\"subfields\":[{\"a\":\"   65062399 \"}]}},{\"035\":{\"ind1\":\" \",\"ind2\":\" \",\"subfields\":[{\"a\":\"(OCoLC)38\"}]}},{\"040\":{\"ind1\":\" \",\"ind2\":\" \",\"subfields\":[{\"a\":\"DLC\"},{\"c\":\"DLC\"},{\"d\":\"IUL\"},{\"d\":\"BTCTA\"}]}},{\"029\":{\"ind1\":\"1\",\"ind2\":\" \",\"subfields\":[{\"a\":\"AU@\"},{\"b\":\"000024867271\"}]}},{\"050\":{\"ind1\":\"0\",\"ind2\":\"0\",\"subfields\":[{\"a\":\"KF26\"},{\"b\":\".R885 1965\"}]}},{\"082\":{\"ind1\":\"0\",\"ind2\":\"0\",\"subfields\":[{\"a\":\"507/.4/0153\"}]}},{\"086\":{\"ind1\":\"0\",\"ind2\":\" \",\"subfields\":[{\"a\":\"Y 4.R 86/2:SM 6/965\"}]}},{\"110\":{\"ind1\":\"1\",\"ind2\":\" \",\"subfields\":[{\"a\":\"United States.\"},{\"b\":\"Congress.\"},{\"b\":\"Senate.\"},{\"b\":\"Committee on Rules and Administration.\"},{\"b\":\"Subcommittee on the Smithsonian Institution.\"}]}},{\"245\":{\"ind1\":\"1\",\"ind2\":\"0\",\"subfields\":[{\"a\":\"Smithsonian Institution (National Museum act of 1965)\"},{\"b\":\"Hearing, Eighty-ninth Congress, first session, on S. 1310 and H.R. 7315 ... June 24, 1965.\"}]}},{\"260\":{\"ind1\":\" \",\"ind2\":\" \",\"subfields\":[{\"a\":\"Washington,\"},{\"b\":\"U.S. Govt. Print. Off.,\"},{\"c\":\"1965.\"}]}},{\"300\":{\"ind1\":\" \",\"ind2\":\" \",\"subfields\":[{\"a\":\"iii, 67 p.\"},{\"c\":\"23 cm.\"}]}},{\"610\":{\"ind1\":\"2\",\"ind2\":\"0\",\"subfields\":[{\"a\":\"Smithsonian Institution.\"}]}},{\"776\":{\"ind1\":\"0\",\"ind2\":\"8\",\"subfields\":[{\"i\":\"Print version:\"},{\"a\":\"United States. Congress. Senate. Committee on the Judiciary.\"},{\"t\":\"Oversight of the U.S. Department of Homeland Security\"},{\"w\":\"(OCoLC)812424058.\"}]}},{\"938\":{\"ind1\":\" \",\"ind2\":\" \",\"subfields\":[{\"a\":\"Baker and Taylor\"},{\"b\":\"BTCP\"},{\"n\":\"65062399\"}]}},{\"945\":{\"ind1\":\" \",\"ind2\":\" \",\"subfields\":[{\"a\":\"IUL\"}]}}]}"
+    @raw_source = open(File.dirname(__FILE__)+'/data/default_source_rec.json').read
   end
 
   it "sets an id on initialization" do 
@@ -445,7 +445,7 @@ end
 
 RSpec.describe Registry::SourceRecord, 'extract_oclcs' do
   before(:all) do
-    rec = File.read(File.expand_path(File.dirname(__FILE__))+'/data/bogus_oclc.json').chomp
+    rec = open(File.dirname(__FILE__)+'/data/bogus_oclc.json').read
     @marc = MARC::Record.new_from_hash(JSON.parse(rec))
     @s = SourceRecord.new
   end
@@ -457,15 +457,15 @@ end
 
 RSpec.describe Registry::SourceRecord, 'extract_sudocs' do
   before(:all) do
-    bogus = File.read(File.expand_path(File.dirname(__FILE__))+'/data/bogus_sudoc.json').chomp
+    bogus = open(File.dirname(__FILE__)+'/data/bogus_sudoc.json').read
     @marc_bogus = MARC::Record.new_from_hash(JSON.parse(bogus))
-    legit = File.read(File.expand_path(File.dirname(__FILE__))+'/data/legit_sudoc.json').chomp
+    legit = open(File.dirname(__FILE__)+'/data/legit_sudoc.json').read
     @marc_legit = MARC::Record.new_from_hash(JSON.parse(legit))
-    non = File.read(File.expand_path(File.dirname(__FILE__))+'/data/non_sudoc.json').chomp
+    non = open(File.dirname(__FILE__)+'/data/non_sudoc.json').read
     @marc_non = MARC::Record.new_from_hash(JSON.parse(non))
-    fed_state = File.read(File.expand_path(File.dirname(__FILE__))+'/data/fed_state_sudoc.json').chomp
+    fed_state = open(File.dirname(__FILE__)+'/data/fed_state_sudoc.json').read
     @marc_fs = MARC::Record.new_from_hash(JSON.parse(fed_state))
-    mangled = File.read(File.expand_path(File.dirname(__FILE__))+'/data/ht_pd_record.json').chomp
+    mangled = open(File.dirname(__FILE__)+'/data/ht_pd_record.json').read
     @marc_mang = MARC::Record.new_from_hash(JSON.parse(mangled))
   end
 
@@ -517,9 +517,9 @@ end
 RSpec.describe Registry::SourceRecord, 'is_govdoc' do
   before(:all) do
     #this file has both a Fed SuDoc and a state okdoc
-    @fed_state = File.read(File.expand_path(File.dirname(__FILE__))+'/data/fed_state_sudoc.json').chomp
+    @fed_state = open(File.dirname(__FILE__)+'/data/fed_state_sudoc.json').read
     @marc = MARC::Record.new_from_hash(JSON.parse(@fed_state))
-    @innd = File.read(File.expand_path(File.dirname(__FILE__))+'/data/innd_record.json').chomp
+    @innd = open(File.dirname(__FILE__)+'/data/innd_record.json').read
     @innd_marc = MARC::Record.new_from_hash(JSON.parse(@innd))
   end
 
@@ -620,8 +620,7 @@ end
 
 RSpec.describe Registry::SourceRecord, '#extract_enum_chrons' do
   it "extracts enum chrons from GPO records" do
-    line = '{"leader":"01656cam  2200373 i 4500","fields":[{"001":"000001290"},{"003":"CaOONL"},{"005":"20041121202944.0"},{"008":"760308s1975    dcu          f000 0 eng d"},{"010":{"ind1":" ","ind2":" ","subfields":[{"a":"75603638"}]}},{"020":{"ind1":" ","ind2":" ","subfields":[{"b":"pbk. :"},{"c":"$0.95"}]}},{"035":{"ind1":"9","ind2":" ","subfields":[{"a":"gp^76001290"}]}},{"035":{"ind1":" ","ind2":" ","subfields":[{"a":"(OCoLC)2036279"}]}},{"040":{"ind1":" ","ind2":" ","subfields":[{"a":"GPO"},{"c":"GPO"}]}},{"086":{"ind1":" ","ind2":" ","subfields":[{"a":"Y 4.Sci 2:94-1/M/v.1"}]}},{"099":{"ind1":" ","ind2":" ","subfields":[{"a":"Y 4.Sci 2:94-1/M/v.1"}]}},{"110":{"ind1":"1","ind2":" ","subfields":[{"a":"United States."},{"b":"Congress."},{"b":"House."},{"b":"Committee on Science and Technology."},{"b":"Subcommittee on Space Science and Applications."}]}},{"245":{"ind1":"1","ind2":"0","subfields":[{"a":"Future space programs 1975 :"},{"b":"report of the Subcommittee on Space Science and Applications prepared for the Committee on Science and Technology, U.S. House of Representatives, Ninety-fourth Congress, first session, September 1975."}]}},{"260":{"ind1":" ","ind2":" ","subfields":[{"a":"Washington :"},{"b":"U.S Govt. Print. Off.,"},{"c":"1975."}]}},{"300":{"ind1":" ","ind2":" ","subfields":[{"a":"v. ;"},{"c":"24 cm."}]}},{"490":{"ind1":"1","ind2":" ","subfields":[{"a":"Serial no. 94-M"}]}},{"500":{"ind1":" ","ind2":" ","subfields":[{"a":"Item 1025-A"}]}},{"500":{"ind1":" ","ind2":" ","subfields":[{"a":"S/N 052-070-02890-4"}]}},{"505":{"ind1":"0","ind2":" ","subfields":[{"a":"v. 1."}]}},{"590":{"ind1":" ","ind2":" ","subfields":[{"a":"[18 cds/"}]}},{"650":{"ind1":" ","ind2":"0","subfields":[{"a":"Space flight."}]}},{"710":{"ind1":"1","ind2":" ","subfields":[{"a":"United States."},{"b":"National Aeronautics and Space Administration."}]}},{"810":{"ind1":"1","ind2":" ","subfields":[{"a":"United States."},{"b":"Congress."},{"b":"House."},{"b":"Committee on Science and Technology."},{"t":"[Committee publication] serial, 94th Congress ;"},{"v":"no. 94-M."}]}},{"956":{"ind1":" ","ind2":" ","subfields":[{"a":"CONV"},{"b":"20"},{"c":"20050210"},{"l":"GPO01"},{"h":"1741"}]}},{"956":{"ind1":" ","ind2":" ","subfields":[{"c":"20060112"},{"l":"GPO01"},{"h":"1700"}]}},{"956":{"ind1":" ","ind2":" ","subfields":[{"c":"20060224"},{"l":"GPO01"},{"h":"1343"}]}},{"956":{"ind1":" ","ind2":" ","subfields":[{"c":"20150504"},{"l":"GPO01"},{"h":"2007"}]}},{"930":{"ind1":"-","ind2":"1","subfields":[{"l":"GPO01"},{"L":"GPO01"},{"m":"BOOK"},{"1":"NABIB"},{"A":"National Bibliography"},{"h":"Y 4.SCI 2:94-1/M/"},{"5":"1290-10"},{"8":"20101112"},{"f":"01"},{"F":"For Distribution"},{"h":"V.1"}]}},{"930":{"ind1":"-","ind2":"1","subfields":[{"l":"GPO01"},{"L":"GPO01"},{"m":"BOOK"},{"1":"NABIB"},{"A":"National Bibliography"},{"h":"Y 4.SCI 2:94-1/M/"},{"5":"1290-20"},{"8":"20101112"},{"f":"02"},{"F":"Not Distributed"},{"h":"V.2"}]}}]}'
-
+    line = open(File.dirname(__FILE__)+'/data/default_gpo_record.json').read 
     src = SourceRecord.new
     src.org_code = 'dgpo'
     src.source = line
