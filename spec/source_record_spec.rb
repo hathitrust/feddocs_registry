@@ -994,6 +994,20 @@ RSpec.describe Registry::SourceRecord, '#has_approved_author?' do
   end
 end
 
+RSpec.describe Registry::SourceRecord, '#has_approved_added_entry?' do
+  before(:all) do
+    @src = SourceRecord.new
+    @src.org_code = "miaahdl"
+    @src.source = open(File.dirname(__FILE__)+'/data/added_entry_gd.json').read
+  end
+
+  it "tells us it has an approved author" do
+    #expect(@src.is_govdoc).to be_falsey
+    expect(@src.has_approved_added_entry?).to be_truthy
+  end
+end
+
+
 # We can detect all of the series
 RSpec.describe Registry::SourceRecord, '#series' do 
   before(:each) do

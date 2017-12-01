@@ -227,12 +227,12 @@ module Registry
 
     # Check author_lccns against the list of approved authors
     def has_approved_author?
-      self.author_lccns.each do |lccn|
-        if AuthorityList.lccns.include? lccn
-          return true
-        end
-      end
-      return false
+      AuthorityList.lccns.intersection(self.author_lccns).count > 0
+    end
+
+    # Check added_entry_lccns against the list of approved authors
+    def has_approved_added_entry?
+      AuthorityList.lccns.intersection(self.added_entry_lccns).count > 0
     end
 
     # Extracts SuDocs
