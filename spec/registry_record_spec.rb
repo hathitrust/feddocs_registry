@@ -2,7 +2,7 @@ require 'registry/registry_record'
 require 'dotenv'
 
 Dotenv.load
-Mongoid.load!("config/mongoid.yml")
+Mongoid.load!(ENV['MONGOID_CONF'])
 
 RR = Registry::RegistryRecord
 SourceRecord = Registry::SourceRecord

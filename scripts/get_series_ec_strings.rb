@@ -10,7 +10,7 @@ Dotenv.load!
 
 oclcs = open(ARGV.shift).read.split("\n").map {|o| o.to_i}
 
-Mongoid.load!(File.expand_path("../config/mongoid.yml", __FILE__), :production)
+Mongoid.load!(ENV['MONGOID_CONF'], :production)
 SourceRecord.where(oclc_resolved:{"$in":oclcs},
                    deprecated_timestamp:{"$exists":0}).each do |src|
   src.extract_enum_chron_strings.each do |ec|

@@ -5,7 +5,7 @@ require 'pp'
 require 'spec_helper'
 
 Dotenv.load
-Mongoid.load!("config/mongoid.yml")
+Mongoid.load!(ENV['MONGOID_CONF'])
 
 RC = Registry::Collator
 

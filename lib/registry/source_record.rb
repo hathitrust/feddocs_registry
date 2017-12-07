@@ -75,8 +75,6 @@ module Registry
 
     @@marc_profiles = {}
 
-    @@mc = Mongo::Client.new([ENV['mongo_host']+':'+ENV['mongo_port']], :database => 'htgd' )
-
     #OCLCPAT taken from traject, except middle o made optional
     OCLCPAT = 
       /

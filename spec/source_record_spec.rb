@@ -3,7 +3,7 @@ require 'dotenv'
 require 'pp'
 
 Dotenv.load
-Mongoid.load!("config/mongoid.yml")
+Mongoid.load!(ENV['MONGOID_CONF'])
 SourceRecord = Registry::SourceRecord
 RegistryRecord = Registry::RegistryRecord
 
