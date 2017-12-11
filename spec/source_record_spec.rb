@@ -8,28 +8,26 @@ SourceRecord = Registry::SourceRecord
 RegistryRecord = Registry::RegistryRecord
 
 RSpec.describe SourceRecord do
+  before(:all) do
+    @fr_rec = open(File.dirname(__FILE__)+'/series/data/federal_register.json').read
+    @ht_pd_rec = open(File.dirname(__FILE__)+'/data/ht_pd_record.json').read
+  end
+  
   it "detects series" do
-    sr = SourceRecord.where({oclc_resolved:1768512, org_code:{"$ne":"miaahdl"}, enum_chrons:/V. \d/}).first
-    
+    sr = SourceRecord.new(org_code:"miu",
+                          source:@fr_rec)
     expect(sr.series).to include('FederalRegister')
-    sr.series << 'FederalRegister'
-    #expect(sr.enum_chrons).to include('Volume: 77, Number: 96')
   end
 
   it "parses the enumchron if it has a series" do
-    sr = SourceRecord.where({oclc_resolved:1768474}).first
-    new_sr = SourceRecord.new
-    new_sr.org_code = sr.org_code
-    new_sr.source = sr.source.to_json
-    expect(new_sr.series).to include('StatutesAtLarge')
-    expect(new_sr.enum_chrons).to include('Volume:123, Part:1')
-    #puts new_sr.ec
+    sr = SourceRecord.new(org_code:"miu",
+                          source:@fr_rec)
+    expect(sr.enum_chrons).to include('Volume:77, Number:97')
   end
 
   it "performs default parsing if it doesn't have a series" do
-    sr = SourceRecord.new
-    sr.org_code = "miaahdl"
-    sr.source = open(File.dirname(__FILE__)+'/data/ht_pd_record.json').read
+    sr = SourceRecord.new(org_code:"miaahdl",
+                          source:@ht_pd_rec)
     expect(sr.series.count).to be(0)
     expect(sr.enum_chrons).to include('Volume:1')
   end
@@ -38,11 +36,8 @@ RSpec.describe SourceRecord do
     #Mongo doesn't like $ in field names. Occasionally, these show up when
     #MARC subfields get messed up. (GPO). This should throw an error.
     rec = open(File.dirname(__FILE__)+'/data/dollarsign.json').read
-    marc = MARC::Record.new_from_hash(JSON.parse(rec))
-    sr = SourceRecord.new
-    sr.org_code = "dgpo"
-    sr.source = rec
-    #expect(sr.source['fields'].select {|f| f.keys[0] == '040'}[0]['040']['subfields'].select {|sf| sf.keys[0] == 'dollarsign'}.count).to be > 0 
+    sr = SourceRecord.new(org_code:"dgpo",
+                          source:rec)
     expect{sr.save}.to raise_error(BSON::String::IllegalKey)
   end
 end
@@ -51,30 +46,27 @@ end
 RSpec.describe Registry::SourceRecord do
   before(:each) do
     @raw_source = open(File.dirname(__FILE__)+'/data/default_source_rec.json').read
+    @sr = SourceRecord.new(org_code:"miaahdl",
+                           source:@raw_source)
   end
 
   it "sets an id on initialization" do 
-    sr = SourceRecord.new
-    expect(sr.source_id).to be_instance_of(String)
-    expect(sr.source_id.length).to eq(36)
+    expect(@sr.source_id).to be_instance_of(String)
+    expect(@sr.source_id.length).to eq(36)
   end
 
   it "sets the publication date" do
-    sr = SourceRecord.new
-    sr.source = @raw_source
-    expect(sr.pub_date).to eq([1965])
+    expect(@sr.pub_date).to eq([1965])
   end
 
   it "sets a marc field" do
-    sr = SourceRecord.new
-    sr.source = @raw_source
-    expect(sr.marc['008'].value).to eq('690605s1965    dcu           000 0 eng  ')
+    expect(@sr.marc['008'].value).to eq('690605s1965    dcu           000 0 eng  ')
   end
 
   it "timestamps on save" do
-    sr = SourceRecord.new
-    sr.save 
-    expect(sr.last_modified).to be_instance_of(DateTime)
+    expect(@sr.last_modified).to be_nil
+    @sr.save 
+    expect(@sr.last_modified).to be_instance_of(DateTime)
   end
 
   it "defaults to HathiTrust org code" do
@@ -86,44 +78,31 @@ RSpec.describe Registry::SourceRecord do
 
 
   it "converts the source string to a hash" do
-    sr = SourceRecord.new
-    sr.source = @raw_source
-    expect(sr.source).to be_instance_of(Hash)
-    expect(sr.source["fields"][3]["008"]).to eq("690605s1965    dcu           000 0 eng  ")
+    expect(@sr.source).to be_instance_of(Hash)
+    expect(@sr.source["fields"][3]["008"]).to eq("690605s1965    dcu           000 0 eng  ")
   end
 
   it "extracts normalized author/publisher/corp" do
-    sr = SourceRecord.new
-    sr.source = @raw_source
-    sr.org_code = "iul"
-    sr.save
-    sr_id = sr.source_id
+    @sr.save
+    sr_id = @sr.source_id
     copy = SourceRecord.find_by(:source_id => sr_id) 
     expect(copy.lccn_normalized).to eq(["65062399"])
     expect(copy.sudocs).to eq(["Y 4.R 86/2:SM 6/965"])
     expect(copy.publisher_headings).to include("U.S. Govt. Print. Off.,")
     expect(copy.author_headings).to include("United States. Congress. Senate. Committee on Rules and Administration. Subcommittee on the Smithsonian Institution.")
     expect(copy.author_parts).to include("United States.")
-
-    sr.deprecate('rspec test')
   end
 
   it "extracts oclc number from 001, 035, 776" do
-    sr = SourceRecord.new
-    sr.source = @raw_source
-    expect(sr.oclc_resolved).to eq([38, 812424058])
+    expect(@sr.oclc_resolved).to eq([38, 812424058])
   end
 
   it "can extract local id from MARC" do
-    sr = SourceRecord.new
-    sr.source = @raw_source
-    expect(sr.extract_local_id).to eq("ocm00000038")
+    expect(@sr.extract_local_id).to eq("ocm00000038")
   end
 
   it "extracts formats" do
-    sr = SourceRecord.new
-    sr.source = @raw_source
-    expect(sr.formats).to eq(["Book","Print"])
+    expect(@sr.formats).to eq(["Book","Print"])
   end
 
   xit "performs reasonably well" do
@@ -133,28 +112,14 @@ RSpec.describe Registry::SourceRecord do
     TracePoint.trace(:call) do |t|
       call_count += 1 if t.method_id == name
     end
-    sr = SourceRecord.new
-    sr.org_code = "miaahdl"
-    sr.source = line
+    sr = SourceRecord.new(org_code:"miaahdl",
+                          source:line)
     sr.is_monograph?
     sr.is_govdoc
     sr.extract_local_id
     expect(call_count).to eq(1)
     expect{sr.source = line}.to perform_under(2).ms
   end
-
-=begin
-  it "won't allow duplicate local_id/org_codes" do
-    sr = SourceRecord.new
-    sr.org_code = "miaahdl"
-    sr.source = open(File.dirname(__FILE__)+'/data/ht_record_3_items.json').read
-    sr.save
-    update = SourceRecord.new
-    update.org_code = "miaahdl"
-    
-    expect{update.source = open(File.dirname(__FILE__)+'/data/ht_record_different_3_items.json').read}.to raise_error(BSON::String::IllegalKey)
-  end
-=end
 
 end
 
@@ -317,7 +282,7 @@ RSpec.describe Registry::SourceRecord, "#add_to_registry" do
     @no_ec_rec.delete
   end
 
-  it "SRs with no ECs still get added to Register" do
+  it "SRs with no ECs still get added to Registry" do
     results = @no_ec_rec.add_to_registry
     expect(results[:num_new]).to eq(1)
     expect(results[:num_deleted]).to eq(0)
@@ -328,9 +293,8 @@ RSpec.describe Registry::SourceRecord, "#add_to_registry" do
   end
 
   it "deprecates old enum_chrons" do 
-    old_rec = SourceRecord.new
-    old_rec.org_code = "miaahdl"
-    old_rec.source = open(File.dirname(__FILE__)+'/data/ht_record_3_items.json').read
+    old_rec = SourceRecord.new(org_code:"miaahdl",
+                               source:open(File.dirname(__FILE__)+'/data/ht_record_3_items.json').read)
     old_rec.save
     old_ecs = old_rec.enum_chrons
 
@@ -798,7 +762,7 @@ RSpec.describe Registry::SourceRecord, '#parse_ec' do
         puts "no match: "+line
       else
         if !ec['description'].nil?
-          #puts SourceRecord.normalize_description(ec['description'])
+          puts SourceRecord.normalize_description(ec['description'])
         end
         res = @src.explode(ec)
         res.each do | canon, features |
@@ -913,9 +877,6 @@ end
 RSpec.describe Registry::SourceRecord, '#explode' do
   it "does nothing" do 
     parsed = SourceRecord.new.parse_ec('1978')
-    #PP.pp parsed
-    #PP.pp SourceRecord.new.explode(parsed)
-    #PP.pp SourceRecord.new.canonicalize(parsed)
     expect(SourceRecord.new.explode(parsed).count).to eq(1)
   end
 end
@@ -958,9 +919,8 @@ end
 
 RSpec.describe Registry::SourceRecord, '#extract_lccns' do
   it "handles bad prefixes in lccns" do 
-    sr = SourceRecord.new
-    sr.org_code = "miaahdl"
-    sr.source = open(File.dirname(__FILE__)+'/data/bad_identifiers.json').read
+    sr = SourceRecord.new(org_code:"miaahdl",
+                          source:open(File.dirname(__FILE__)+'/data/bad_identifiers.json').read)
     expect(sr.extract_lccns).to eq(["2004394700"])
     marc = MARC::Record.new_from_hash(sr.source)
     expect(SourceRecord.new().extract_lccns(marc)).to eq(["2004394700"])
@@ -970,9 +930,8 @@ end
 
 RSpec.describe Registry::SourceRecord, '#extract_issns' do
   it "returns [] if garbage issns" do 
-    sr = SourceRecord.new
-    sr.org_code = "miaahdl"
-    sr.source = open(File.dirname(__FILE__)+'/data/bad_identifiers.json').read
+    sr = SourceRecord.new(org_code:"miaahdl",
+                          source:open(File.dirname(__FILE__)+'/data/bad_identifiers.json').read)
     expect(sr.extract_issns).to eq([])
     marc = MARC::Record.new_from_hash(sr.source)
     expect(SourceRecord.new().extract_issns(marc)).to eq([])
@@ -1001,8 +960,8 @@ RSpec.describe Registry::SourceRecord, '#has_approved_added_entry?' do
     @src.source = open(File.dirname(__FILE__)+'/data/added_entry_gd.json').read
   end
 
-  it "tells us it has an approved author" do
-    #expect(@src.is_govdoc).to be_falsey
+  it "tells us it has an approved added entry author" do
+    expect(@src.is_govdoc).to be_falsey
     expect(@src.has_approved_added_entry?).to be_truthy
   end
 end
@@ -1029,7 +988,6 @@ RSpec.describe Registry::SourceRecord, '#series' do
     @src.source = open(File.dirname(__FILE__)+'/series/data/public_papers.json').read
     expect(@src.series).to eq(['PublicPapersOfThePresidents'])
   end
-
 
   after(:each) do
     @src.delete
