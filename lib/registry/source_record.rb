@@ -918,9 +918,7 @@ module Registry
 
     def get_lccns names
       lccns = []
-      if names.nil?
-        return lccns
-      end
+      names ||= []
       names.each do |n| 
         lccns << Authority.with(client:"nauth") do |klass| 
           auth = klass.search(n)

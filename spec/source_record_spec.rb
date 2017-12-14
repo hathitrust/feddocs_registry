@@ -183,6 +183,11 @@ RSpec.describe Registry::SourceRecord, "#get_lccns" do
     sr.source = open(File.dirname(__FILE__)+"/data/dgpo_has_ecs.json").read
     expect(sr.added_entry_lccns).to include('https://lccn.loc.gov/n80126064')
   end
+
+  it "gives us an empty array for nil names" do
+    sr = SourceRecord.new
+    expect(sr.get_lccns(nil)).to eq([])
+  end
 end
 
 RSpec.describe Registry::SourceRecord, "#report_numbers" do
