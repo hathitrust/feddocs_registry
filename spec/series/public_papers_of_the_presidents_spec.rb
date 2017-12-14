@@ -6,7 +6,7 @@ describe "PublicPapersOfThePresidents" do
   let(:src) { Class.new { extend PubPape } }
 
   describe "parse_ec" do
-    xit "can parse them all" do 
+    it "can parse them all" do 
       matches = 0
       misses = 0
       input = File.dirname(__FILE__)+'/data/public_papers_ecs.txt'
@@ -26,7 +26,8 @@ describe "PublicPapersOfThePresidents" do
       end
       puts "Public Papers match: #{matches}"
       puts "Public Papers no match: #{misses}"
-      expect(matches).to eq(matches+misses)
+      expect(matches).to eq(1528)
+      #expect(matches).to eq(matches+misses)
     end
 
     it "parses canonical" do

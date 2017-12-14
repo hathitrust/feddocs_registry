@@ -6,7 +6,7 @@ describe "ForeignRelations" do
   let(:src) { Class.new { extend FR }} 
 
   describe "parse_ec" do
-    xit "can parse them all" do 
+    it "can parse them all" do 
       matches = 0
       misses = 0
       input = File.dirname(__FILE__)+'/data/foreign_relations_enumchrons.txt'
@@ -24,7 +24,8 @@ describe "ForeignRelations" do
 
       puts "FR Reports Record match: #{matches}"
       puts "FR Reports Record no match: #{misses}"
-      expect(matches).to eq(matches+misses)
+      expect(matches).to eq(4626)
+      #expect(matches).to eq(matches+misses)
     end
     
     it "parses V. 4 1939" do

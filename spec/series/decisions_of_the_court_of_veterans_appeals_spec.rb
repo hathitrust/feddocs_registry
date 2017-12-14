@@ -6,7 +6,7 @@ describe "DecisionsOfTheCourtOfVeteransAppeals" do
   let(:src) { Class.new { extend DCVA } }
 
   describe "parse_ec" do
-    xit "can parse them all" do 
+    it "can parse them all" do 
       matches = 0
       misses = 0
       input = File.dirname(__FILE__)+'/data/decisions_vets_ec.txt'
@@ -26,7 +26,8 @@ describe "DecisionsOfTheCourtOfVeteransAppeals" do
       end
       puts "Decisions Vets Record match: #{matches}"
       puts "Decisions Vets Record no match: #{misses}"
-      expect(matches).to eq(matches+misses)
+      expect(matches).to eq(2408)
+      #expect(matches).to eq(matches+misses)
     end
 
     it "parses 'NO. 79-7950'" do

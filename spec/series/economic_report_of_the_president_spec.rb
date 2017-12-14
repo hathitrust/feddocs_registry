@@ -5,7 +5,7 @@ describe "EconomicReportOfThePresident" do
   let(:src) { Class.new { extend ER }}
 
   describe "parse_ec" do
-    xit "can parse them all" do 
+    it "can parse them all" do 
       matches = 0
       misses = 0
       can_canon = 0
@@ -21,7 +21,8 @@ describe "EconomicReportOfThePresident" do
           matches += 1
         end
       end
-      expect(matches).to eq(matches+misses)
+      expect(matches).to eq(186)
+      #expect(matches).to eq(matches+misses)
     end
 
     it "parses a simple year" do

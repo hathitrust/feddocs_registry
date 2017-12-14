@@ -6,7 +6,7 @@ describe "CancerTreatmentReport" do
   let(:src) { Class.new { extend CTR } }
 
   describe "parse_ec" do
-    xit "can parse them all" do 
+    it "can parse them all" do 
       matches = 0
       misses = 0
       input = File.dirname(__FILE__)+'/data/cancer_treatment_report_ecs.txt'
@@ -26,7 +26,8 @@ describe "CancerTreatmentReport" do
       end
       puts "Cancer Treatment match: #{matches}"
       puts "Cancer Treatment no match: #{misses}"
-      expect(matches).to eq(matches+misses)
+      expect(matches).to eq(409)
+      #expect(matches).to eq(matches+misses)
     end
 
     it "parses canonical" do

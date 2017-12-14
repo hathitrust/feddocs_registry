@@ -6,7 +6,7 @@ describe "VitalStatistics" do
   let(:src) { Class.new { extend VS } }
 
   describe "parse_ec" do
-    xit "can parse them all" do 
+    it "can parse them all" do 
       matches = 0
       misses = 0
       input = File.dirname(__FILE__)+'/data/vital_statistics_ecs.txt'
@@ -15,7 +15,7 @@ describe "VitalStatistics" do
         ec = src.parse_ec(line)
         if ec.nil? or ec.length == 0
           misses += 1
-          puts "no match: "+line
+          #puts "no match: "+line
         else
           res = src.explode(ec)
           res.each do | canon, features |
@@ -26,7 +26,8 @@ describe "VitalStatistics" do
       end
       puts "Vital Statistics match: #{matches}"
       puts "Vital Statistics no match: #{misses}"
-      expect(matches).to eq(matches+misses)
+      expect(matches).to eq(2759)
+      #expect(matches).to eq(matches+misses)
     end
 
     it "parses canonical" do

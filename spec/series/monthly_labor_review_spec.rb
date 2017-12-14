@@ -6,7 +6,7 @@ describe "MonthlyLaborReview" do
   let(:src) { Class.new { extend MLR } }
 
   describe "parse_ec" do
-    xit "can parse them all" do 
+    it "can parse them all" do 
       matches = 0
       misses = 0
       input = File.dirname(__FILE__)+'/data/monthly_labor_review_enumchrons.txt'
@@ -28,7 +28,8 @@ describe "MonthlyLaborReview" do
       end
       puts "MLR Record match: #{matches}"
       puts "MLR Record no match: #{misses}"
-      expect(matches).to eq(matches+misses)
+      expect(matches).to eq(5542)
+      #expect(matches).to eq(matches+misses)
     end
 
     it "parses 'V. 62-63 (1946)'" do

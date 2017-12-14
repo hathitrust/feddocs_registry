@@ -6,7 +6,7 @@ describe "MineralsYearbook" do
   let(:src) { Class.new { extend MY } }
 
   describe "parse_ec" do
-    xit "can parse them all" do 
+    it "can parse them all" do 
       matches = 0
       misses = 0
       input = File.dirname(__FILE__)+'/data/minerals_yearbook_enumchrons.txt'
@@ -29,7 +29,8 @@ describe "MineralsYearbook" do
       end
       puts "Minerals Yearbook Record match: #{matches}"
       puts "Minerals Yearbook Record no match: #{misses}"
-      expect(matches).to eq(matches+misses)
+      expect(matches).to eq(4020)
+      #expect(matches).to eq(matches+misses)
     end
 
     it "parses '2007 V. 3 PT. 3'" do

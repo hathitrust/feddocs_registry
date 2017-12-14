@@ -6,7 +6,7 @@ describe "Congressional Record" do
   let(:src) { Class.new { extend CR }} 
 
   describe "parse_ec" do
-    xit "can parse them all" do 
+    it "can parse them all" do 
       matches = 0
       misses = 0
       can_canon = 0
@@ -33,7 +33,8 @@ describe "Congressional Record" do
       puts "Congressional Record no match: #{misses}"
       puts "Congressional Record can canonicalize: #{can_canon}"
       puts "Congressional Record can't canonicalize: #{cant_canon}"
-      expect(matches).to eq(matches+misses)
+      expect(matches).to eq(14902)
+      #expect(matches).to eq(matches+misses)
     end
     
     it "parses it's canonical version" do

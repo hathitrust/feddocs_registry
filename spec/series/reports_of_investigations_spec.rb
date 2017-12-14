@@ -6,7 +6,7 @@ describe "ReportsOfInvestigations" do
   let(:src) { Class.new { extend ROI } }
 
   describe "parse_ec" do
-    xit "can parse them all" do 
+    it "can parse them all" do 
       matches = 0
       misses = 0
       input = File.dirname(__FILE__)+'/data/mine_investigations.txt'
@@ -26,7 +26,8 @@ describe "ReportsOfInvestigations" do
       end
       puts "Reports of Investigations Record match: #{matches}"
       puts "Reports of Investigations Record no match: #{misses}"
-      expect(matches).to eq(matches+misses)
+      expect(matches).to eq(3691)
+      #expect(matches).to eq(matches+misses)
     end
 
     it "doesn't confuse years for numbers" do

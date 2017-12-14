@@ -6,7 +6,7 @@ describe "StatutesAtLarge" do
   let(:src) { Class.new { extend StatutesAtLarge } } 
 
   describe "parse_ec" do
-    xit "can parse them all" do 
+    it "can parse them all" do 
       matches = 0
       misses = 0
       can_canon = 0
@@ -22,7 +22,8 @@ describe "StatutesAtLarge" do
           matches += 1
         end
       end
-      expect(matches).to eq(matches+misses)
+      expect(matches).to eq(2912)
+      #expect(matches).to eq(matches+misses)
     end
 
     it "parses 'V. 96:PT. 1 (1984)'" do

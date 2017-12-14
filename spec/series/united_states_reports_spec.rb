@@ -6,7 +6,7 @@ describe "UnitedStatesReports" do
   let(:src) { Class.new { extend USR } }
 
   describe "parse_ec" do
-    xit "can parse them all" do 
+    it "can parse them all" do 
       volumes = Hash.new {|h,k| h[k] = {}}
       matches = 0
       misses = 0
@@ -16,7 +16,7 @@ describe "UnitedStatesReports" do
         ec = src.parse_ec(line)
         if ec.nil? or ec.length == 0
           misses += 1
-          puts "no match: "+line
+          #puts "no match: "+line
         else
           src.explode(ec).each do | canon, enum_chron |
             volumes[enum_chron["volume"]] = volumes[enum_chron["volume"]].merge(enum_chron)
@@ -31,7 +31,8 @@ describe "UnitedStatesReports" do
 
       puts "US Reports Record match: #{matches}"
       puts "US Reports Record no match: #{misses}"
-      expect(matches).to eq(matches+misses)
+      expect(matches).to eq(3548)
+      #expect(matches).to eq(matches+misses)
     end
 
     it "parses V. 364 (OCT. TERM 1959/60)" do

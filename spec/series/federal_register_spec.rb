@@ -5,7 +5,7 @@ describe "FederalRegister" do
   let(:src) { Class.new { extend FederalRegister } } 
 
   describe "parse_ec" do
-    xit "can parse them all" do 
+    it "can parse them all" do 
       matches = 0
       misses = 0
       can_canon = 0
@@ -21,7 +21,8 @@ describe "FederalRegister" do
           matches += 1
         end
       end
-      expect(matches).to eq(matches+misses)
+      expect(matches).to eq(25757)
+      #expect(matches).to eq(matches+misses)
     end
 
     it "parses 'V. 48:NO. 4 (1983:JAN. 6)'" do
