@@ -6,7 +6,7 @@ describe "JournalOfTheNationalCancerInstitute" do
   let(:src) { Class.new { extend JNCI } }
 
   describe "parse_ec" do
-    xit "can parse them all" do 
+    it "can parse them all" do 
       matches = 0
       misses = 0
       input = File.dirname(__FILE__)+'/data/cancer_institute_ecs.txt'
@@ -26,7 +26,8 @@ describe "JournalOfTheNationalCancerInstitute" do
       end
       #puts "Cancer Institute match: #{matches}"
       #puts "Cancer Institute no match: #{misses}"
-      expect(matches).to eq(matches+misses)
+      expect(matches).to eq(3806)
+      #expect(matches).to eq(matches+misses)
     end
 
     it "parses canonical" do
@@ -120,44 +121,5 @@ describe "JournalOfTheNationalCancerInstitute" do
       expect(src.remove_dupe_years ec_string).to eq('V. 91, NO. 13-18 1999 2000')      
     end
   end
-
-=begin
-  #pub schedule to messed up for this
-  describe "months_to_numbers" do
-    it "calculates numbers given months" do
-      ec = {'volume'=>"85",
-            'start_month'=>"July",
-            'end_month'=>"September"}
-      bad_ec = ec.clone
-      bad_ec['volume'] = "65"
-      src.months_to_numbers ec
-      src.months_to_numbers bad_ec
-      expect(ec['start_number']).to eq('13')
-      expect(ec['end_number']).to eq('18')
-      expect(bad_ec['start_number']).to be_nil
-      #parse_ec should run it
-      ec = src.parse_ec("V. 93,OCT-DEC 2001")
-      expect(ec['start_number']).to eq('19')
-      expect(ec['end_number']).to eq('24')
-    end
-  end
-
-  describe "numbers_to_months" do
-    it "calculates months given numbers" do
-      ec = {'volume'=>"85",
-            'start_number'=>"3",
-            'end_number'=>"4"}
-      multimonth = ec.clone
-      multimonth['end_number'] = "9"
-      src.numbers_to_months ec
-      src.numbers_to_months multimonth
-      expect(ec['month']).to eq('February')
-      expect(ec['start_month']).to be_nil 
-      expect(multimonth['start_month']).to eq('February')
-      expect(multimonth['end_month']).to eq('May')
-      expect(multimonth['month']).to be_nil
-    end
-  end
-=end
 
 end

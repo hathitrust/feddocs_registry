@@ -321,7 +321,6 @@ module Registry
         end
         if ec['number']
           canon << "Number:#{ec['number']}"
-          #ec['month'] = JournalOfTheNationalCancerInstitute.month_from_number(ec['number'])
         end
         if ec['start_number']
           canon << "Numbers:#{ec['start_number']}-#{ec['end_number']}"
@@ -366,65 +365,6 @@ module Registry
         else
           nil
         end
-      end
-
-      # only used after V.80 1988 due to ever changing publication schedule
-      def month_from_number num
-        month_num = (num.to_f / 2).ceil.to_i
-        MONTHS[month_num-1]
-      end
-
-      # only used after V.80 1988 due to ever changing publication schedule
-      def numbers_from_month month
-        mindex = MONTHS.index(Series.lookup_month(month))+1
-        nums = {start_number:mindex*2-1,
-                end_number:mindex*2}
-        nums
-      end
-
-      # only used after V80 1988 due to ever changing publication schedule
-      def months_to_numbers ec
-        if (ec['volume'] and ec['volume'].to_i >= 81) or
-           (ec['year'] and ec['year'].to_i >= 1989)
-          #can we derive number from month
-          if !ec['number'] and !ec['start_number'] and 
-            (ec['month'] or ec['start_month'])
-            if ec['month']
-              nums = self.numbers_from_month ec['month']
-              ec['start_number'] = nums[:start_number].to_s
-              ec['end_number'] = nums[:end_number].to_s
-            elsif ec['start_month']
-              nums = self.numbers_from_month ec['start_month']
-              ec['start_number'] = nums[:start_number].to_s
-              nums = self.numbers_from_month ec['end_month']
-              ec['end_number'] = nums[:end_number].to_s
-            end
-          end
-        end
-        ec
-      end
-
-      # only used after V80 1988 due to ever changing publication schedule
-      def numbers_to_months ec
-        if (ec['volume'] and ec['volume'].to_i >= 81) or
-           (ec['year'] and ec['year'].to_i >= 1989)
-          if !ec['month'] and !ec['start_month'] and
-            (ec['number'] or ec['start_number'])
-            if ec['number']
-              ec['month'] = self.month_from_number ec['number']
-            elsif ec['start_number']
-              sm = self.month_from_number ec['start_number']
-              em = self.month_from_number ec['end_number']
-              if sm == em
-                ec['month'] = sm
-              else
-                ec['start_month'] = sm
-                ec['end_month'] = em
-              end
-            end
-          end
-        end
-        ec
       end
 
       def remove_dupe_years ec_string
