@@ -46,19 +46,18 @@ describe "Series.correct_year" do
 end
 
 describe "all Series" do
-  Registry::Series.constants.each do | s |
-    s = "Registry::Series::#{s.to_s}"
-    if eval(s).respond_to?(:canonicalize)
-      it "the canonicalize method returns nil if {} given" do
-        puts s
-        expect(eval(s).canonicalize({})).to be_nil
-      end
-
-      it "fails to explode if it can't canonicalize" do
-        expect(eval(s).explode({'string'=>"cant_canonicalize_this"}).keys.count).to eq(0)
-      end
+  Registry::Series.constants.select { |c| eval(c.to_s).class == Module }.each do |c|
+    s = Class.new { extend eval(c.to_s) }
+    it "the canonicalize method returns nil if {} given" do
+      puts c
+      expect(s.respond_to?(:canonicalize)).to be_truthy
+      expect(s.canonicalize({})).to be_nil
     end
-        
+
+    it "fails to explode if it can't canonicalize" do
+      expect(s.respond_to?(:explode)).to be_truthy
+      expect(s.explode({'string'=>"cant_canonicalize_this"}).keys.count).to eq(0)
+    end
   end
 end
 

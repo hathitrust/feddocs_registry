@@ -106,7 +106,7 @@ module Registry
       # enum_chrons - { <canonical ec string> : {<parsed features>}, }
       #
       # Canonical string format: Year:<year>, Part:<part>
-      def explode( ec, src)
+      def explode( ec, src={})
         ec ||= {}
 
         #some of these are monographs with the year info in pub_date or sudocs
@@ -134,13 +134,13 @@ module Registry
 
         canon = ''
         if ec['year'] and !ec['part'].nil?
-          canon = "Year:#{ec['year']}, Part:#{ec['part']}"
+          canon = self.canonicalize(ec)
           enum_chrons[canon] = ec.clone
           @@parts[ec['year']] << ec['part']
           @@parts[ec['year']].uniq!
         elsif ec['year'] and ec['start_part']
           for pt in ec['start_part']..ec['end_part']
-            canon = "Year:#{ec['year']}, Part:#{pt}"
+            canon = self.canonicalize({'year'=>ec['year'], 'part'=>pt})
             enum_chrons[canon] = ec.clone
             @@parts[ec['year']] << pt 
           end
@@ -153,8 +153,8 @@ module Registry
           #    enum_chrons[canon] = ec
           #  end
           #else
-            canon = "Year:#{ec['year']}"
-            enum_chrons[canon] = ec.clone
+          canon = self.canonicalize(ec)
+          enum_chrons[canon] = ec.clone
           #end
         elsif ec['start_year']
           for y in ec['start_year']..ec['end_year']
@@ -164,13 +164,28 @@ module Registry
             #    enum_chrons[canon] = ec
             #  end
             #else
-              canon = "Year:#{y}"
-              enum_chrons[canon] = ec.clone
+            canon = self.canonicalize({'year'=>y}) 
+            enum_chrons[canon] = ec.clone
             #end
           end
         end
 
         enum_chrons
+      end
+
+      def canonicalize ec
+        canon = []
+        if ec['year']
+          canon << "Year:#{ec['year']}"
+        end
+        if ec['part']
+          canon << "Part:#{ec['part']}"
+        end
+        if canon.length > 0
+          canon.join(", ")
+        else
+          nil
+        end
       end
 
       def self.parse_file

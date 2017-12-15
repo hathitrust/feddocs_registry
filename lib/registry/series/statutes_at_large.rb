@@ -174,15 +174,21 @@ module Registry
           return {}
         end
 
-        if ec['volume'] and ec['part']
-          key = "Volume:#{ec['volume']}, Part:#{ec['part']}"
-          if ec['start_page']
-            key << ", Pages:#{ec['start_page']}-#{ec['end_page']}"
-          end
-          enum_chrons[key] = ec
+        if canon = self.canonicalize(ec)
+          enum_chrons[canon] = ec
         end
 
         enum_chrons
+      end
+
+      def canonicalize ec
+        if ec['volume'] and ec['part']
+          canon = "Volume:#{ec['volume']}, Part:#{ec['part']}"
+          if ec['start_page']
+            canon << ", Pages:#{ec['start_page']}-#{ec['end_page']}"
+          end
+        end
+        canon
       end
 
       def self.parse_file
