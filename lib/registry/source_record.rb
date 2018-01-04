@@ -66,7 +66,6 @@ module Registry
 
     #this stuff is extra ugly
     Dotenv.load
-    @@collator = Collator.new(__dir__+'/../../config/traject_config.rb')
     @@extractor = Traject::Indexer.new
     @@extractor.load_config_file(__dir__+'/../../config/traject_config.rb')
 
@@ -869,11 +868,9 @@ module Registry
       return self[field.to_sym] unless self[field.to_sym].nil?
       @extracted ||= self.extracted
       if @extracted[field.to_s].nil?
-        #self.instance_variable_set("@#{field}",[])
         self[field.to_sym] = []
       else
         self[field.to_sym] = @extracted[field.to_s]
-        #self.instance_variable_set("@#{field}",@extracted[field.to_s])
       end
     end
     alias_method :electronic_versions, :extracted_field
@@ -883,31 +880,19 @@ module Registry
     def author_lccns 
       return @author_lccns unless @author_lccns.nil?
       @extracted ||= self.extracted
-      if @extracted['author_lccn_lookup'].nil?
-        self.author_lccns = []
-      else
-        self.author_lccns = self.get_lccns @extracted['author_lccn_lookup']
-      end
+      self.author_lccns = self.get_lccns @extracted['author_lccn_lookup']
     end
 
     def added_entry_lccns
       return @added_entry_lccns unless @added_entry_lccns.nil?
       @extracted ||= self.extracted
-      if @extracted['added_entry_lccn_lookup'].nil?
-        self.added_entry_lccns = []
-      else
-        self.added_entry_lccns = self.get_lccns @extracted['added_entry_lccn_lookup']
-      end
+      self.added_entry_lccns = self.get_lccns @extracted['added_entry_lccn_lookup']
     end
 
     def report_numbers
       return @report_numbers unless @report_numbers.nil?
       @extracted ||= self.extracted
-      if @extracted['report_numbers'].nil?
-        self.report_numbers = []
-      else
-        self.report_numbers = @extracted['report_numbers']
-      end
+      self.report_numbers = @extracted['report_numbers'] || []
     end
 
     def extracted m=nil

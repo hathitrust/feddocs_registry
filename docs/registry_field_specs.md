@@ -2,7 +2,7 @@ ancestors
 ---------
 	type: Array of strings
 	An array of registry IDs for records that have been superseded by this record,
-	.e.g through merging.
+	e.g. through merging.
 
 deprecated_timestamp
 --------------------
@@ -128,4 +128,3 @@ related_electronic_resources
 ----------------------------
   type: array of strings
   Pulled from 856, indicators 42  
-

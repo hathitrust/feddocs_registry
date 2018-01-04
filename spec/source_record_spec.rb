@@ -757,18 +757,15 @@ RSpec.describe Registry::SourceRecord, '#parse_ec' do
   xit "can parse them all" do 
     matches = 0
     misses = 0
-    input = File.dirname(__FILE__)+'/data/mono_enum_chrons.tsv'
+    input = File.dirname(__FILE__)+'/data/ec_strings_2017-12-19.txt'
     open(input, 'r').each do |line|
-      ec_count, ec_string = line.chomp.split(/\t/)
+      ec_string = line.chomp
 
       ec = @src.parse_ec(ec_string)
       if ec.nil? or ec.length == 0
         misses += ec_count.to_i
         puts "no match: "+line
       else
-        if !ec['description'].nil?
-          puts SourceRecord.normalize_description(ec['description'])
-        end
         res = @src.explode(ec)
         res.each do | canon, features |
           #puts canon
