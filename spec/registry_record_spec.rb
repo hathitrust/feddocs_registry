@@ -53,6 +53,9 @@ RSpec.describe RR, "#initialize" do
 
   it "collects electronic_resources" do
     expect(@dgpo_reg.electronic_resources).to include('electronic resource')
+    expect(@dgpo_reg.electronic_resources).to include('electronic resource no indicator')
+    expect(@dgpo_reg.related_electronic_resources).to include('related electronic resource')
+    expect(@dgpo_reg.electronic_versions).to include('electronic version')
   end
 
 end

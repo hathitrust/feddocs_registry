@@ -32,6 +32,9 @@ module Registry
       fields[:author_lccns] = sources.collect{|s| s.author_lccns}.flatten.uniq
       fields[:report_numbers] = sources.collect{|s| s.report_numbers}.flatten.uniq
       fields[:added_entry_lccns] = sources.collect{|s| s.added_entry_lccns}.flatten.uniq
+      fields[:electronic_resources] = sources.collect{|s| s.electronic_resources}.flatten.uniq
+      fields[:related_electronic_resources] = sources.collect{|s| s.related_electronic_resources}.flatten.uniq
+      fields[:electronic_versions] = sources.collect{|s| s.electronic_versions}.flatten.uniq
       sources.each do | rec | 
     
         if rec.ht_availability == 'Full View'

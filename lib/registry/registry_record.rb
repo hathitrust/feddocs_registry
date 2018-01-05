@@ -30,7 +30,7 @@ module Registry
     field :electronic_resources, type: Array
     field :print_holdings_t, type: Array
 
-    @@collator = Collator.new(__dir__+'/../../config/traject_config.rb')
+    @@collator = Collator.new(__dir__+'/../../config/traject_registry_record_config.rb')
     @@db_conn = Mysql2::Client.new(:host => ENV['db_host'], 
                               :username => ENV['db_user'],
                               :password => ENV['db_pw'],

@@ -67,7 +67,7 @@ module Registry
     #this stuff is extra ugly
     Dotenv.load
     @@extractor = Traject::Indexer.new
-    @@extractor.load_config_file(__dir__+'/../../config/traject_config.rb')
+    @@extractor.load_config_file(__dir__+'/../../config/traject_source_record_config.rb')
 
     @@contrib_001 = {}
     open(__dir__+'/../../config/contributors_w_001_oclcs.txt').each{ |l| @@contrib_001[l.chomp] = 1 }

@@ -2,11 +2,8 @@ require 'pp'
 require 'library_stdnums'
 require_relative '../lib/registry/normalize'
 
-# A sample traject configration, save as say `traject_config.rb`, then
-# run `traject -c traject_config.rb marc_file.marc` to index to
-# solr specified in config file, according to rules specified in
-# config file
-
+# A traject configuration for RegistryRecord
+# Most of these fields will eventually be sent to solr. 
 
 # To have access to various built-in logic
 # for pulling things out of MARC21, like `marc_languages`
@@ -23,7 +20,6 @@ extend Traject::Macros::MarcFormats
 # files however you like, you can call traject with as many
 # config files as you like, `traject -c one.rb -c two.rb -c etc.rb`
 settings do
-  #provide "solr.url", "http://solr-sdr-usfeddocs-dev:9032/usfeddocs/collection1"
   provide "reader_class_name", "Traject::NDJReader"
   provide "marc_source.type", "json"
 end
@@ -64,39 +60,26 @@ end
 #author
 
 to_field "author_t",            extract_marc("100abcdgqu:110abcdgnu:111acdegjnqu")
-to_field "author_parts",            extract_marc("100abcdgqu:110abcdgnu:111acdegjnqu", :separator => nil)
 to_field "author_addl_t",       extract_marc("700abcdegqu:710abcdegnu:711acdegjnqu:720a:505r:245c:191abcdegqu")
 to_field "author_display",      extract_marc("100abcdq:110abcdgnu:111acdegjnqu")
 to_field "author_display_facet",      extract_marc("100abcdq:110abcdgnu:111acdegjnqu")
 to_field "author_sort",         marc_sortable_author
-to_field "author_lccn_lookup", extract_marc("100abcd:110abntd")
-to_field "added_entry_lccn_lookup", extract_marc("700abcd:710abntd")
 
 #not needed
 to_field "author_facet",        extract_marc("100abcdq:110abcdgnu:111acdenqu:700abcdq:710abcdgnu:711acdenqu", :trim_punctuation => true)
 
 
 #publisher
-to_field "publisher_heading",         extract_marc("260b")
 to_field "publisher_t",        extract_marc("260abef:261abef:262ab:264ab")
 
 #place of publication
 to_field "published_display",   extract_marc("260a:264|1*|abc", :trim_punctuation => true)
-
-#pubdate
-to_field "pub_date",            marc_publication_date
-
-#sudoc
-#to_field "sudoc_display",       extract_marc("086a")
 
 #lc call number
 to_field "lc_callnum_display",  extract_marc("050ab")
 
 #physical description 300
 to_field "material_type_display", extract_marc("300")
-
-#gpo item number
-to_field "gpo_item_number", extract_marc("074a")
 
 #OCLC number
 #to_field "oclcnum_t",           oclcnum
@@ -107,30 +90,11 @@ to_field "title_series_t",      extract_marc("440a:490av:800abcdt:400abcd:810abc
 
 
 #enum/chron
-to_field "enumchron_display",   extract_marc("ecd")
+#to_field "enumchron_display",   extract_marc("ecd")
 
 #subject
 to_field "subject_t",           extract_marc("600:610:611:630:650:651avxyz:653aa:654abcvyz:655abcvxyz:690abcdxyz:691abxyz:692abxyz:693abxyz:656akvxyz:657avxyz:652axyz:658abcd")
 to_field "subject_topic_facet",           extract_marc("600:610:611:630:650:651avxyz:653aa:654abcvyz:655abcvxyz:690abcdxyz:691abxyz:692abxyz:693abxyz:656akvxyz:657avxyz:652axyz:658abcd")
 
-#electronic_resources
-to_field "electronic_resources", extract_marc("856|4 |u:856|40|u")
-to_field "electronic_versions", extract_marc("856|41|u")
-to_field "related_electronic_resources", extract_marc("856|42|u")
-
-# report numbers, esp. for OSTI
-to_field "report_numbers", extract_marc("088a")
-
 #format
 to_field "format",              marc_formats
-
-#to_field "isbn_t",		extract_marc('020a', :separator=>nil) do |rec, acc|
-#     orig = acc.dup
-#     acc.map!{|x| StdNum::ISBN.allNormalizedValues(x)}
-#     acc << orig
-#     acc.flatten!
-#     acc.uniq!
-#end
-	
-
-

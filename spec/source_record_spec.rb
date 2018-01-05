@@ -105,7 +105,7 @@ RSpec.describe Registry::SourceRecord do
     expect(@sr.formats).to eq(["Book","Print"])
   end
 
-  xit "performs reasonably well" do
+  it "performs reasonably well" do
     line = open(File.dirname(__FILE__)+'/data/ht_record_different_3_items.json').read
     call_count = 0
     name = :new_from_hash

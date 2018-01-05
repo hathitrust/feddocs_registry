@@ -11,7 +11,7 @@ RC = Registry::Collator
 
 RSpec.describe RC, "#initialize" do
   before(:all) do 
-    @collator = RC.new('config/traject_config.rb')
+    @collator = RC.new('config/traject_registry_record_config.rb')
   end
 
   it "loads an extractor" do 
@@ -24,7 +24,7 @@ RSpec.describe RC, "#extract_fields" do
   before(:all) do
     #just grab one
     @regrec = Registry::RegistryRecord.where(:source_record_ids.with_size => 6).first
-    @collator = RC.new('config/traject_config.rb')
+    @collator = RC.new('config/traject_registry_record_config.rb')
     @collected_fields = @collator.extract_fields @regrec.sources 
     @alsrc = Registry::SourceRecord.new()
     @alsrc.source = open(File.dirname(__FILE__)+"/data/whitelisted_oclc.json").read
