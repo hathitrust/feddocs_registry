@@ -38,9 +38,9 @@ module Registry
       sources.each do | rec | 
     
         if rec.ht_availability == 'Full View'
-          fields[:ht_ids_fv] << rec[:source]["fields"][0]["001"]
+          fields[:ht_ids_fv] << rec.local_id
         elsif rec.ht_availability == 'Limited View'
-          fields[:ht_ids_lv] << rec[:source]["fields"][0]["001"]
+          fields[:ht_ids_lv] << rec.local_id
         end      
 
         base_marc = MARC::Record.new_from_hash(rec.source)
