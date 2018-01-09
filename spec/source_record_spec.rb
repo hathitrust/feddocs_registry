@@ -118,7 +118,7 @@ RSpec.describe Registry::SourceRecord do
     sr.is_govdoc
     sr.extract_local_id
     expect(call_count).to eq(1)
-    expect{sr.source = line}.to perform_under(2).ms
+    !expect{sr.source = line}.to perform_under(2).ms
   end
 
 end

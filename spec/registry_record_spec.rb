@@ -22,12 +22,18 @@ RSpec.describe RR, "#initialize" do
     @dgpo_src.source = open(File.dirname(__FILE__)+"/data/dgpo_has_ecs.json").read
     @dgpo_src.save
     @dgpo_reg = Registry::RegistryRecord.new([@dgpo_src.source_id], '' ,'testing')
+    
+    @pd_sr = SourceRecord.new
+    @pd_sr.org_code = "miaahdl"
+    @pd_sr.source = open(File.dirname(__FILE__)+'/data/ht_pd_record.json').read
+    @pd_sr.save
 
   end
 
   after(:all) do
     @dgpo_src.delete
     @dgpo_reg.delete
+    @pd_sr.delete
   end
 
   it "creates a new registry record" do
@@ -41,6 +47,13 @@ RSpec.describe RR, "#initialize" do
     expect(@new_rec.lccn_t).to eq ["65062399"]
     expect(@new_rec.isbn_t).to eq []
     expect(@new_rec.issn_t).to eq []
+  end
+
+  it "does not collect author_lccn_lookup fields" do
+    expect(@pd_sr.extracted['author_lccn_lookup'].count).to eq(1)
+    new_reg = Registry::RegistryRecord.new([@pd_sr.source_id], '', 'testing')
+    expect(new_reg['author_lccn_lookup']).to be_nil
+    expect(@pd_sr.publisher_headings).to eq(new_reg.publisher_headings)
   end
 
   it "adds org codes" do
