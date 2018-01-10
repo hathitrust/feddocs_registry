@@ -163,6 +163,25 @@ RSpec.describe RR, "add_source" do
   end
 end
 
+RSpec.describe RR do
+  before(:all) do
+    mrc = open(File.dirname(__FILE__)+'/series/data/econreport.json').read
+    @src = SourceRecord.new(org_code:"miaahdl",
+                            source:mrc)
+    @src.save
+    @reg = RR.new([@src.source_id], '', 'testing')
+  end
+
+  it "collects pub_dates" do
+    expect(@src.pub_date).to eq([1966])
+    expect(@reg.pub_date).to eq([1966])
+  end
+    
+  after(:all) do
+    @src.delete
+  end
+end
+
 RSpec.describe RR, "#save" do
   it "changes last_modified before saving" do
     rec = RR.first

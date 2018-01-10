@@ -58,7 +58,8 @@ to_field "title3_t" do |record, accumulator|
 end
 
 #author
-
+#todo: confirm these identical fields need to be repeated. 
+#
 to_field "author_t",            extract_marc("100abcdgqu:110abcdgnu:111acdegjnqu")
 to_field "author_addl_t",       extract_marc("700abcdegqu:710abcdegnu:711acdegjnqu:720a:505r:245c:191abcdegqu")
 to_field "author_display",      extract_marc("100abcdq:110abcdgnu:111acdegjnqu")
