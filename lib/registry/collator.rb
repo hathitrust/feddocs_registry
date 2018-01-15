@@ -37,6 +37,7 @@ module Registry
       fields[:electronic_versions] = sources.collect{|s| s.electronic_versions}.flatten.uniq
       fields[:publisher_headings] = sources.collect{|s| s.publisher_headings}.flatten.uniq
       fields[:pub_date] = sources.collect{|s| s.pub_date}.flatten.uniq
+      fields[:gpo_item_numbers] = sources.collect{|s| s.gpo_item_numbers}.flatten.uniq
       sources.each do | rec | 
     
         if rec.ht_availability == 'Full View'

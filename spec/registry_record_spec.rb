@@ -71,6 +71,9 @@ RSpec.describe RR, "#initialize" do
     expect(@dgpo_reg.electronic_versions).to include('electronic version')
   end
 
+  it "collects gpo_item_numbers" do
+    expect(@dgpo_reg.gpo_item_numbers).to include('123')
+  end
 end
 
 RSpec.describe RR, "#cluster" do
