@@ -120,11 +120,10 @@ format
 ------
   Traject method marc_formats
 
-gpo_item_number
+gpo_item_numbers
 ---------------
   type: array of strings
-  MARC 074a
-  Should be gpo_item_numbers to match SourceRecord. todo:
+  MARC 074a collected from source records. 
 
 ht_availability
 ---------------
