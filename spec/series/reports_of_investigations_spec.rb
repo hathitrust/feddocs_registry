@@ -1,25 +1,27 @@
+# frozen_string_literal: true
+
 require 'json'
 
 ROI = Registry::Series::ReportsOfInvestigations
 
-describe "ReportsOfInvestigations" do
+describe 'ReportsOfInvestigations' do
   let(:src) { Class.new { extend ROI } }
 
-  describe "parse_ec" do
-    it "can parse them all" do 
+  describe 'parse_ec' do
+    it 'can parse them all' do
       matches = 0
       misses = 0
-      input = File.dirname(__FILE__)+'/data/mine_investigations.txt'
+      input = File.dirname(__FILE__) + '/data/mine_investigations.txt'
       open(input, 'r').each do |line|
         line.chomp!
         ec = src.parse_ec(line)
-        if ec.nil? or ec.length == 0
+        if ec.nil? || ec.empty?
           misses += 1
-          #puts "no match: "+line
+          # puts "no match: "+line
         else
           res = src.explode(ec)
-          res.each do | canon, features |
-            #puts canon
+          res.each do |canon, features|
+            # puts canon
           end
           matches += 1
         end
@@ -27,7 +29,7 @@ describe "ReportsOfInvestigations" do
       puts "Reports of Investigations Record match: #{matches}"
       puts "Reports of Investigations Record no match: #{misses}"
       expect(matches).to eq(3691)
-      #expect(matches).to eq(matches+misses)
+      # expect(matches).to eq(matches+misses)
     end
 
     it "doesn't confuse years for numbers" do
@@ -81,37 +83,33 @@ describe "ReportsOfInvestigations" do
     it "parses '7936-7938 (1974-75)'" do
       expect(src.parse_ec('7936-7938 (1974-75)')['year']).to eq('1974-1975')
     end
-
   end
 
-  describe "canonicalize" do
+  describe 'canonicalize' do
     it "returns nil if ec can't be parsed" do
       expect(src.canonicalize({})).to be_nil
     end
 
-    it "turns a parsed ec into a canonical string" do
+    it 'turns a parsed ec into a canonical string' do
       expect(src.canonicalize(src.parse_ec('NO. 7936 YR. 1974'))).to eq('Number:7936')
     end
-
   end
 
-  describe "explode" do
-    it "expands multi numbers" do
+  describe 'explode' do
+    it 'expands multi numbers' do
       expect(src.explode(src.parse_ec('6007-6019')).count).to eq(13)
     end
 
-    it "turns a parsed ec into a canonical string (multi year)" do
+    it 'turns a parsed ec into a canonical string (multi year)' do
       parsed = src.parse_ec('7936-7938 (1974-75)')
       exploded = src.explode(parsed)
       expect(exploded.keys[0]).to eq('Number:7936')
     end
-
   end
 
-  describe "oclcs" do
-    it "has an oclcs field" do
-      expect(ROI.oclcs).to include(1728640)
+  describe 'oclcs' do
+    it 'has an oclcs field' do
+      expect(ROI.oclcs).to include(1_728_640)
     end
   end
-
 end

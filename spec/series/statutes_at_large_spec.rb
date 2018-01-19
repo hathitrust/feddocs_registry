@@ -1,29 +1,31 @@
+# frozen_string_literal: true
+
 require 'json'
 SR = Registry::SourceRecord
 StatutesAtLarge = Registry::Series::StatutesAtLarge
 
-describe "StatutesAtLarge" do
-  let(:src) { Class.new { extend StatutesAtLarge } } 
+describe 'StatutesAtLarge' do
+  let(:src) { Class.new { extend StatutesAtLarge } }
 
-  describe "parse_ec" do
-    it "can parse them all" do 
+  describe 'parse_ec' do
+    it 'can parse them all' do
       matches = 0
       misses = 0
       can_canon = 0
       cant_canon = 0
-      input = File.dirname(__FILE__)+'/data/statutes_enumchrons.txt'
+      input = File.dirname(__FILE__) + '/data/statutes_enumchrons.txt'
       open(input, 'r').each do |line|
         line.chomp!
         ec = src.parse_ec(line)
-        if ec.nil? or ec.length == 0
+        if ec.nil? || ec.empty?
           misses += 1
-          #puts "no match: "+line
-        else 
+          # puts "no match: "+line
+        else
           matches += 1
         end
       end
       expect(matches).to eq(2912)
-      #expect(matches).to eq(matches+misses)
+      # expect(matches).to eq(matches+misses)
     end
 
     it "parses 'V. 96:PT. 1 (1984)'" do
@@ -64,7 +66,6 @@ describe "StatutesAtLarge" do
       expect(src.parse_ec('V. 99:PT. 1')).to be_truthy
     end
 
-
     it "parses 'V. V. 32:1 1901-03'" do
       expect(src.parse_ec('V. V. 32:1 1901-03')).to be_truthy
     end
@@ -72,7 +73,7 @@ describe "StatutesAtLarge" do
     it "parses 'KF50 . U5 V. 94 PT. 2'" do
       expect(src.parse_ec('KF50 . U5 V. 94 PT. 2')).to be_truthy
     end
-    
+
     it "parses 'V. 100 PT. 5
                 V. 100;PT. 5
                 V. 101 1987 PT. 1
@@ -82,7 +83,7 @@ describe "StatutesAtLarge" do
       expect(src.parse_ec('V. 101 1987 PT. 1')).to be_truthy
       expect(src.parse_ec('V. 101:1987:PT. 1')).to be_truthy
     end
-    
+
     it "parses 'V. 93
                 V. 93 1979
                 V. 93 (1979)'" do
@@ -132,9 +133,8 @@ describe "StatutesAtLarge" do
                 V. 77A (1963)'" do
       expect(src.parse_ec('V. 77A')).to be_truthy
       expect(src.parse_ec('V. 77A 1963')).to be_truthy
-      expect(src.parse_ec('V. 77A (1963)')).to be_truthy 
+      expect(src.parse_ec('V. 77A (1963)')).to be_truthy
     end
-
 
     it "parses 'V. 118:PT. 1(2004)'" do
       expect(src.parse_ec('V. 118:PT. 1(2004)')).to be_truthy
@@ -151,26 +151,24 @@ describe "StatutesAtLarge" do
     end
   end
 
-  describe "explode" do
-    it "standardizes enum chrons with the correct fields" do
+  describe 'explode' do
+    it 'standardizes enum chrons with the correct fields' do
       expect(src.explode(src.parse_ec('V. 96:2 1982')).count).to eq(1)
       expect(src.explode(src.parse_ec('V. 96:2 1982'))).to have_key('Volume:96, Part:2')
-    end 
-
-
-  end
-
-  describe "parse_file" do
-    it "parses a file of enumchrons" do 
-      match, no_match = StatutesAtLarge.parse_file
-      expect(match).to be > 1934
-      #expect(match).to eq(2385)
     end
   end
 
-  describe "oclcs" do
-    it "has an oclcs field" do
-      expect(StatutesAtLarge.oclcs).to include(1768474)
+  describe 'parse_file' do
+    it 'parses a file of enumchrons' do
+      match, no_match = StatutesAtLarge.parse_file
+      expect(match).to be > 1934
+      # expect(match).to eq(2385)
+    end
+  end
+
+  describe 'oclcs' do
+    it 'has an oclcs field' do
+      expect(StatutesAtLarge.oclcs).to include(1_768_474)
     end
   end
 end
