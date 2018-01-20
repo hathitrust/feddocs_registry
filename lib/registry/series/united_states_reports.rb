@@ -1,6 +1,6 @@
-# frozen_string_literal: true
-
 require 'pp'
+=begin
+=end
 
 module Registry
   module Series
@@ -12,19 +12,19 @@ module Registry
         'JU 6.8'
       end
 
-      def self.oclcs
-        [10_648_533, 1_768_670]
+      def self.oclcs 
+        [10648533, 1768670]
       end
-
-      def parse_ec(ec_string)
-        reporters = %w[DALLAS CRANCH WHEATON PETERS HOWARD BLACK WALLACE]
+      
+      def parse_ec ec_string
+        reporters = ['DALLAS','CRANCH','WHEATON','PETERS','HOWARD','BLACK','WALLACE']
         v = 'V\.\s?(?<volume>\d+)'
         ot = '(?<october>OCT\.? (TERM)?)'
         y = '(YR\.\s)?(?<year>\d{4})'
         ys = '(?<start_year>\d{4})[/-](?<end_year>\d{2,4})'
-        rpt = '(?<reporter>(' + reporters.join('|') + ')) (?<number>\d{1,2})'
+        rpt = '(?<reporter>('+reporters.join('|')+')) (?<number>\d{1,2})'
 
-        # canonical
+        #canonical
         # Volume: 1, Year:1982-1983, WALLACE 5, October Term
         m ||= /^Volume:(?<volume>\d+)(, Years?:(#{ys}|(?<year>\d{4})))?(, #{rpt})?(, (?<october>October Term))?$/.match(ec_string)
         m ||= /^Volume:(?<volume>\d+), Part:(?<part>\d+)$/.match(ec_string)
@@ -49,18 +49,18 @@ module Registry
         # V. 546:1
         m ||= /^#{v}:(?<part>\d)$/.match(ec_string)
 
-        # we'll just take the volume number
+        #we'll just take the volume number
         m ||= /^#{v}[, \(]/.match(ec_string)
 
-        unless m.nil?
-          ec = Hash[m.names.zip(m.captures)]
-          ec.delete_if { |_k, v| v.nil? }
+        if !m.nil?
+          ec = Hash[ m.names.zip( m.captures ) ]
+          ec.delete_if {|k, v| v.nil? }
           if ec.key? 'end_year'
             ec['end_year'] = Series.calc_end_year(ec['start_year'], ec['end_year'])
           end
 
-          # kill the zero fills
-          if ec['volume']
+          #kill the zero fills
+          if ec['volume'] 
             ec['volume'].sub!(/^0+/, '')
           elsif ec['start_volume']
             ec['start_volume'].sub!(/^0+/, '')
@@ -70,51 +70,57 @@ module Registry
         ec
       end
 
-      def explode(ec, _src = nil)
-        enum_chrons = {}
-        return {} if ec.nil?
+      def explode(ec, src=nil)
+        enum_chrons = {} 
+        if ec.nil?
+          return {}
+        end
 
         ecs = []
         if ec['start_volume']
-          (ec['start_volume']..ec['end_volume']).each { |v| ecs << { 'volume' => v } }
+          (ec['start_volume']..ec['end_volume']).each {|v| ecs << {"volume"=>v}}
         else
           ecs << ec
         end
 
-        ecs.each do |ec|
-          if canon = canonicalize(ec)
-            ec['canon'] = canon
+        ecs.each do | ec |
+          if canon = self.canonicalize(ec)
+            ec['canon'] = canon 
             enum_chrons[ec['canon']] = ec.clone
           end
         end
-
+         
         enum_chrons
       end
 
-      def canonicalize(ec)
+      def canonicalize ec
         if @@volumes.include? ec['volume']
           canon = @@volumes[ec['volume']]
-        elsif ec['volume']
+        elsif ec['volume'] 
           canon = "Volume:#{ec['volume']}"
-          canon += ", Part:#{ec['part']}" if ec['part']
+          if ec['part']
+            canon += ", Part:#{ec['part']}"
+          end
           if ec['year']
             canon += ", Year:#{ec['year']}"
           elsif ec['start_year']
             canon += ", Years:#{ec['start_year']}-#{ec['end_year']}"
           end
-          canon += ", #{ec['reporter']} #{ec['number']}" if ec['reporter']
+          if ec['reporter']
+            canon += ", #{ec['reporter']} #{ec['number']}"
+          end
         end
         canon
       end
-
-      def self.load_context
-        pairs = File.dirname(__FILE__) + '/data/usr_volumes.tsv'
+ 
+      def self.load_context 
+        pairs = File.dirname(__FILE__)+'/data/usr_volumes.tsv'
         open(pairs).each do |line|
           volume, canon = line.chomp.split(/\t/)
           @@volumes[volume] = canon
         end
       end
-      load_context
+      self.load_context
     end
   end
 end

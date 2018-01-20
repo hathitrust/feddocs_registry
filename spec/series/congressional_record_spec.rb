@@ -1,31 +1,29 @@
-# frozen_string_literal: true
-
 require 'json'
 
 CR = Registry::Series::CongressionalRecord
 
-describe 'Congressional Record' do
-  let(:src) { Class.new { extend CR } }
+describe "Congressional Record" do
+  let(:src) { Class.new { extend CR }} 
 
-  describe 'parse_ec' do
-    it 'can parse them all' do
+  describe "parse_ec" do
+    it "can parse them all" do 
       matches = 0
       misses = 0
       can_canon = 0
       cant_canon = 0
-      input = File.dirname(__FILE__) + '/data/congressional_record_enumchrons.txt'
+      input = File.dirname(__FILE__)+'/data/congressional_record_enumchrons.txt'
       open(input, 'r').each do |line|
         line.chomp!
         ec = src.parse_ec(line)
-        if ec.nil? || ec.empty?
+        if ec.nil? or ec.length == 0
           misses += 1
-          # puts "no match: "+line
-        else
+          #puts "no match: "+line
+        else 
           matches += 1
           if src.canonicalize(ec)
             can_canon += 1
           else
-            # puts "can't canon: "+line
+            #puts "can't canon: "+line
             cant_canon += 1
           end
         end
@@ -35,10 +33,10 @@ describe 'Congressional Record' do
       puts "Congressional Record no match: #{misses}"
       puts "Congressional Record can canonicalize: #{can_canon}"
       puts "Congressional Record can't canonicalize: #{cant_canon}"
-      expect(matches).to eq(14_902)
-      # expect(matches).to eq(matches+misses)
+      expect(matches).to eq(14902)
+      #expect(matches).to eq(matches+misses)
     end
-
+    
     it "parses it's canonical version" do
       expect(src.parse_ec('Volume:105, Part:20')['volume']).to eq('105')
     end
@@ -50,7 +48,7 @@ describe 'Congressional Record' do
     it "parses 'V. 5 1877 INDEX'" do
       expect(src.parse_ec('V. 5 1877 INDEX')['volume']).to eq('5')
     end
-
+    
     it "parses 'V. 105 PT. 35'" do
       expect(src.parse_ec('V. 105 PT. 35')['volume']).to eq('105')
     end
@@ -62,7 +60,7 @@ describe 'Congressional Record' do
     it "parses 'V. 137:PT. 16 (1991:SEPT. 10/23)'" do
       expect(src.parse_ec('V. 137:PT. 16 (1991:SEPT. 10/23)')['part']).to eq('16')
     end
-
+        
     it "parses 'V. 97:15 (1951)'" do
       expect(src.parse_ec('V. 97:15 (1951)')['part']).to eq('15')
     end
@@ -110,36 +108,40 @@ describe 'Congressional Record' do
     it "parses '102ND CONG. , 1ST SES. V. 137 PT. 25 INDEX L-Z'" do
       expect(src.parse_ec('102ND CONG. , 1ST SES. V. 137 PT. 25 INDEX L-Z')['part']).to eq('25')
     end
-
+    
     it "parses 'V. 84. PT. 10 1939'" do
       expect(src.parse_ec('V. 84. PT. 10 1939')['part']).to eq('10')
     end
 
-    #     # We're going to assume Volume. Might as well decide on something.
-    #     it "can NOT parse '108/PT. 17'" do
-    #       expect(src.parse_ec('108/PT. 17')).to be_nil
-    #     end
+=begin
+    # We're going to assume Volume. Might as well decide on something.
+    it "can NOT parse '108/PT. 17'" do
+      expect(src.parse_ec('108/PT. 17')).to be_nil
+    end
+=end
     it "can parse '108/PT. 17'" do
       expect(src.parse_ec('108/PT. 17')['part']).to eq('17')
     end
 
-    it 'handles indexes' do
+    it "handles indexes" do 
       expect(src.parse_ec('102/1-138/PT. 24/INDEX L-Z')['index']).to eq('L-Z')
     end
+
   end
 
-  describe 'explode' do
-    it 'returns a canonical form' do
+  describe "explode" do
+    it "returns a canonical form" do
       expect(src.explode(src.parse_ec('V. 97:15 (1951)'), {})).to have_key('Volume:97, Part:15')
     end
 
-    it 'handles indexes' do
+    it "handles indexes" do 
       expect(src.explode(src.parse_ec('102/1-138/PT. 24/INDEX L-Z'), {})).to have_key('Volume:138, Part:24, Index:L-Z')
     end
+
   end
 
-  describe 'canonicalize' do
-    it 'returns a canonical form' do
+  describe "canonicalize" do
+    it "returns a canonical form" do
       expect(src.canonicalize(src.parse_ec('V. 97:15 (1951)'))).to eq('Volume:97, Part:15')
     end
 
@@ -148,15 +150,15 @@ describe 'Congressional Record' do
     end
   end
 
-  describe 'sudoc_stem' do
-    it 'has a sudoc_stem field' do
+  describe "sudoc_stem" do 
+    it "has a sudoc_stem field" do 
       expect(CR.sudoc_stem).to eq('X 1.1:')
     end
   end
 
-  describe 'oclcs' do
-    it 'has an oclcs field' do
-      # expect(UnitedStatesReports.oclcs).to include(10648533)
+  describe "oclcs" do
+    it "has an oclcs field" do
+      #expect(UnitedStatesReports.oclcs).to include(10648533)
     end
   end
 end
