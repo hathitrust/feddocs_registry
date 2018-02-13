@@ -119,7 +119,7 @@ module Registry
           fields['string']
         end
       end
-      enum_chrons << '' if enum_chrons.count == 0
+      enum_chrons << '' if enum_chrons.count.zero?
       extract_holdings marc if org_code == 'miaahdl'
     end
 
@@ -208,17 +208,17 @@ module Registry
           return false
         end
       end
-      (/^.{17}u.{10}f/ === f008) || (self.sudocs.count > 0) || (extract_sudocs(marc).count > 0) || (gpo_item_numbers.count > 0) || has_approved_author?
+      (/^.{17}u.{10}f/ === f008) || (self.sudocs.count.positive?) || (extract_sudocs(marc).count.positive?) || (gpo_item_numbers.count.positive?) || has_approved_author?
     end
 
     # Check author_lccns against the list of approved authors
     def has_approved_author?
-      AuthorityList.lccns.intersection(author_lccns).count > 0
+      AuthorityList.lccns.intersection(author_lccns).count.positive?
     end
 
     # Check added_entry_lccns against the list of approved authors
     def has_approved_added_entry?
-      AuthorityList.lccns.intersection(added_entry_lccns).count > 0
+      AuthorityList.lccns.intersection(added_entry_lccns).count.positive?
     end
 
     # Extracts SuDocs
@@ -397,7 +397,7 @@ module Registry
       tag, subcode = @@marc_profiles[self.org_code]['enum_chrons'].split(/ /)
       marc.each_by_tag(tag) do |field|
         subfield_codes = field.find_all { |subfield| subfield.code == subcode }
-        if subfield_codes.count > 0
+        if subfield_codes.count.positive?
           if self.org_code == 'dgpo'
             # take the second one if it's from gpo?
             if subfield_codes.count > 1
@@ -455,7 +455,7 @@ module Registry
         # anything we can do with it?
         # .explode might be able to use ec_string == '' if there is a relevant
         # pub_date/sudoc in the MARC
-        if exploded.keys.count > 0
+        if exploded.keys.count.positive?
           exploded.each do |canonical, features|
             # series may return exploded items all referencing the same feature set.
             # since we are changing it we need multiple copies
@@ -508,7 +508,7 @@ module Registry
           parsed_ec = parse_ec ec_string
           if !parsed_ec.nil?
             exploded = explode(parsed_ec, self)
-            if exploded.keys.count > 0
+            if exploded.keys.count.positive?
               exploded.each do |canonical, features|
                 ecs << canonical
               end
@@ -611,7 +611,7 @@ module Registry
       else
         regrec = RegistryRecord.new([self.source_id], ec, reason_str)
       end
-      if regrec.source_record_ids.count == 0
+      if regrec.source_record_ids.count.zero?
         raise "No source record ids! source_id: #{self.source_id}"
       end
       regrec.save
@@ -621,65 +621,65 @@ module Registry
     def series
       @series ||= []
       # try to set it
-      if (self.oclc_resolved.map(&:to_i) & Series::FederalRegister.oclcs).count > 0
+      if (self.oclc_resolved.map(&:to_i) & Series::FederalRegister.oclcs).count.positive?
         @series << 'FederalRegister'
       end
-      if (self.oclc_resolved.map(&:to_i) & Series::StatutesAtLarge.oclcs).count > 0
+      if (self.oclc_resolved.map(&:to_i) & Series::StatutesAtLarge.oclcs).count.positive?
         @series << 'StatutesAtLarge'
       end
-      if (self.oclc_resolved.map(&:to_i) & Series::AgriculturalStatistics.oclcs).count > 0
+      if (self.oclc_resolved.map(&:to_i) & Series::AgriculturalStatistics.oclcs).count.positive?
         @series << 'AgriculturalStatistics'
       end
-      if (self.oclc_resolved.map(&:to_i) & Series::MonthlyLaborReview.oclcs).count > 0
+      if (self.oclc_resolved.map(&:to_i) & Series::MonthlyLaborReview.oclcs).count.positive?
         @series << 'MonthlyLaborReview'
       end
-      if (self.oclc_resolved.map(&:to_i) & Series::MineralsYearbook.oclcs).count > 0
+      if (self.oclc_resolved.map(&:to_i) & Series::MineralsYearbook.oclcs).count.positive?
         @series << 'MineralsYearbook'
       end
-      if (self.oclc_resolved.map(&:to_i) & Series::StatisticalAbstract.oclcs).count > 0
+      if (self.oclc_resolved.map(&:to_i) & Series::StatisticalAbstract.oclcs).count.positive?
         @series << 'StatisticalAbstract'
       end
-      if (((self.oclc_resolved.map(&:to_i) & Series::UnitedStatesReports.oclcs).count > 0) ||
-        (self.sudocs.grep(/^#{::Regexp.escape(Series::UnitedStatesReports.sudoc_stem)}/).count > 0))
+      if (((self.oclc_resolved.map(&:to_i) & Series::UnitedStatesReports.oclcs).count.positive?) ||
+        (self.sudocs.grep(/^#{::Regexp.escape(Series::UnitedStatesReports.sudoc_stem)}/).count.positive?))
         @series << 'UnitedStatesReports'
       end
-      if self.sudocs.grep(/^#{::Regexp.escape(Series::CivilRightsCommission.sudoc_stem)}/).count > 0
+      if self.sudocs.grep(/^#{::Regexp.escape(Series::CivilRightsCommission.sudoc_stem)}/).count.positive?
         @series << 'CivilRightsCommission'
       end
-      if (self.oclc_resolved.map(&:to_i) & Series::CongressionalRecord.oclcs).count > 0
+      if (self.oclc_resolved.map(&:to_i) & Series::CongressionalRecord.oclcs).count.positive?
         @series << 'CongressionalRecord'
       end
-      if self.sudocs.grep(/^#{::Regexp.escape(Series::ForeignRelations.sudoc_stem)}/).count > 0
+      if self.sudocs.grep(/^#{::Regexp.escape(Series::ForeignRelations.sudoc_stem)}/).count.positive?
         @series << 'ForeignRelations'
       end
-      if (((self.oclc_resolved.map(&:to_i) & Series::CongressionalSerialSet.oclcs).count > 0) ||
-        (self.sudocs.grep(/^#{::Regexp.escape(Series::CongressionalSerialSet.sudoc_stem)}/).count > 0))
+      if (((self.oclc_resolved.map(&:to_i) & Series::CongressionalSerialSet.oclcs).count.positive?) ||
+        (self.sudocs.grep(/^#{::Regexp.escape(Series::CongressionalSerialSet.sudoc_stem)}/).count.positive?))
         @series << 'CongressionalSerialSet'
       end
-      if ((self.sudocs.grep(/^#{::Regexp.escape(Series::EconomicReportOfThePresident.sudoc_stem)}/).count > 0) ||
-        ((self.oclc_resolved.map(&:to_i) & Series::EconomicReportOfThePresident.oclcs).count > 0))
+      if ((self.sudocs.grep(/^#{::Regexp.escape(Series::EconomicReportOfThePresident.sudoc_stem)}/).count.positive?) ||
+        ((self.oclc_resolved.map(&:to_i) & Series::EconomicReportOfThePresident.oclcs).count.positive?))
         @series << 'EconomicReportOfThePresident'
       end
-      if (self.oclc_resolved.map(&:to_i) & Series::ReportsOfInvestigations.oclcs).count > 0
+      if (self.oclc_resolved.map(&:to_i) & Series::ReportsOfInvestigations.oclcs).count.positive?
         @series << 'ReportsOfInvestigations'
       end
-      if (self.oclc_resolved.map(&:to_i) & Series::DecisionsOfTheCourtOfVeteransAppeals.oclcs).count > 0
+      if (self.oclc_resolved.map(&:to_i) & Series::DecisionsOfTheCourtOfVeteransAppeals.oclcs).count.positive?
         @series << 'DecisionsOfTheCourtOfVeteransAppeals'
       end
-      if (self.oclc_resolved.map(&:to_i) & Series::JournalOfTheNationalCancerInstitute.oclcs).count > 0
+      if (self.oclc_resolved.map(&:to_i) & Series::JournalOfTheNationalCancerInstitute.oclcs).count.positive?
         @series << 'JournalOfTheNationalCancerInstitute'
       end
-      if (self.oclc_resolved.map(&:to_i) & Series::CancerTreatmentReport.oclcs).count > 0
+      if (self.oclc_resolved.map(&:to_i) & Series::CancerTreatmentReport.oclcs).count.positive?
         @series << 'CancerTreatmentReport'
       end
-      if (self.oclc_resolved.map(&:to_i) & Series::VitalStatistics.oclcs).count > 0
+      if (self.oclc_resolved.map(&:to_i) & Series::VitalStatistics.oclcs).count.positive?
         @series << 'VitalStatistics'
       end
-      if (self.oclc_resolved.map(&:to_i) & Series::PublicPapersOfThePresidents.oclcs).count > 0
+      if (self.oclc_resolved.map(&:to_i) & Series::PublicPapersOfThePresidents.oclcs).count.positive?
         @series << 'PublicPapersOfThePresidents'
       end
 
-      if !@series.nil? && (@series.count > 0)
+      if !@series.nil? && (@series.count.positive?)
         @series.uniq!
         extend(Module.const_get('Registry::Series::' + @series.first))
         load_context

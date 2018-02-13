@@ -125,7 +125,7 @@ module Registry
         end
 
         enum_chrons = {}
-        return {} if ec.keys.count == 0
+        return {} if ec.keys.count.zero?
 
         canon = ''
         if ec['year'] && !ec['part'].nil?

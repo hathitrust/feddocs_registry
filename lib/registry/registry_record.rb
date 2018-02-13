@@ -53,7 +53,7 @@ module Registry
       @@collator.extract_fields(@sources).each_with_index { |(k, v), i| self[k] = v }
 
       @sources.each do |s|
-        if !s.series.nil? && (s.series.count > 0)
+        if !s.series.nil? && (s.series.count.positive?)
           self.series = s.series.map { |s| s.gsub(/([A-Z])/, ' \1').strip }
         end
       end
@@ -64,17 +64,17 @@ module Registry
       self.registry_id ||= SecureRandom.uuid
       self.enumchron_display = enum_chron
       set_ht_availability
-      if (print_holdings_t.nil? || (print_holdings_t.count == 0)) &&
-         (oclcnum_t.count > 0)
+      if (print_holdings_t.nil? || (print_holdings_t.count.zero?)) &&
+         (oclcnum_t.count.positive?)
         print_holdings
       end
     end
 
     # Sets HT availability based on ht_ids_fv and ht_ids_lv fields
     def set_ht_availability
-      if ht_ids_fv.count > 0
+      if ht_ids_fv.count.positive?
         self.ht_availability = 'Full View'
-      elsif ht_ids_lv.count > 0
+      elsif ht_ids_lv.count.positive?
         self.ht_availability = 'Limited View'
       else
         self.ht_availability = 'Not In HathiTrust'
@@ -101,7 +101,7 @@ module Registry
         end
         source_record_ids.uniq!
         self.source_org_codes.uniq!
-        if !source_record.series.nil? && (source_record.series.count > 0)
+        if !source_record.series.nil? && (source_record.series.count.positive?)
           self.series = source_record.series.map { |s| s.gsub(/([A-Z])/, ' \1').strip }
           series.uniq!
         end
@@ -184,13 +184,13 @@ module Registry
     # If any of the source records are for monograph bibs
     # return true
     def is_monograph?
-      sources.select { |s| s.source['leader'] =~ /^.{7}m/ }.count > 0
+      sources.select { |s| s.source['leader'] =~ /^.{7}m/ }.count.positive?
     end
 
     def save
       # make sure our source records are uniq and that we have 1
       self.source_record_ids = source_record_ids.uniq
-      raise 'No source records for this Reg Rec' if source_record_ids.count == 0
+      raise 'No source records for this Reg Rec' if source_record_ids.count.zero?
       self.last_modified = Time.now.utc
       super
     end
@@ -201,31 +201,31 @@ module Registry
     # enum_chron - an enumchron string
     def RegistryRecord.cluster(s, enum_chron)
       # OCLC first
-      if s.oclc_resolved.count > 0
+      if s.oclc_resolved.count.positive?
         rec = RegistryRecord.where(oclcnum_t: s.oclc_resolved,
                                    enumchron_display: enum_chron,
                                    deprecated_timestamp: { "$exists": 0 }).first
       end
       # lccn
-      if (s.lccn_normalized.count > 0) && !rec
+      if (s.lccn_normalized.count.positive?) && !rec
         rec = RegistryRecord.where(lccn_t: s.lccn_normalized,
                                    enumchron_display: enum_chron,
                                    deprecated_timestamp: { "$exists": 0 }).first
       end
       # isbn
-      if (s.isbns_normalized.count > 0) && !rec
+      if (s.isbns_normalized.count.positive?) && !rec
         rec = RegistryRecord.where(isbn_t: s.isbns_normalized,
                                    enumchron_display: enum_chron,
                                    deprecated_timestamp: { "$exists": 0 }).first
       end
       # issn
-      if (s.issn_normalized.count > 0) && !rec
+      if (s.issn_normalized.count.positive?) && !rec
         rec = RegistryRecord.where(issn_t: s.issn_normalized,
                                    enumchron_display: enum_chron,
                                    deprecated_timestamp: { "$exists": 0 }).first
       end
       # sudoc
-      if (s.sudocs.count > 0) && !rec
+      if (s.sudocs.count.positive?) && !rec
         rec = RegistryRecord.where(sudoc_display: s.sudocs,
                                    enumchron_display: enum_chron,
                                    deprecated_timestamp: { "$exists": 0 }).first
@@ -236,7 +236,7 @@ module Registry
     def print_holdings(oclcs = nil)
       oclcs ||= oclcnum_t
       self.print_holdings_t = []
-      if oclcs.count > 0
+      if oclcs.count.positive?
         get_holdings = "SELECT DISTINCT(member_id) from holdings_memberitem
                         WHERE oclc IN(#{@@db_conn.escape(oclcs.join(','))})"
         @results = @@db_conn.query(get_holdings)

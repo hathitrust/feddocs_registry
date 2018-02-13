@@ -1,3 +1,5 @@
+Style/NumericPredicate:
+  AutoCorrect: true
 
 Style/FrozenStringLiteralComment:
   Enabled: false
