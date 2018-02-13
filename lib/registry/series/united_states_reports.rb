@@ -70,9 +70,7 @@ module Registry
 
       def explode(ec, src = nil)
         enum_chrons = {}
-        if ec.nil?
-          return {}
-        end
+        return {} if ec.nil?
 
         ecs = []
         if ec['start_volume']
@@ -96,17 +94,13 @@ module Registry
           canon = @@volumes[ec['volume']]
         elsif ec['volume']
           canon = "Volume:#{ec['volume']}"
-          if ec['part']
-            canon += ", Part:#{ec['part']}"
-          end
+          canon += ", Part:#{ec['part']}" if ec['part']
           if ec['year']
             canon += ", Year:#{ec['year']}"
           elsif ec['start_year']
             canon += ", Years:#{ec['start_year']}-#{ec['end_year']}"
           end
-          if ec['reporter']
-            canon += ", #{ec['reporter']} #{ec['number']}"
-          end
+          canon += ", #{ec['reporter']} #{ec['number']}" if ec['reporter']
         end
         canon
       end

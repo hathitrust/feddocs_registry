@@ -131,9 +131,7 @@ module Registry
       # Canonical string format: Serial Number:<serial number>, Part:<part number>
       def explode(ec, src = nil)
         enum_chrons = {}
-        if ec.nil?
-          return {}
-        end
+        return {} if ec.nil?
 
         # serial number and part are sufficient to uniquely identify them.
         # we'll keep the other parsed tokens around, but they aren't necessary for

@@ -33,9 +33,7 @@ module Registry
         ec_string.gsub!(/ CD$/, '')
 
         # fix the three digit years
-        if ec_string.match?(/^9\d\d[^0-9]*/)
-          ec_string = '1' + ec_string
-        end
+        ec_string = '1' + ec_string if ec_string.match?(/^9\d\d[^0-9]*/)
 
         # simple year
         # 2008 /* 264 */
@@ -71,9 +69,7 @@ module Registry
       #
       def explode(ec, src = nil)
         enum_chrons = {}
-        if ec.nil?
-          return {}
-        end
+        return {} if ec.nil?
 
         if ec['year']
           enum_chrons[ec['year']] = ec

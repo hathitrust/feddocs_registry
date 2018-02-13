@@ -125,9 +125,7 @@ module Registry
         end
 
         enum_chrons = {}
-        if ec.keys.count == 0
-          return {}
-        end
+        return {} if ec.keys.count == 0
 
         canon = ''
         if ec['year'] && !ec['part'].nil?
@@ -172,16 +170,10 @@ module Registry
 
       def canonicalize(ec)
         canon = []
-        if ec['year']
-          canon << "Year:#{ec['year']}"
-        end
-        if ec['part']
-          canon << "Part:#{ec['part']}"
-        end
+        canon << "Year:#{ec['year']}" if ec['year']
+        canon << "Part:#{ec['part']}" if ec['part']
         if !canon.empty?
           canon.join(', ')
-        else
-          nil
         end
       end
 

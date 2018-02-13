@@ -119,12 +119,8 @@ module Registry
           fields['string']
         end
       end
-      if enum_chrons.count == 0
-        enum_chrons << ''
-      end
-      if org_code == 'miaahdl'
-        extract_holdings marc
-      end
+      enum_chrons << '' if enum_chrons.count == 0
+      extract_holdings marc if org_code == 'miaahdl'
     end
 
     # A source record may be deprecated if it is out of scope.
@@ -170,9 +166,7 @@ module Registry
       begin
         id = source['fields'].find { |f| f[field] }[field].delete(' ')
         # this will eliminate leading zeros but only for actual integer ids
-        if id.match?(/^[0-9]+$/)
-          id.gsub!(/^0+/, '')
-        end
+        id.gsub!(/^0+/, '') if id.match?(/^[0-9]+$/)
       rescue
         # the field doesn't exist
         id = ''
@@ -186,13 +180,9 @@ module Registry
       if self.org_code == 'miaahdl'
         availability = 'Limited View'
         marc.each_by_tag('974') do |field|
-          if field['r'] == 'pd'
-            availability = 'Full View'
-          end
+          availability = 'Full View' if field['r'] == 'pd'
         end
         availability
-      else
-        nil
       end
     end
 
@@ -249,9 +239,7 @@ module Registry
           if !field['2'].nil? && field['2'] !~/^sudoc/i && field['z'].nil?
             self.non_sudocs << field['a'].chomp
             # if ind1 == 0 then it is also bad MARC
-            if field.indicator1 == '0'
-              self.invalid_sudocs << field['a'].chomp
-            end
+            self.invalid_sudocs << field['a'].chomp if field.indicator1 == '0'
 
           # ind1 says it is
           elsif field.indicator1 == '0' # and no subfield $2 or $2 is sudoc
@@ -292,9 +280,7 @@ module Registry
       marc.each_by_tag('035') do |field|
         if field['a'] && OCLCPAT.match(field['a'])
           oclc = $1.to_i
-          if oclc
-            self.oclc_alleged << oclc
-          end
+          self.oclc_alleged << oclc if oclc
         end
       end
 
@@ -323,9 +309,7 @@ module Registry
       marc.each_by_tag('776') do |field|
         subfield_ws = field.find_all { |subfield| subfield.code == 'w' }
         subfield_ws.each do |sub|
-          if OCLCPAT.match(sub.value)
-            self.oclc_alleged << $1.to_i
-          end
+          self.oclc_alleged << $1.to_i if OCLCPAT.match(sub.value)
         end
       end
 
@@ -388,9 +372,7 @@ module Registry
         if field['a'] && (field['a'] != '')
           self.isbns << field['a']
           isbn = StdNum::ISBN.normalize(field['a'])
-          if isbn && (isbn != '')
-            self.isbns_normalized << isbn
-          end
+          self.isbns_normalized << isbn if isbn && (isbn != '')
         end
       end
 
@@ -440,9 +422,7 @@ module Registry
     # Remove them
     def remove_sudocs_from_enumchrons(sudocs, ecs)
       ecs.each do |e|
-        if sudocs.map { |s| s.delete(' ') }.include? e.delete(' ')
-          ecs.delete(e)
-        end
+        ecs.delete(e) if sudocs.map { |s| s.delete(' ') }.include? e.delete(' ')
       end
       ecs
     end
@@ -460,18 +440,14 @@ module Registry
       @marc = m unless m.nil?
 
       ec_strings = extract_enum_chron_strings marc
-      if ec_strings == []
-        ec_strings = ['']
-      end
+      ec_strings = [''] if ec_strings == []
 
       # parse out all of their features
       ec_strings.uniq.each do |ec_string|
         # Series specific parsing
         parsed_ec = parse_ec ec_string
 
-        if parsed_ec.nil?
-          parsed_ec = {}
-        end
+        parsed_ec = {} if parsed_ec.nil?
 
         parsed_ec['string'] = ec_string
         exploded = explode(parsed_ec, self)
@@ -718,9 +694,7 @@ module Registry
 
       # fix 3 digit years, this is more restrictive than most series specific
       # work.
-      if ec_string.match?(/^9\d\d$/)
-        ec_string = '1' + ec_string
-      end
+      ec_string = '1' + ec_string if ec_string.match?(/^9\d\d$/)
 
       # tokens
       # divider
@@ -776,9 +750,7 @@ module Registry
       ] # patterns
 
       patterns.each do |p|
-        unless m.nil?
-          break
-        end
+        break unless m.nil?
         m ||= p.match(ec_string)
       end
 
@@ -789,9 +761,7 @@ module Registry
 
         # year unlikely. Probably don't know what we think we know.
         # From the regex, year can't be < 1800
-        if ec['year'].to_i > (Time.now.year + 5)
-          ec = nil
-        end
+        ec = nil if ec['year'].to_i > (Time.now.year + 5)
       end
       ec
     end
@@ -800,9 +770,7 @@ module Registry
       # we would need to know something about the title to do this
       # accurately, so we're not really doing anything here
       enum_chrons = {}
-      if ec.nil?
-        return {}
-      end
+      return {} if ec.nil?
 
       ecs = [ec]
       ecs.each do |ec|
@@ -818,9 +786,7 @@ module Registry
       # default order is:
       t_order = ['year', 'volume', 'part', 'number', 'book', 'sheet']
       canon = t_order.reject { |t| ec[t].nil? }.collect { |t| t.to_s.capitalize + ':' + ec[t] }.join(', ')
-      if canon == ''
-        canon = nil
-      end
+      canon = nil if canon == ''
       canon
     end
 

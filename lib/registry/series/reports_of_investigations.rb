@@ -122,9 +122,7 @@ module Registry
         ] # patterns
 
         patterns.each do |p|
-          unless m.nil?
-            break
-          end
+          break unless m.nil?
           m ||= p.match(ec_string)
         end
 
@@ -143,9 +141,7 @@ module Registry
 
       def explode(ec, src = nil)
         enum_chrons = {}
-        if ec.nil?
-          return {}
-        end
+        return {} if ec.nil?
 
         ecs = []
         if ec['start_number']
@@ -170,9 +166,7 @@ module Registry
 
       def canonicalize(ec)
         # Number:8560
-        if ec['number']
-          canon = "Number:#{ec['number']}"
-        end
+        canon = "Number:#{ec['number']}" if ec['number']
         canon
       end
 

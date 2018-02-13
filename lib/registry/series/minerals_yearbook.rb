@@ -18,9 +18,7 @@ module Registry
         m = nil
 
         # fix 3 digit years
-        if ec_string.match?(/^9\d\d[^0-9]*/)
-          ec_string = '1' + ec_string
-        end
+        ec_string = '1' + ec_string if ec_string.match?(/^9\d\d[^0-9]*/)
 
         # useless junk
         ec_string.sub!(/^TN23 \. U612 /, '')
@@ -195,9 +193,7 @@ module Registry
         ] # patterns
 
         patterns.each do |p|
-          unless m.nil?
-            break
-          end
+          break unless m.nil?
           m ||= p.match(ec_string)
         end
 
@@ -226,9 +222,7 @@ module Registry
 
       def explode(ec, src = nil)
         enum_chrons = {}
-        if ec.nil?
-          return {}
-        end
+        return {} if ec.nil?
 
         ecs = []
         if ec['start_volume']
@@ -261,9 +255,7 @@ module Registry
       # free text is terrible. the solution is just as bad
       def normalize_description(desc)
         # remove "AREA REPORTS" if it's not the only thing
-        if desc !~ /^AREA REPORTS$/
-          desc.sub!(/^AREA\s?RE?P(OR)?TS:?\s?/, '')
-        end
+        desc.sub!(/^AREA\s?RE?P(OR)?TS:?\s?/, '') if desc !~ /^AREA REPORTS$/
         desc.sub!(/^INTL:/, '')
 
         desc.sub!(/U\.?\s?S\.?\s?S\.?\s?R\.?\s?/, 'USSR')
@@ -298,15 +290,9 @@ module Registry
           elsif ec['start_year']
             canon = "Year:#{ec['start_year']}-#{ec['end_year']}"
           end
-          if ec['volume']
-            canon += ", Volume:#{ec['volume']}"
-          end
-          if ec['part']
-            canon += ", Part:#{ec['part']}"
-          end
-          if ec['description']
-            canon += ", Description:#{ec['description']}"
-          end
+          canon += ", Volume:#{ec['volume']}" if ec['volume']
+          canon += ", Part:#{ec['part']}" if ec['part']
+          canon += ", Description:#{ec['description']}" if ec['description']
         end
         canon
       end

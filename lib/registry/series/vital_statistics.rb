@@ -32,13 +32,9 @@ module Registry
         ec_string.gsub!(/ = .*$/, '')
 
         # fix the three digit years
-        if ec_string.match?(/^[89]\d\d[^0-9]*/)
-          ec_string = '1' + ec_string
-        end
+        ec_string = '1' + ec_string if ec_string.match?(/^[89]\d\d[^0-9]*/)
         # seriously
-        if ec_string.match?(/^0\d\d[^0-9]*/)
-          ec_string = '2' + ec_string
-        end
+        ec_string = '2' + ec_string if ec_string.match?(/^0\d\d[^0-9]*/)
 
         # tokens
         y = '(Y(ear|R\.)?[:\s])?(?<year>\d{4})'
@@ -203,9 +199,7 @@ module Registry
         ] # patterns
 
         patterns.each do |p|
-          unless m.nil?
-            break
-          end
+          break unless m.nil?
           m ||= p.match(ec_string)
         end
 
@@ -218,9 +212,7 @@ module Registry
 
       def explode(ec, src = nil)
         enum_chrons = {}
-        if ec.nil?
-          return {}
-        end
+        return {} if ec.nil?
 
         ecs = []
         ecs << ec
@@ -237,28 +229,14 @@ module Registry
 
       def canonicalize(ec)
         canon = []
-        if ec['year']
-          canon << "Year:#{ec['year']}"
-        end
-        if ec['volume']
-          canon << "Volume:#{ec['volume']}"
-        end
-        if ec['part']
-          canon << "Part:#{ec['part']}"
-        end
-        if ec['section']
-          canon << "Section:#{ec['section']}"
-        end
-        if ec['appendix']
-          canon << 'Appendix'
-        end
-        if ec['supplement']
-          canon << 'Supplement'
-        end
+        canon << "Year:#{ec['year']}" if ec['year']
+        canon << "Volume:#{ec['volume']}" if ec['volume']
+        canon << "Part:#{ec['part']}" if ec['part']
+        canon << "Section:#{ec['section']}" if ec['section']
+        canon << 'Appendix' if ec['appendix']
+        canon << 'Supplement' if ec['supplement']
         if !canon.empty?
           canon.join(', ')
-        else
-          nil
         end
       end
 

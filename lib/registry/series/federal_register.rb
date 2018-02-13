@@ -147,9 +147,7 @@ module Registry
       # enum_chrons - { <canonical ec string> : {<parsed features>}, }
       def explode(ec, src = nil)
         enum_chrons = {}
-        if ec.nil?
-          return {}
-        end
+        return {} if ec.nil?
 
         if ec['number'] && ec['volume']
           enum_chrons["Volume:#{ec["volume"]}, Number:#{ec["number"]}"] = ec

@@ -252,9 +252,7 @@ module Registry
         ] # patterns
 
         patterns.each do |p|
-          unless m.nil?
-            break
-          end
+          break unless m.nil?
           m ||= p.match(ec_string)
         end
 
@@ -296,9 +294,7 @@ module Registry
 
       def explode(ec, src = nil)
         enum_chrons = {}
-        if ec.nil?
-          return {}
-        end
+        return {} if ec.nil?
 
         ecs = []
 
@@ -324,9 +320,7 @@ module Registry
 
       def canonicalize(ec)
         canon = []
-        if ec['volume']
-          canon << "Volume:#{ec['volume']}"
-        end
+        canon << "Volume:#{ec['volume']}" if ec['volume']
         if ec['number']
           canon << "Number:#{ec['number']}"
           # ec['month'] = JournalOfTheNationalCancerInstitute.month_from_number(ec['number'])
@@ -337,22 +331,16 @@ module Registry
         if !ec['number'] && !ec['start_number'] && ec['start_page']
           canon << "Pages:#{ec['start_page']}-#{ec['end_page']}"
         end
-        if ec['year']
-          canon << "Year:#{ec['year']}"
-        end
+        canon << "Year:#{ec['year']}" if ec['year']
         if ec['start_year']
           canon << "Years:#{ec['start_year']}-#{ec['end_year']}"
         end
-        if ec['month'] && !ec['number']
-          canon << "Month:#{ec['month']}"
-        end
+        canon << "Month:#{ec['month']}" if ec['month'] && !ec['number']
         if ec['start_month'] && !ec['number']
           canon << "Months:#{ec['start_month']}-#{ec['end_month']}"
         end
         if !canon.empty?
           canon.join(', ')
-        else
-          nil
         end
       end
 
@@ -361,8 +349,6 @@ module Registry
         # correspondence
         if year.to_i >= 1976
           (60 + (year.to_i - 1976)).to_s
-        else
-          nil
         end
       end
 
@@ -371,8 +357,6 @@ module Registry
         # correspondence
         if volume.to_i >= 60
           (1976 + (volume.to_i - 60)).to_s
-        else
-          nil
         end
       end
 

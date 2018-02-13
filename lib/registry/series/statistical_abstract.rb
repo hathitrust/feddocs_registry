@@ -39,13 +39,9 @@ module Registry
         ec_string.gsub!(/ - WD/, '')
 
         # fix the three digit years
-        if ec_string.match?(/^[89]\d\d[^0-9]*/)
-          ec_string = '1' + ec_string
-        end
+        ec_string = '1' + ec_string if ec_string.match?(/^[89]\d\d[^0-9]*/)
         # seriously
-        if ec_string.match?(/^0\d\d[^0-9]*/)
-          ec_string = '2' + ec_string
-        end
+        ec_string = '2' + ec_string if ec_string.match?(/^0\d\d[^0-9]*/)
 
         # sometimes years get duplicated
         ec_string.gsub!(/(?<y>\d{4}) \(?\k<y>\)?/, '\k<y>')
@@ -235,35 +231,25 @@ module Registry
       # Canonical string format: <edition number>, <year>-<year>
       def explode(ec, src = nil)
         enum_chrons = {}
-        if ec.nil?
-          return {}
-        end
+        return {} if ec.nil?
 
         # we will trust edition more than year so start there
         if ec['edition']
           canon = StatisticalAbstract.editions[ec['edition']]
-          if canon
-            enum_chrons[canon] = ec
-          end
+          enum_chrons[canon] = ec if canon
         elsif ec['start_edition'] && ec['end_edition']
           # might end up with duplicates for the combined years. Won't matter
           for ed in ec['start_edition']..ec['end_edition']
             canon = StatisticalAbstract.editions[ed]
-            if canon
-              enum_chrons[canon] = ec
-            end
+            enum_chrons[canon] = ec if canon
           end
         elsif ec['year']
           canon = StatisticalAbstract.years[ec['year']]
-          if canon
-            enum_chrons[canon] = ec
-          end
+          enum_chrons[canon] = ec if canon
         elsif ec['start_year'] && ec['end_year']
           for y in ec['start_year']..ec['end_year']
             canon = StatisticalAbstract.years[y]
-            if canon
-              enum_chrons[canon] = ec
-            end
+            enum_chrons[canon] = ec if canon
           end
         end # else enum_chrons still equals {}
 

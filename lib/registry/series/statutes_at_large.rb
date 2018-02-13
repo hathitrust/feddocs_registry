@@ -166,9 +166,7 @@ module Registry
       #
       def explode(ec, src = nil)
         enum_chrons = {}
-        if ec.nil?
-          return {}
-        end
+        return {} if ec.nil?
 
         if canon = canonicalize(ec)
           enum_chrons[canon] = ec

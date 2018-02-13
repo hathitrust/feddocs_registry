@@ -217,9 +217,7 @@ module Registry
         ] # patterns
 
         patterns.each do |p|
-          unless m.nil?
-            break
-          end
+          break unless m.nil?
           m ||= p.match(ec_string)
         end
 
@@ -257,9 +255,7 @@ module Registry
       # Canonical string format: <volume number>, <part>, <index/abstract>
       def explode(ec, src = nil)
         enum_chrons = {}
-        if ec.nil?
-          return {}
-        end
+        return {} if ec.nil?
 
         if canon = canonicalize(ec)
           enum_chrons[canon] = ec.clone
@@ -282,9 +278,7 @@ module Registry
               canon += ", Index:#{ec['index']}"
             end
           end
-          if ec['appendix']
-            canon += ', Appendix'
-          end
+          canon += ', Appendix' if ec['appendix']
         end
         canon
       end

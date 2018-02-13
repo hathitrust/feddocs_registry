@@ -547,9 +547,7 @@ RSpec.describe Registry::SourceRecord, '#extract_identifiers' do
     count = 0
     SourceRecord.all.each do |rec|
       count += 1
-      if count > 20 # arbitrary
-        break
-      end
+      break if count > 20 # arbitrary
       old_oclc_alleged = rec.oclc_alleged
       old_lccn = rec.lccn_normalized
       old_sudocs = rec.sudocs

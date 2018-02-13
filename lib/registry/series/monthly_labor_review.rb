@@ -176,9 +176,7 @@ module Registry
         ] # patterns
 
         patterns.each do |p|
-          unless m.nil?
-            break
-          end
+          break unless m.nil?
           m ||= p.match(ec_string)
         end
 
@@ -202,9 +200,7 @@ module Registry
 
       def explode(ec, src = nil)
         enum_chrons = {}
-        if ec.nil?
-          return {}
-        end
+        return {} if ec.nil?
 
         ecs = []
         if ec['start_number']
@@ -249,23 +245,15 @@ module Registry
             canon += ", Number:#{ec['number']}"
             ec['month'] ||= MONTHS[ec['number'].to_i - 1]
           end
-          if ec['year']
-            canon += ", Year:#{ec['year']}"
-          end
-          if ec['month']
-            canon += ", Month:#{Series.lookup_month(ec['month'])}"
-          end
-          if ec['index']
-            canon += ', Index'
-          end
+          canon += ", Year:#{ec['year']}" if ec['year']
+          canon += ", Month:#{Series.lookup_month(ec['month'])}" if ec['month']
+          canon += ', Index' if ec['index']
         elsif ec['start_volume']
           canon = "Volumes:#{ec['start_volume']}-#{ec['end_volume']}"
           if ec['start_year']
             canon += ", Years:#{ec['start_year']}-#{ec['end_year']}"
           end
-          if ec['index']
-            canon += ", #{ec['index']}"
-          end
+          canon += ", #{ec['index']}" if ec['index']
         end
         canon
       end

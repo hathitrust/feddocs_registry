@@ -153,9 +153,7 @@ module Registry
       self.deprecated_reason = reason
       self.deprecated_timestamp = Time.now.utc
       self.suppressed = true
-      if successors
-        self[:successors] = successors
-      end
+      self[:successors] = successors if successors
 
       save
     end
@@ -192,9 +190,7 @@ module Registry
     def save
       # make sure our source records are uniq and that we have 1
       self.source_record_ids = source_record_ids.uniq
-      if source_record_ids.count == 0
-        raise 'No source records for this Reg Rec'
-      end
+      raise 'No source records for this Reg Rec' if source_record_ids.count == 0
       self.last_modified = Time.now.utc
       super
     end

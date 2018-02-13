@@ -82,9 +82,7 @@ module Registry
         ] # patterns
 
         patterns.each do |p|
-          unless m.nil?
-            break
-          end
+          break unless m.nil?
           m ||= p.match(ec_string)
         end
 
@@ -97,13 +95,9 @@ module Registry
             ec['decision_year'] = Series.correct_year(ec['decision_year'])
           end
 
-          if ec['year']
-            ec['year'] = Series.correct_year(ec['year'])
-          end
+          ec['year'] = Series.correct_year(ec['year']) if ec['year']
 
-          if ec['decision_year'] && !ec['year']
-            ec['year'] = ec['decision_year']
-          end
+          ec['year'] = ec['decision_year'] if ec['decision_year'] && !ec['year']
 
           if ec['month'] && ec['month'] =~/^[0-9]+$/
             ec['month'] = MONTHS[ec['month'].to_i - 1]
@@ -126,9 +120,7 @@ module Registry
 
       def explode(ec, src = nil)
         enum_chrons = {}
-        if ec.nil?
-          return {}
-        end
+        return {} if ec.nil?
 
         ecs = []
         ecs << ec
@@ -147,18 +139,14 @@ module Registry
         # Number:8560
         if ec['number']
           canon = "Number:#{ec['number']}"
-          if ec['decision']
-            canon += "-#{ec['decision']}"
-          end
+          canon += "-#{ec['decision']}" if ec['decision']
         end
         if ec['year']
           canon += ", Decision Date:#{ec['year']}"
           if ec['month']
             month_num = (MONTHS.index(Series.lookup_month(ec['month'])) + 1).to_s.rjust(2, '0')
             canon += "-#{month_num}"
-            if ec['day']
-              canon += "-#{ec['day'].rjust(2, '0')}"
-            end
+            canon += "-#{ec['day'].rjust(2, '0')}" if ec['day']
           end
         end
         canon

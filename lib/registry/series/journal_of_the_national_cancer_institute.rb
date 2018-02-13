@@ -237,9 +237,7 @@ module Registry
         ] # patterns
 
         patterns.each do |p|
-          unless m.nil?
-            break
-          end
+          break unless m.nil?
           m ||= p.match(ec_string)
         end
 
@@ -281,9 +279,7 @@ module Registry
 
       def explode(ec, src = nil)
         enum_chrons = {}
-        if ec.nil?
-          return {}
-        end
+        return {} if ec.nil?
 
         ecs = []
 #         #lost cause due to publication history
@@ -309,34 +305,24 @@ module Registry
 
       def canonicalize(ec)
         canon = []
-        if ec['volume']
-          canon << "Volume:#{ec['volume']}"
-        end
-        if ec['number']
-          canon << "Number:#{ec['number']}"
-        end
+        canon << "Volume:#{ec['volume']}" if ec['volume']
+        canon << "Number:#{ec['number']}" if ec['number']
         if ec['start_number']
           canon << "Numbers:#{ec['start_number']}-#{ec['end_number']}"
         end
         if !ec['number'] && !ec['start_number'] && ec['start_page']
           canon << "Pages:#{ec['start_page']}-#{ec['end_page']}"
         end
-        if ec['year']
-          canon << "Year:#{ec['year']}"
-        end
+        canon << "Year:#{ec['year']}" if ec['year']
         if ec['start_year']
           canon << "Years:#{ec['start_year']}-#{ec['end_year']}"
         end
-        if ec['month']
-          canon << "Month:#{ec['month']}"
-        end
+        canon << "Month:#{ec['month']}" if ec['month']
         if ec['start_month']
           canon << "Months:#{ec['start_month']}-#{ec['end_month']}"
         end
         if !canon.empty?
           canon.join(', ')
-        else
-          nil
         end
       end
 
@@ -345,8 +331,6 @@ module Registry
         # correspondence
         if year.to_i >= 1988
           (80 + (year.to_i - 1988)).to_s
-        else
-          nil
         end
       end
 
@@ -355,8 +339,6 @@ module Registry
         # correspondence
         if volume.to_i >= 80
           (1988 + (volume.to_i - 80)).to_s
-        else
-          nil
         end
       end
 

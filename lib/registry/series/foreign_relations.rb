@@ -39,13 +39,9 @@ module Registry
         ec_string.gsub!(/#{div}SUPPLEMENT$/, '')
 
         # fix the three digit years
-        if ec_string.match?(/^[89]\d\d[^0-9]*/)
-          ec_string = '1' + ec_string
-        end
+        ec_string = '1' + ec_string if ec_string.match?(/^[89]\d\d[^0-9]*/)
         # seriously
-        if ec_string.match?(/^0\d\d[^0-9]*/)
-          ec_string = '2' + ec_string
-        end
+        ec_string = '2' + ec_string if ec_string.match?(/^0\d\d[^0-9]*/)
 
         # fix some manglings
         ec_string.gsub!(/(\d{2,4})V/, '\1 V')
@@ -196,9 +192,7 @@ module Registry
       #
       def explode(ec, src = nil)
         enum_chrons = {}
-        if ec.nil?
-          return {}
-        end
+        return {} if ec.nil?
 
         if canon = canonicalize(ec)
           ec['canon'] = canon
@@ -214,15 +208,9 @@ module Registry
           if ec['start_year']
             parts << "Year:#{ec['start_year']}-#{ec['end_year']}"
           end
-          if ec['year']
-            parts << "Year:#{ec['year']}"
-          end
-          if ec['volume']
-            parts << "Volume:#{ec['volume']}"
-          end
-          if ec['part']
-            parts << "Part:#{ec['part']}"
-          end
+          parts << "Year:#{ec['year']}" if ec['year']
+          parts << "Volume:#{ec['volume']}" if ec['volume']
+          parts << "Part:#{ec['part']}" if ec['part']
           canon = parts.join(', ')
         end
         canon
