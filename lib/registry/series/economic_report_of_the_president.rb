@@ -1,7 +1,5 @@
 require 'pp'
-=begin
-  Yearly, sometimes in multiple parts. We need to look at pub_date for monographs.
-=end
+#   Yearly, sometimes in multiple parts. We need to look at pub_date for monographs.
 
 module Registry
   module Series

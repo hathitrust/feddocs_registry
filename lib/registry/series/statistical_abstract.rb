@@ -1,9 +1,7 @@
 require 'pp'
-=begin
-  The Statistical Abstract was published annually, 1878 through 2012.
-  The 1944/1945, 1982/1983, and 2004/2005 editions were published as two year
-  volumes. No volume was produced for 1884 or 1927.
-=end
+#   The Statistical Abstract was published annually, 1878 through 2012.
+#   The 1944/1945, 1982/1983, and 2004/2005 editions were published as two year
+#   volumes. No volume was produced for 1884 or 1927.
 
 module Registry
   module Series

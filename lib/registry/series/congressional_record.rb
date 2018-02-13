@@ -1,6 +1,4 @@
 require 'pp'
-=begin
-=end
 
 module Registry
   module Series

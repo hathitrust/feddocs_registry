@@ -37,7 +37,7 @@ RSpec.describe RC, '#extract_fields' do
 
   it 'collects all the fields from all source records' do
     all_fields = []
-    # todo: bad test!
+    # TODO: bad test!
     @regrec.sources.each do |key, value|
       all_fields << key
     end

@@ -1,6 +1,4 @@
 require 'pp'
-=begin
-=end
 
 module Registry
   module Series
@@ -288,18 +286,16 @@ module Registry
         end
 
         ecs = []
-=begin
-        #lost cause due to publication history
-        if ec['start_number']
-          for num in ec['start_number'] .. ec['end_number']
-            copy = ec.clone
-            copy['number'] = num
-            ecs << copy
-          end
-        else
-          ecs << ec
-        end
-=end
+#         #lost cause due to publication history
+#         if ec['start_number']
+#           for num in ec['start_number'] .. ec['end_number']
+#             copy = ec.clone
+#             copy['number'] = num
+#             ecs << copy
+#           end
+#         else
+#           ecs << ec
+#         end
         ecs << ec
         ecs.each do |ec|
           if canon = canonicalize(ec)

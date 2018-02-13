@@ -18,9 +18,6 @@ describe 'PublicPapersOfThePresidents' do
           # puts 'no match: ' + line
         else
           res = src.explode(ec)
-          res.each do |canon, features|
-            # puts canon
-          end
           matches += 1
         end
       end

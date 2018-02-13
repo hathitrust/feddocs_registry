@@ -37,7 +37,7 @@ describe 'Series.correct_year' do
     expect(Series.correct_year(895)).to eq('1895')
   end
 
-  # todo: not entirely sure what we should do with these.
+  # TODO: not entirely sure what we should do with these.
   # Should we return nil?
   it 'handles bogus centuries' do
     expect(Series.correct_year(650)).to eq('2650')

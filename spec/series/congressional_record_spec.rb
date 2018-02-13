@@ -113,12 +113,10 @@ describe 'Congressional Record' do
       expect(src.parse_ec('V. 84. PT. 10 1939')['part']).to eq('10')
     end
 
-=begin
-    # We're going to assume Volume. Might as well decide on something.
-    it "can NOT parse '108/PT. 17'" do
-      expect(src.parse_ec('108/PT. 17')).to be_nil
-    end
-=end
+#     # We're going to assume Volume. Might as well decide on something.
+#     it "can NOT parse '108/PT. 17'" do
+#       expect(src.parse_ec('108/PT. 17')).to be_nil
+#     end
     it "can parse '108/PT. 17'" do
       expect(src.parse_ec('108/PT. 17')['part']).to eq('17')
     end

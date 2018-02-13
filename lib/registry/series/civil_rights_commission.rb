@@ -1,7 +1,5 @@
 require 'pp'
-=begin
-  Does nothing. Just filler.
-=end
+#   Does nothing. Just filler.
 
 module Registry
   module Series

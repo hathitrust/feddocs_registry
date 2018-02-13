@@ -622,24 +622,22 @@ RSpec.describe Registry::SourceRecord, '#extract_enum_chrons' do
     expect(sr.enum_chrons[0]).to eq('')
   end
 
-=begin
-  it "hasn't changed since last extraction" do
-    SourceRecord.where(deprecated_timestamp:{"$exists":0}).no_timeout.each do |src|
-      if src.enum_chrons.include? 'INDEX:V. 58-59 YR. 1993-1994'
-        src.source = src.source.to_json
-        src.save
-      end
-      old_enum_chrons = src.enum_chrons
-      src.source = src.source.to_json
-      expect(old_enum_chrons).to eq(src.enum_chrons)
-    end
-  end
-=end
+#   it "hasn't changed since last extraction" do
+#     SourceRecord.where(deprecated_timestamp:{"$exists":0}).no_timeout.each do |src|
+#       if src.enum_chrons.include? 'INDEX:V. 58-59 YR. 1993-1994'
+#         src.source = src.source.to_json
+#         src.save
+#       end
+#       old_enum_chrons = src.enum_chrons
+#       src.source = src.source.to_json
+#       expect(old_enum_chrons).to eq(src.enum_chrons)
+#     end
+#   end
 end
 
 RSpec.describe Registry::SourceRecord, '#extract_enum_chron_strings' do
   it 'extracts enum chron strings from MARC records' do
-    sr = SourceRecord.where({ sudocs: 'II0 aLC 4.7:T 12/v.1-6' }).first
+    sr = SourceRecord.where( sudocs: 'II0 aLC 4.7:T 12/v.1-6' ).first
     expect(sr.extract_enum_chron_strings).to include('V. 6')
   end
 

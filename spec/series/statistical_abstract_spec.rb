@@ -105,16 +105,14 @@ describe 'StatisticalAbstract' do
     end
   end
 
-=begin
-  #we don't need this any more
-  describe "parse_file" do
-    it "parses a file of enumchrons" do
-      match, no_match = StatisticalAbstract.parse_file
-      expect(match).to be >= 1552
-      #expect(match).to eq(1566) #actual number in test file is 1566
-    end
-  end
-=end
+#   #we don't need this any more
+#   describe "parse_file" do
+#     it "parses a file of enumchrons" do
+#       match, no_match = StatisticalAbstract.parse_file
+#       expect(match).to be >= 1552
+#       #expect(match).to eq(1566) #actual number in test file is 1566
+#     end
+#   end
 
   describe 'oclcs' do
     it 'has an oclcs field' do
