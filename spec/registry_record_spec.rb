@@ -336,17 +336,17 @@ RSpec.describe RR, '#print_holdings' do
     expect(@rec.print_holdings([10_210_704])).to include('umich')
   end
 
-#   it "processes a hundred print holdings a second" do
-#     start = Time.now
-#     count = 0
-#     RR.where(oclcnum_t:{"$exists":1}).no_timeout.each do |r|
-#       count += 1
-#       if count > 5000
-#         break
-#       end
-#       ph = r.print_holdings
-#     end
-#     endtime = Time.now
-#     expect( endtime - start ).to eq(5)
-#   end
+  #   it "processes a hundred print holdings a second" do
+  #     start = Time.now
+  #     count = 0
+  #     RR.where(oclcnum_t:{"$exists":1}).no_timeout.each do |r|
+  #       count += 1
+  #       if count > 5000
+  #         break
+  #       end
+  #       ph = r.print_holdings
+  #     end
+  #     endtime = Time.now
+  #     expect( endtime - start ).to eq(5)
+  #   end
 end

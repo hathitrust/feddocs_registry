@@ -53,7 +53,7 @@ module Registry
       @@collator.extract_fields(@sources).each_with_index { |(k, v), i| self[k] = v }
 
       @sources.each do |s|
-        if !s.series.nil? && (s.series.count.positive?)
+        if !s.series.nil? && s.series.count.positive?
           self.series = s.series.map { |s| s.gsub(/([A-Z])/, ' \1').strip }
         end
       end
@@ -64,21 +64,21 @@ module Registry
       self.registry_id ||= SecureRandom.uuid
       self.enumchron_display = enum_chron
       set_ht_availability
-      if (print_holdings_t.nil? || (print_holdings_t.count.zero?)) &&
-         (oclcnum_t.count.positive?)
+      if (print_holdings_t.nil? || print_holdings_t.count.zero?) &&
+         oclcnum_t.count.positive?
         print_holdings
       end
     end
 
     # Sets HT availability based on ht_ids_fv and ht_ids_lv fields
     def set_ht_availability
-      if ht_ids_fv.count.positive?
-        self.ht_availability = 'Full View'
-      elsif ht_ids_lv.count.positive?
-        self.ht_availability = 'Limited View'
-      else
-        self.ht_availability = 'Not In HathiTrust'
-      end
+      self.ht_availability = if ht_ids_fv.count.positive?
+                               'Full View'
+                             elsif ht_ids_lv.count.positive?
+                               'Limited View'
+                             else
+                               'Not In HathiTrust'
+                              end
     end
 
     # Adds a source record to the cluster.
@@ -101,7 +101,7 @@ module Registry
         end
         source_record_ids.uniq!
         self.source_org_codes.uniq!
-        if !source_record.series.nil? && (source_record.series.count.positive?)
+        if !source_record.series.nil? && source_record.series.count.positive?
           self.series = source_record.series.map { |s| s.gsub(/([A-Z])/, ' \1').strip }
           series.uniq!
         end
@@ -164,7 +164,7 @@ module Registry
     # ids - RegistryRecord ids that will be replaced with a new record.
     # enum_chon
     # reason
-    def RegistryRecord.merge(ids, enum_chron, reason)
+    def self.merge(ids, enum_chron, reason)
       # merge existing reg records
       recs = RegistryRecord.where(:registry_id.in => ids)
       new_rec = RegistryRecord.new(recs.collect(&:source_record_ids).flatten.uniq, enum_chron, reason, ids)
@@ -199,7 +199,7 @@ module Registry
     #
     # s - a SourceRecord
     # enum_chron - an enumchron string
-    def RegistryRecord.cluster(s, enum_chron)
+    def self.cluster(s, enum_chron)
       # OCLC first
       if s.oclc_resolved.count.positive?
         rec = RegistryRecord.where(oclcnum_t: s.oclc_resolved,
@@ -207,25 +207,25 @@ module Registry
                                    deprecated_timestamp: { "$exists": 0 }).first
       end
       # lccn
-      if (s.lccn_normalized.count.positive?) && !rec
+      if s.lccn_normalized.count.positive? && !rec
         rec = RegistryRecord.where(lccn_t: s.lccn_normalized,
                                    enumchron_display: enum_chron,
                                    deprecated_timestamp: { "$exists": 0 }).first
       end
       # isbn
-      if (s.isbns_normalized.count.positive?) && !rec
+      if s.isbns_normalized.count.positive? && !rec
         rec = RegistryRecord.where(isbn_t: s.isbns_normalized,
                                    enumchron_display: enum_chron,
                                    deprecated_timestamp: { "$exists": 0 }).first
       end
       # issn
-      if (s.issn_normalized.count.positive?) && !rec
+      if s.issn_normalized.count.positive? && !rec
         rec = RegistryRecord.where(issn_t: s.issn_normalized,
                                    enumchron_display: enum_chron,
                                    deprecated_timestamp: { "$exists": 0 }).first
       end
       # sudoc
-      if (s.sudocs.count.positive?) && !rec
+      if s.sudocs.count.positive? && !rec
         rec = RegistryRecord.where(sudoc_display: s.sudocs,
                                    enumchron_display: enum_chron,
                                    deprecated_timestamp: { "$exists": 0 }).first

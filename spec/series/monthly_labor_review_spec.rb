@@ -19,7 +19,7 @@ describe 'MonthlyLaborReview' do
         else
           res = src.explode(ec)
           res.each do |canon, features|
-            if canon =~/Volume:.*Year:/ && canon !~/INDEX/i
+            if canon =~ /Volume:.*Year:/ && canon !~ /INDEX/i
               # puts [features['volume'], features['year']].join("\t")
             end
           end

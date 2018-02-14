@@ -61,7 +61,7 @@ module Registry
     field :sudocs
     field :invalid_sudocs # bad MARC, not necessarily bad SuDoc
     field :non_sudocs
-    attr_accessor :marc
+    attr_writer :marc
 
     # this stuff is extra ugly
     Dotenv.load
@@ -208,7 +208,7 @@ module Registry
           return false
         end
       end
-      (/^.{17}u.{10}f/ === f008) || (self.sudocs.count.positive?) || (extract_sudocs(marc).count.positive?) || (gpo_item_numbers.count.positive?) || has_approved_author?
+      (/^.{17}u.{10}f/ === f008) || self.sudocs.count.positive? || extract_sudocs(marc).count.positive? || gpo_item_numbers.count.positive? || has_approved_author?
     end
 
     # Check author_lccns against the list of approved authors
@@ -236,7 +236,7 @@ module Registry
           # $2 says its not a sudoc
           # except sometimes $2 is describing subfield z and
           # subfield a is in fact a SuDoc... seriously
-          if !field['2'].nil? && field['2'] !~/^sudoc/i && field['z'].nil?
+          if !field['2'].nil? && field['2'] !~ /^sudoc/i && field['z'].nil?
             self.non_sudocs << field['a'].chomp
             # if ind1 == 0 then it is also bad MARC
             self.invalid_sudocs << field['a'].chomp if field.indicator1 == '0'
@@ -246,12 +246,12 @@ module Registry
             self.sudocs << field['a'].chomp
 
           # sudoc in $2 and it looks like one
-          elsif field['a'] =~/:/ && field['2'] =~/^sudoc/i
+          elsif field['a'] =~ /:/ && field['2'] =~ /^sudoc/i
             self.sudocs << field['a'].chomp
 
           # it looks like one and it isn't telling us it isn't
           # bad MARC but too many to ignore
-          elsif (field.indicator1.strip == '') && field['a'] =~/:/ && field['a'] !~/^IL/ && field['2'].nil?
+          elsif (field.indicator1.strip == '') && field['a'] =~ /:/ && field['a'] !~ /^IL/ && field['2'].nil?
             self.sudocs << field['a'].chomp
             self.invalid_sudocs << field['a'].chomp
 
@@ -288,7 +288,7 @@ module Registry
       # or contributor told us to look there
       marc.each_by_tag('001') do |field|
         if OCLCPAT.match(field.value) ||
-           (@@contrib_001[self.org_code] && field.value =~/^(\d+)$/x)
+           (@@contrib_001[self.org_code] && field.value =~ /^(\d+)$/x)
           self.oclc_alleged << $1.to_i
         end
       end
@@ -297,7 +297,7 @@ module Registry
       if self.org_code == 'inu'
         marc.each_by_tag('955') do |field|
           field.subfields.each do |sf|
-            if (sf.code == 'o') && sf.value =~/(\d+)/
+            if (sf.code == 'o') && sf.value =~ /(\d+)/
               self.oclc_alleged << $1.to_i
             end
           end
@@ -526,12 +526,12 @@ module Registry
           ec_digest = Digest::SHA256.hexdigest(ec)
           holdings[ec_digest] ||= [] # array of holdings for this enumchron
           holdings[ec_digest] << { ec: ec,
-                                        c: field['c'],
-                                        z: field['z'],
-                                        y: field['y'],
-                                        r: field['r'],
-                                        s: field['s'],
-                                        u: field['u'] }
+                                   c: field['c'],
+                                   z: field['z'],
+                                   y: field['y'],
+                                   r: field['r'],
+                                   s: field['s'],
+                                   u: field['u'] }
         end
       end # each 974
       ht_item_ids.uniq!
@@ -578,7 +578,7 @@ module Registry
 
       { num_new: new_ecs.count, num_deleted: deleted_ecs.count }
     end
-    alias_method :update_in_registry, :add_to_registry
+    alias update_in_registry add_to_registry
 
     # For whatever reason an enumchron has disappeared from Source Record.
     # Remove from RegistryRecord's associated with this Source Record.
@@ -639,8 +639,8 @@ module Registry
       if (self.oclc_resolved.map(&:to_i) & Series::StatisticalAbstract.oclcs).count.positive?
         @series << 'StatisticalAbstract'
       end
-      if (((self.oclc_resolved.map(&:to_i) & Series::UnitedStatesReports.oclcs).count.positive?) ||
-        (self.sudocs.grep(/^#{::Regexp.escape(Series::UnitedStatesReports.sudoc_stem)}/).count.positive?))
+      if ((self.oclc_resolved.map(&:to_i) & Series::UnitedStatesReports.oclcs).count.positive? ||
+        self.sudocs.grep(/^#{::Regexp.escape(Series::UnitedStatesReports.sudoc_stem)}/).count.positive?)
         @series << 'UnitedStatesReports'
       end
       if self.sudocs.grep(/^#{::Regexp.escape(Series::CivilRightsCommission.sudoc_stem)}/).count.positive?
@@ -652,12 +652,12 @@ module Registry
       if self.sudocs.grep(/^#{::Regexp.escape(Series::ForeignRelations.sudoc_stem)}/).count.positive?
         @series << 'ForeignRelations'
       end
-      if (((self.oclc_resolved.map(&:to_i) & Series::CongressionalSerialSet.oclcs).count.positive?) ||
-        (self.sudocs.grep(/^#{::Regexp.escape(Series::CongressionalSerialSet.sudoc_stem)}/).count.positive?))
+      if ((self.oclc_resolved.map(&:to_i) & Series::CongressionalSerialSet.oclcs).count.positive? ||
+        self.sudocs.grep(/^#{::Regexp.escape(Series::CongressionalSerialSet.sudoc_stem)}/).count.positive?)
         @series << 'CongressionalSerialSet'
       end
-      if ((self.sudocs.grep(/^#{::Regexp.escape(Series::EconomicReportOfThePresident.sudoc_stem)}/).count.positive?) ||
-        ((self.oclc_resolved.map(&:to_i) & Series::EconomicReportOfThePresident.oclcs).count.positive?))
+      if (self.sudocs.grep(/^#{::Regexp.escape(Series::EconomicReportOfThePresident.sudoc_stem)}/).count.positive? ||
+        (self.oclc_resolved.map(&:to_i) & Series::EconomicReportOfThePresident.oclcs).count.positive?)
         @series << 'EconomicReportOfThePresident'
       end
       if (self.oclc_resolved.map(&:to_i) & Series::ReportsOfInvestigations.oclcs).count.positive?
@@ -679,7 +679,7 @@ module Registry
         @series << 'PublicPapersOfThePresidents'
       end
 
-      if !@series.nil? && (@series.count.positive?)
+      if !@series.nil? && @series.count.positive?
         @series.uniq!
         extend(Module.const_get('Registry::Series::' + @series.first))
         load_context
@@ -774,7 +774,7 @@ module Registry
 
       ecs = [ec]
       ecs.each do |ec|
-        if canon = canonicalize(ec)
+        if (canon = canonicalize(ec))
           ec['canon'] = canon
           enum_chrons[ec['canon']] = ec.clone
         end
@@ -784,7 +784,7 @@ module Registry
 
     def canonicalize(ec)
       # default order is:
-      t_order = ['year', 'volume', 'part', 'number', 'book', 'sheet']
+      t_order = %w[year volume part number book sheet]
       canon = t_order.reject { |t| ec[t].nil? }.collect { |t| t.to_s.capitalize + ':' + ec[t] }.join(', ')
       canon = nil if canon == ''
       canon
@@ -835,9 +835,9 @@ module Registry
         self[field.to_sym] = @extracted[field.to_s]
       end
     end
-    alias_method :electronic_versions, :extracted_field
-    alias_method :related_electronic_resources, :extracted_field
-    alias_method :electronic_resources, :extracted_field
+    alias electronic_versions extracted_field
+    alias related_electronic_resources extracted_field
+    alias electronic_resources extracted_field
 
     def author_lccns
       return @author_lccns unless @author_lccns.nil?
