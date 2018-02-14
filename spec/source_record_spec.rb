@@ -113,7 +113,7 @@ RSpec.describe Registry::SourceRecord do
     sr = SourceRecord.new(org_code: 'miaahdl',
                           source: line)
     sr.monograph?
-    sr.is_govdoc
+    sr.fed_doc?
     sr.extract_local_id
     expect(call_count).to eq(1)
     !expect { sr.source = line }.to perform_under(2).ms
@@ -444,7 +444,7 @@ RSpec.describe Registry::SourceRecord, 'extract_sudocs' do
     ilmarc = MARC::Record.new_from_hash(JSON.parse(ildoc))
     expect(s.extract_sudocs(ilmarc)).not_to include('IL/DNR 52.9:')
     s.source = ildoc
-    expect(s.is_govdoc).to eq(false)
+    expect(s.fed_doc?).to eq(false)
   end
 
   it 'ignores non-SuDocs, uses non-SuDocs to filter out bogus' do
@@ -470,7 +470,7 @@ RSpec.describe Registry::SourceRecord, 'extract_sudocs' do
   end
 end
 
-RSpec.describe Registry::SourceRecord, 'is_govdoc' do
+RSpec.describe Registry::SourceRecord, 'fed_doc?' do
   before(:all) do
     # this file has both a Fed SuDoc and a state okdoc
     @fed_state = open(File.dirname(__FILE__) + '/data/fed_state_sudoc.json').read
@@ -483,26 +483,26 @@ RSpec.describe Registry::SourceRecord, 'is_govdoc' do
     s = SourceRecord.new
     s.source = @fed_state
     expect(s.extract_sudocs(@marc).count).to be(1)
-    expect(s.is_govdoc(@marc)).to be_truthy
+    expect(s.fed_doc?(@marc)).to be_truthy
 
     s = SourceRecord.new
     s.source = @innd
-    expect(s.is_govdoc).to be_truthy
-    expect(s.is_govdoc(@innd_marc)).to be_truthy
+    expect(s.fed_doc?).to be_truthy
+    expect(s.fed_doc?(@innd_marc)).to be_truthy
   end
 
   it 'leverages OCLC blacklist' do
     bad_oclc = File.read(File.expand_path(File.dirname(__FILE__)) + '/data/blacklisted_oclc.json').chomp
     s = SourceRecord.new
     s.source = bad_oclc
-    expect(s.is_govdoc).to be false
+    expect(s.fed_doc?).to be false
   end
 
   it 'uses OCLC whitelist' do
     good_oclc = File.read(File.expand_path(File.dirname(__FILE__)) + '/data/whitelisted_oclc.json').chomp
     s = SourceRecord.new
     s.source = good_oclc
-    expect(s.is_govdoc).to be true
+    expect(s.fed_doc?).to be true
   end
 
   it 'uses the 074' do
@@ -510,7 +510,7 @@ RSpec.describe Registry::SourceRecord, 'is_govdoc' do
     s = SourceRecord.new
     s.source = source
     expect(s.gpo_item_numbers).to eq(['123'])
-    expect(s.is_govdoc).to be true
+    expect(s.fed_doc?).to be true
   end
 
   it "doesn't choke if there is no 074" do
@@ -518,7 +518,7 @@ RSpec.describe Registry::SourceRecord, 'is_govdoc' do
     s = SourceRecord.new
     s.source = source
     expect(s.gpo_item_numbers).to eq([])
-    expect(s.is_govdoc).to be false
+    expect(s.fed_doc?).to be false
   end
 
   it 'uses the authority list' do
@@ -526,15 +526,15 @@ RSpec.describe Registry::SourceRecord, 'is_govdoc' do
     auth_only = SourceRecord.new
     auth_only.org_code = 'miaahdl'
     auth_only.source = ao
-    expect(auth_only.is_govdoc).to be_truthy
+    expect(auth_only.fed_doc?).to be_truthy
   end
 
   it 'returns true/false not 0 or nil' do
     gd = SourceRecord.new
     gd.org_code = 'miaahdl'
     gd.source = open(File.dirname(__FILE__) + '/data/ht_pd_record.json').read
-    expect(gd.is_govdoc).to be(true)
-    expect(gd.is_govdoc).to_not be(0)
+    expect(gd.fed_doc?).to be(true)
+    expect(gd.fed_doc?).to_not be(0)
   end
 end
 
@@ -938,7 +938,7 @@ RSpec.describe Registry::SourceRecord, '#has_approved_added_entry?' do
   end
 
   it 'tells us it has an approved added entry author' do
-    expect(@src.is_govdoc).to be_falsey
+    expect(@src.fed_doc?).to be_falsey
     expect(@src.has_approved_added_entry?).to be_truthy
   end
 end

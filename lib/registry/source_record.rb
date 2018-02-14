@@ -186,10 +186,10 @@ module Registry
       end
     end
 
-    # Determine if this is a govdoc based on 008 and 086 and 074
+    # Determine if this is a feddoc based on 008 and 086 and 074
     # and OCLC blacklist
     # marc - ruby-marc repesentation of source
-    def is_govdoc(m = nil)
+    def fed_doc?(m = nil)
       @marc = m unless m.nil?
 
       # if fields.nil? #rare but happens let rescue handle it
