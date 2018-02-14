@@ -112,7 +112,7 @@ RSpec.describe Registry::SourceRecord do
     end
     sr = SourceRecord.new(org_code: 'miaahdl',
                           source: line)
-    sr.is_monograph?
+    sr.monograph?
     sr.is_govdoc
     sr.extract_local_id
     expect(call_count).to eq(1)
@@ -689,17 +689,17 @@ RSpec.describe Registry::SourceRecord, '#extract_holdings' do
   end
 end
 
-RSpec.describe Registry::SourceRecord, '#is_monograph' do
+RSpec.describe Registry::SourceRecord, '#monograph' do
   it 'identifies a monograph' do
     src = SourceRecord.new
     src.source = open(File.dirname(__FILE__) + '/data/no_enums_no_series_src.json').read
-    expect(src.is_monograph?).to be_truthy
+    expect(src.monograph?).to be_truthy
   end
 
   it 'identifies a non-monograph' do
     src = SourceRecord.new
     src.source = open(File.dirname(__FILE__) + '/series/data/statabstract_multiple_ecs.json').read
-    expect(src.is_monograph?).to be_falsey
+    expect(src.monograph?).to be_falsey
   end
 end
 
@@ -926,7 +926,6 @@ RSpec.describe Registry::SourceRecord, '#has_approved_author?' do
   end
 
   it 'tells us it has an approved author' do
-    # expect(@src.is_govdoc).to be_falsey
     expect(@src.has_approved_author?).to be_truthy
   end
 end

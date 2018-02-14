@@ -249,15 +249,15 @@ RSpec.describe RR, '#deprecate' do
   end
 end
 
-RSpec.describe RR, 'is_monograph?' do
+RSpec.describe RR, 'monograph?' do
   it 'returns true if one or more source records is a monograph bib' do
     rec = RR.where(oclcnum_t: 447_925).first
-    expect(rec.is_monograph?).to be true
+    expect(rec.monograph?).to be true
   end
 
   it 'returns false if none of the source records are a monograph bib' do
     rec = RR.where(oclcnum_t: 243_871_545).first
-    expect(rec.is_monograph?).to be false
+    expect(rec.monograph?).to be false
   end
 end
 

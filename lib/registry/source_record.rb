@@ -537,11 +537,11 @@ module Registry
       ht_item_ids.uniq!
     end
 
-    # is_monograph?
+    # monograph?
     # Occasionally useful wrapper over checking the leader in the source.
     # Note: Just because it is a monograph, does NOT mean it is missing
     # enumchrons.
-    def is_monograph?
+    def monograph?
       source['leader'] =~ /^.{7}m/
     end
 

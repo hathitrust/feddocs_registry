@@ -190,7 +190,7 @@ module Registry
 
     # If any of the source records are for monograph bibs
     # return true
-    def is_monograph?
+    def monograph?
       sources.select { |s| s.source['leader'] =~ /^.{7}m/ }.count.positive?
     end
 
