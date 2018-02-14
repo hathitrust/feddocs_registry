@@ -161,7 +161,7 @@ module Registry
         unless m.nil?
           ec = Hash[m.names.zip(m.captures)]
           # remove nils
-          ec.delete_if { |k, v| v.nil? }
+          ec.delete_if { |_k, v| v.nil? }
           if ec.key?('year') && (ec['year'].length == 2)
             ec['year'] = '19' + ec['year']
           elsif ec.key?('year') && (ec['year'].length == 3)
@@ -216,8 +216,7 @@ module Registry
         canon
       end
 
-      def self.load_context
-      end
+      def self.load_context; end
       load_context
     end
   end

@@ -6,8 +6,7 @@ module Registry
       # class << self; attr_accessor :volumes end
       # @volumes = {}
 
-      def self.sudoc_stem
-      end
+      def self.sudoc_stem; end
 
       def self.oclcs
         [2_101_497, 681_450_829]
@@ -258,9 +257,9 @@ module Registry
 
         unless m.nil?
           ec = Hash[m.names.zip(m.captures)]
-          ec.delete_if { |k, v| v.nil? }
+          ec.delete_if { |_k, v| v.nil? }
 
-          if ec['month'] && ec['month'] =~/^[0-9]+$/
+          if ec['month'] && ec['month'] =~ /^[0-9]+$/
             ec['month'] = MONTHS[ec['month'].to_i - 1]
           elsif ec['month']
             ec['month'] = Series.lookup_month ec['month']
@@ -369,8 +368,7 @@ module Registry
         end
       end
 
-      def self.load_context
-      end
+      def self.load_context; end
       load_context
     end
   end

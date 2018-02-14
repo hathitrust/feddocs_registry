@@ -47,7 +47,7 @@ module Registry
 
         base_marc = MARC::Record.new_from_hash(rec.source)
         # extract this record's fields into the cluster's fields
-        fields.merge!(@extractor.map_record(base_marc)) do |key, v1, v2|
+        fields.merge!(@extractor.map_record(base_marc)) do |_key, v1, v2|
           # key conflict results in flattened/uniqued array
           [v1].flatten | [v2].flatten
         end

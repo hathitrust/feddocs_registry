@@ -8,8 +8,7 @@ module Registry
         'CR'
       end
 
-      def self.oclcs
-      end
+      def self.oclcs; end
 
       def parse_ec(ec_string)
         # our match
@@ -29,8 +28,7 @@ module Registry
         nil
       end
 
-      def self.load_context
-      end
+      def self.load_context; end
       load_context
     end
   end

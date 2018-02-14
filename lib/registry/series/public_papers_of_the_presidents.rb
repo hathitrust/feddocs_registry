@@ -5,8 +5,7 @@ module Registry
     module PublicPapersOfThePresidents
       @@presidents = []
 
-      def self.sudoc_stem
-      end
+      def self.sudoc_stem; end
 
       def self.oclcs
         [1_198_154, 47_858_835]
@@ -148,7 +147,7 @@ module Registry
 
         unless m.nil?
           ec = Hash[m.names.zip(m.captures)]
-          ec.delete_if { |k, v| v.nil? }
+          ec.delete_if { |_k, v| v.nil? }
           if ec.key? 'end_year'
             ec['end_year'] = Series.calc_end_year(ec['start_year'], ec['end_year'])
           end

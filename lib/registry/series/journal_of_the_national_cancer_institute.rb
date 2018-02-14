@@ -6,8 +6,7 @@ module Registry
       # class << self; attr_accessor :volumes end
       # @volumes = {}
 
-      def self.sudoc_stem
-      end
+      def self.sudoc_stem; end
 
       def self.oclcs
         [1_064_763, 36_542_869, 173_847_259, 21_986_096]
@@ -243,9 +242,9 @@ module Registry
 
         unless m.nil?
           ec = Hash[m.names.zip(m.captures)]
-          ec.delete_if { |k, v| v.nil? }
+          ec.delete_if { |_k, v| v.nil? }
 
-          if ec['month'] && ec['month'] =~/^[0-9]+$/
+          if ec['month'] && ec['month'] =~ /^[0-9]+$/
             ec['month'] = MONTHS[ec['month'].to_i - 1]
           elsif ec['month']
             ec['month'] = Series.lookup_month ec['month']
@@ -282,16 +281,16 @@ module Registry
         return {} if ec.nil?
 
         ecs = []
-#         #lost cause due to publication history
-#         if ec['start_number']
-#           for num in ec['start_number'] .. ec['end_number']
-#             copy = ec.clone
-#             copy['number'] = num
-#             ecs << copy
-#           end
-#         else
-#           ecs << ec
-#         end
+        #         #lost cause due to publication history
+        #         if ec['start_number']
+        #           for num in ec['start_number'] .. ec['end_number']
+        #             copy = ec.clone
+        #             copy['number'] = num
+        #             ecs << copy
+        #           end
+        #         else
+        #           ecs << ec
+        #         end
         ecs << ec
         ecs.each do |ec|
           if canon = canonicalize(ec)
@@ -351,8 +350,7 @@ module Registry
         end
       end
 
-      def self.load_context
-      end
+      def self.load_context; end
       load_context
     end
   end

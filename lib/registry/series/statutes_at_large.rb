@@ -208,8 +208,7 @@ module Registry
         [@match, @no_match]
       end
 
-      def self.load_context
-      end
+      def self.load_context; end
       load_context
     end
   end

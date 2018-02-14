@@ -18,7 +18,7 @@ describe 'UnitedStatesReports' do
           misses += 1
           # puts "no match: "+line
         else
-          src.explode(ec).each do |canon, enum_chron|
+          src.explode(ec).each do |_canon, enum_chron|
             volumes[enum_chron['volume']] = volumes[enum_chron['volume']].merge(enum_chron)
             # puts enum_chron['volume']+"\t"+canon
           end

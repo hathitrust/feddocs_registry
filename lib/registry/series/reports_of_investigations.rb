@@ -6,8 +6,7 @@ module Registry
       # class << self; attr_accessor :volumes end
       # @volumes = {}
 
-      def self.sudoc_stem
-      end
+      def self.sudoc_stem; end
 
       def self.oclcs
         [1_728_640]
@@ -128,7 +127,7 @@ module Registry
 
         unless m.nil?
           ec = Hash[m.names.zip(m.captures)]
-          ec.delete_if { |k, v| v.nil? }
+          ec.delete_if { |_k, v| v.nil? }
           if ec.key? 'end_year'
             ec['end_year'] = Series.calc_end_year(ec['start_year'], ec['end_year'])
             # we don't explode years so just stick it together
@@ -170,8 +169,7 @@ module Registry
         canon
       end
 
-      def self.load_context
-      end
+      def self.load_context; end
       load_context
     end
   end

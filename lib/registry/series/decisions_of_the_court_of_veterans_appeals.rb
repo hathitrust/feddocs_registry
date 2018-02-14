@@ -6,8 +6,7 @@ module Registry
       # class << self; attr_accessor :volumes end
       # @volumes = {}
 
-      def self.sudoc_stem
-      end
+      def self.sudoc_stem; end
 
       def self.oclcs
         [27_093_456]
@@ -88,7 +87,7 @@ module Registry
 
         unless m.nil?
           ec = Hash[m.names.zip(m.captures)]
-          ec.delete_if { |k, v| v.nil? }
+          ec.delete_if { |_k, v| v.nil? }
 
           # the two years in the enumchron need to match
           if ec['decision_year']
@@ -99,13 +98,13 @@ module Registry
 
           ec['year'] = ec['decision_year'] if ec['decision_year'] && !ec['year']
 
-          if ec['month'] && ec['month'] =~/^[0-9]+$/
+          if ec['month'] && ec['month'] =~ /^[0-9]+$/
             ec['month'] = MONTHS[ec['month'].to_i - 1]
           end
 
           # sometimes the number lacks the case year prefix, reassemble
           # e.g. 1990:753/2
-          if ec['number'] && ec['number'] !~/-/ && (ec['case_year'].length == 4)
+          if ec['number'] && ec['number'] !~ /-/ && (ec['case_year'].length == 4)
             ec['number'] = ec['case_year'][2, 2,] + '-' + ec['number']
           end
 
@@ -152,8 +151,7 @@ module Registry
         canon
       end
 
-      def self.load_context
-      end
+      def self.load_context; end
       load_context
     end
   end

@@ -165,8 +165,7 @@ module Registry
         enum_chrons
       end
 
-      def canonicalize(ec)
-      end
+      def canonicalize(ec); end
 
       def self.parse_file
         @no_match = 0

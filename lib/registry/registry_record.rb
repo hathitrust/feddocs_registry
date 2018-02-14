@@ -30,7 +30,8 @@ module Registry
     field :electronic_resources, type: Array
     field :print_holdings_t, type: Array
 
-    @@collator = Collator.new(__dir__ + '/../../config/traject_registry_record_config.rb')
+    @@collator = Collator.new(__dir__ + '/../../config/'\
+                                        'traject_registry_record_config.rb')
     @@db_conn = Mysql2::Client.new(:host => ENV['db_host'],
                                    :username => ENV['db_user'],
                                    :password => ENV['db_pw'],
@@ -50,7 +51,8 @@ module Registry
       self.source_record_ids = sid_cluster
       self.source_org_codes ||= []
       @sources = SourceRecord.where(:source_id.in => sid_cluster)
-      @@collator.extract_fields(@sources).each_with_index { |(k, v), i| self[k] = v }
+      @@collator.extract_fields(@sources)\
+        .each_with_index { |(k, v), _i| self[k] = v }
 
       @sources.each do |s|
         if !s.series.nil? && s.series.count.positive?
@@ -85,7 +87,8 @@ module Registry
     #
     # source_record - SourceRecord object
     #
-    # So we don't have to recollate an entire cluster for the addition of one rec
+    # So we don't have to recollate an entire cluster for the 
+    # addition of one rec
     def add_source(source_record)
       # if it's already in this record then we have to recollate.
       # otherwise we have no way of removing old data extractions
@@ -102,7 +105,9 @@ module Registry
         source_record_ids.uniq!
         self.source_org_codes.uniq!
         if !source_record.series.nil? && source_record.series.count.positive?
-          self.series = source_record.series.map { |s| s.gsub(/([A-Z])/, ' \1').strip }
+          self.series = source_record.series.map do |s| 
+            s.gsub(/([A-Z])/, ' \1').strip
+          end
           series.uniq!
         end
       end
@@ -116,7 +121,8 @@ module Registry
       @sources = SourceRecord.where(:source_id.in => source_record_ids)
       self.source_org_codes = @sources.collect(&:org_code)
       self.source_org_codes.uniq!
-      @@collator.extract_fields(@sources).each_with_index { |(k, v), i| self[k] = v }
+      @@collator.extract_fields(@sources)
+        .each_with_index { |(k, v), _i| self[k] = v }
       save
     end
 
@@ -167,7 +173,8 @@ module Registry
     def self.merge(ids, enum_chron, reason)
       # merge existing reg records
       recs = RegistryRecord.where(:registry_id.in => ids)
-      new_rec = RegistryRecord.new(recs.collect(&:source_record_ids).flatten.uniq, enum_chron, reason, ids)
+      all_src_ids = recs.collect(&:source_record_ids).flatten.uniq
+      new_rec = RegistryRecord.new(all_src_ids, enum_chron, reason, ids)
       new_rec.save
       recs.each { |r| r.deprecate(reason, [new_rec.registry_id]) }
       new_rec
@@ -190,7 +197,7 @@ module Registry
     def save
       # make sure our source records are uniq and that we have 1
       self.source_record_ids = source_record_ids.uniq
-      raise 'No source records for this Reg Rec' if source_record_ids.count.zero?
+      raise 'No source recs for this Reg Rec' if source_record_ids.count.zero?
       self.last_modified = Time.now.utc
       super
     end

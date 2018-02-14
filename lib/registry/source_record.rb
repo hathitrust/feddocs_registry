@@ -112,7 +112,7 @@ module Registry
       added_entry_lccns
       self.series = series # important to do this before extracting enumchrons
       self.ec = extract_enum_chrons
-      self.enum_chrons = ec.collect do |k, fields|
+      self.enum_chrons = ec.collect do |_k, fields|
         if !fields['canonical'].nil?
           fields['canonical']
         else
@@ -509,7 +509,7 @@ module Registry
           if !parsed_ec.nil?
             exploded = explode(parsed_ec, self)
             if exploded.keys.count.positive?
-              exploded.each do |canonical, features|
+              exploded.each do |canonical, _features|
                 ecs << canonical
               end
             else # parseable not explodeable
@@ -757,7 +757,7 @@ module Registry
       # some cleanup
       unless m.nil?
         ec = Hash[m.names.zip(m.captures)]
-        ec.delete_if { |k, v| v.nil? }
+        ec.delete_if { |_k, v| v.nil? }
 
         # year unlikely. Probably don't know what we think we know.
         # From the regex, year can't be < 1800
@@ -790,8 +790,7 @@ module Registry
       canon
     end
 
-    def load_context
-    end
+    def load_context; end
 
     def save
       self.last_modified = Time.now.utc

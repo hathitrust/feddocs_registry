@@ -38,7 +38,7 @@ RSpec.describe RC, '#extract_fields' do
   it 'collects all the fields from all source records' do
     all_fields = []
     # TODO: bad test!
-    @regrec.sources.each do |key, value|
+    @regrec.sources.each do |key, _value|
       all_fields << key
     end
     expect(all_fields.uniq.count).to be < @collected_fields.keys.count

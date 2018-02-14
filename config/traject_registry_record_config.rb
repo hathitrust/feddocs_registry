@@ -29,7 +29,7 @@ to_field 'text', extract_all_marc_values
 
 # title
 to_field 'title', extract_marc('245a')
-to_field 'title_display', extract_marc('245a', :trim_punctuation => true) do |rec, acc|
+to_field 'title_display', extract_marc('245a', :trim_punctuation => true) do |_rec, acc|
   acc.map! { |s| Normalize.normalize_title(s) }
 end
 

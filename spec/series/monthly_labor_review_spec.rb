@@ -18,7 +18,7 @@ describe 'MonthlyLaborReview' do
           # puts "no match: "+line
         else
           res = src.explode(ec)
-          res.each do |canon, features|
+          res.each do |canon, _features|
             if canon =~ /Volume:.*Year:/ && canon !~ /INDEX/i
               # puts [features['volume'], features['year']].join("\t")
             end

@@ -15,7 +15,7 @@ module Registry
       end
 
       def parse_ec(ec_string)
-        reporters = ['DALLAS', 'CRANCH', 'WHEATON', 'PETERS', 'HOWARD', 'BLACK', 'WALLACE']
+        reporters = %w[DALLAS CRANCH WHEATON PETERS HOWARD BLACK WALLACE]
         v = 'V\.\s?(?<volume>\d+)'
         ot = '(?<october>OCT\.? (TERM)?)'
         y = '(YR\.\s)?(?<year>\d{4})'
@@ -52,7 +52,7 @@ module Registry
 
         unless m.nil?
           ec = Hash[m.names.zip(m.captures)]
-          ec.delete_if { |k, v| v.nil? }
+          ec.delete_if { |_k, v| v.nil? }
           if ec.key? 'end_year'
             ec['end_year'] = Series.calc_end_year(ec['start_year'], ec['end_year'])
           end

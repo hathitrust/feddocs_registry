@@ -575,7 +575,7 @@ RSpec.describe Registry::SourceRecord, '#extract_enum_chrons' do
     src = SourceRecord.new
     src.org_code = 'dgpo'
     src.source = line
-    expect(src.extract_enum_chrons.collect { |k, ec| ec['string'] }).to eq(['V. 1', 'V. 2'])
+    expect(src.extract_enum_chrons.collect { |_k, ec| ec['string'] }).to eq(['V. 1', 'V. 2'])
   end
 
   it 'extracts enum chrons from non-GPO records' do
@@ -635,7 +635,7 @@ end
 
 RSpec.describe Registry::SourceRecord, '#extract_enum_chron_strings' do
   it 'extracts enum chron strings from MARC records' do
-    sr = SourceRecord.where( sudocs: 'II0 aLC 4.7:T 12/v.1-6' ).first
+    sr = SourceRecord.where(sudocs: 'II0 aLC 4.7:T 12/v.1-6').first
     expect(sr.extract_enum_chron_strings).to include('V. 6')
   end
 

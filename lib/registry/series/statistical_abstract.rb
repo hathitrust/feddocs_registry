@@ -188,7 +188,7 @@ module Registry
         unless m.nil?
           ec = Hash[m.names.zip(m.captures)]
           # remove nils
-          ec.delete_if { |k, v| v.nil? }
+          ec.delete_if { |_k, v| v.nil? }
           if ec.key?('year') && (ec['year'].length == 3)
             if (ec['year'][0] == '8') || (ec['year'][0] == '9')
               ec['year'] = '1' + ec['year']
@@ -256,8 +256,7 @@ module Registry
         enum_chrons
       end
 
-      def canonicalize(ec)
-      end
+      def canonicalize(ec); end
 
       def self.parse_file
         @no_match = 0
