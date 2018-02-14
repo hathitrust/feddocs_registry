@@ -930,6 +930,7 @@ module Registry
         p = YAML.load_file(profile)
         @@marc_profiles[p['org_code']] = p
       end
+      @@marc_profiles
     end
     marc_profiles
   end
