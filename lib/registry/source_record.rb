@@ -12,16 +12,18 @@ require 'filter/whitelist'
 require 'filter/authority_list'
 require 'nauth/authority'
 require 'oclc_authoritative'
-include OclcAuthoritative
 Authority = Nauth::Authority
 
 Dir[File.dirname(__FILE__) + '/series/*.rb'].each { |file| require file }
 
 module Registry
+  # Source Record is a MARC bibliographic record along with extracted and
+  # calculated features.
   class SourceRecord
     include Mongoid::Document
     include Mongoid::Attributes::Dynamic
     include Registry::Series
+    include OclcAuthoritative
     store_in collection: 'source_records'
 
     field :author_parts
@@ -66,10 +68,13 @@ module Registry
     # this stuff is extra ugly
     Dotenv.load
     @@extractor = Traject::Indexer.new
-    @@extractor.load_config_file(__dir__ + '/../../config/traject_source_record_config.rb')
+    source_traject = __dir__ + '/../../config/traject_source_record_config.rb'
+    @@extractor.load_config_file(source_traject)
 
-    @@contrib_001 = {}
-    open(__dir__ + '/../../config/contributors_w_001_oclcs.txt').each { |l| @@contrib_001[l.chomp] = 1 }
+    @@contrib001 = {}
+    open(__dir__ + '/../../config/contributors_w_001_oclcs.txt').each do |l|
+      @@contrib001[l.chomp] = 1
+    end
 
     @@marc_profiles = {}
 
@@ -91,7 +96,8 @@ module Registry
       @marc ||= MARC::Record.new_from_hash(source)
     end
 
-    # On assignment of source json string, record is parsed, and identifiers extracted.
+    # On assignment of source json string, record is parsed,
+    # and identifiers extracted.
     def source=(value)
       @source = JSON.parse(value)
       super(fix_flasus(org_code, @source))
@@ -104,7 +110,7 @@ module Registry
       self.author_headings = @extracted['author_t'] || []
       self.author_parts = @extracted['author_parts'] || []
       self.report_numbers = @extracted['report_numbers'] || []
-      extract_identifiers marc
+      extract_identifiers
       electronic_resources
       related_electronic_resources
       electronic_versions
@@ -134,7 +140,7 @@ module Registry
     end
 
     # Extracts and normalizes identifiers from self.source
-    def extract_identifiers(m = nil)
+    def extract_identifiers
       self.org_code ||= '' # should be set on ingest.
       self.oclc_alleged ||= []
       self.oclc_resolved ||= []
@@ -155,7 +161,7 @@ module Registry
       self.formats = Traject::Macros::MarcFormatClassifier.new(marc).formats
 
       self.oclc_resolved = oclc_alleged.map { |o| resolve_oclc(o) }.flatten.uniq
-    end # extract_identifiers
+    end
 
     # Extract the contributing institutions id for this record.
     # Enables update/replacement of source records.
@@ -177,13 +183,12 @@ module Registry
     # Determine HT availability. 'Full View', 'Limited View', 'not available'
     #
     def ht_availability
-      if self.org_code == 'miaahdl'
-        availability = 'Limited View'
-        marc.each_by_tag('974') do |field|
-          availability = 'Full View' if field['r'] == 'pd'
-        end
-        availability
+      return unless self.org_code == 'miaahdl'
+      availability = 'Limited View'
+      marc.each_by_tag('974') do |field|
+        availability = 'Full View' if field['r'] == 'pd'
       end
+      availability
     end
 
     # Determine if this is a feddoc based on 008 and 086 and 074
@@ -193,31 +198,32 @@ module Registry
       @marc = m unless m.nil?
 
       # if fields.nil? #rare but happens let rescue handle it
-      field_008 = marc['008']
-      if field_008.nil?
-        f008 = ''
-      else
-        f008 = field_008.value
-      end
-      extract_identifiers(marc)
+      field008 = marc['008']
+      f008 = if field008.nil?
+               f008 = ''
+             else
+               field008.value
+             end
+      extract_identifiers
       # check the blacklist
       self.oclc_resolved.each do |o|
-        if Whitelist.oclcs.include? o
-          return true
-        elsif Blacklist.oclcs.include? o
-          return false
-        end
+        return true if Whitelist.oclcs.include? o
+        return false if Blacklist.oclcs.include? o
       end
-      (/^.{17}u.{10}f/ === f008) || self.sudocs.count.positive? || extract_sudocs(marc).count.positive? || gpo_item_numbers.count.positive? || has_approved_author?
+      (/^.{17}u.{10}f/ === f008) ||
+        self.sudocs.count.positive? ||
+        extract_sudocs(marc).count.positive? ||
+        gpo_item_numbers.count.positive? ||
+        approved_author?
     end
 
     # Check author_lccns against the list of approved authors
-    def has_approved_author?
+    def approved_author?
       AuthorityList.lccns.intersection(author_lccns).count.positive?
     end
 
     # Check added_entry_lccns against the list of approved authors
-    def has_approved_added_entry?
+    def approved_added_entry?
       AuthorityList.lccns.intersection(added_entry_lccns).count.positive?
     end
 
@@ -251,7 +257,10 @@ module Registry
 
           # it looks like one and it isn't telling us it isn't
           # bad MARC but too many to ignore
-          elsif (field.indicator1.strip == '') && field['a'] =~ /:/ && field['a'] !~ /^IL/ && field['2'].nil?
+          elsif (field.indicator1.strip == '') &&
+                field['a'] =~ /:/ &&
+                field['a'] !~ /^IL/ &&
+                field['2'].nil?
             self.sudocs << field['a'].chomp
             self.invalid_sudocs << field['a'].chomp
 
@@ -288,7 +297,7 @@ module Registry
       # or contributor told us to look there
       marc.each_by_tag('001') do |field|
         if OCLCPAT.match(field.value) ||
-           (@@contrib_001[self.org_code] && field.value =~ /^(\d+)$/x)
+           (@@contrib001[self.org_code] && field.value =~ /^(\d+)$/x)
           self.oclc_alleged << $1.to_i
         end
       end
@@ -369,11 +378,10 @@ module Registry
       self.isbns_normalized = []
 
       marc.each_by_tag('020') do |field|
-        if field['a'] && (field['a'] != '')
-          self.isbns << field['a']
-          isbn = StdNum::ISBN.normalize(field['a'])
-          self.isbns_normalized << isbn if isbn && (isbn != '')
-        end
+        next unless field['a'] && (field['a'] != '')
+        self.isbns << field['a']
+        isbn = StdNum::ISBN.normalize(field['a'])
+        self.isbns_normalized << isbn if isbn && (isbn != '')
       end
 
       # We don't care about different physical forms so
@@ -404,7 +412,9 @@ module Registry
               ec_strings << Normalize.enum_chron(subfield_codes[1].value)
             end
           else
-            ec_strings << subfield_codes.map { |sf| Normalize.enum_chron(sf.value) }
+            ec_strings << subfield_codes.map do |sf|
+              Normalize.enum_chron(sf.value)
+            end
           end
         end
       end
@@ -432,11 +442,10 @@ module Registry
     #
     # ecs - {<hashed canonical ec string> : {<parsed features>}, }
     #
-    def extract_enum_chrons(m = nil, o = nil, e = nil)
+    def extract_enum_chrons(m = nil, _o = nil, _e = nil)
       # make sure we've set series
       series
       ecs = {}
-      # org_code ||= self.org_code
       @marc = m unless m.nil?
 
       ec_strings = extract_enum_chron_strings marc
@@ -457,22 +466,23 @@ module Registry
         # pub_date/sudoc in the MARC
         if exploded.keys.count.positive?
           exploded.each do |canonical, features|
-            # series may return exploded items all referencing the same feature set.
+            # series may return exploded items all referencing the
+            # same feature set.
             # since we are changing it we need multiple copies
             features = features.clone
             features['string'] = ec_string
             features['canonical'] = canonical
-            # possible to have multiple ec_strings be reduced to a single ec_string
+            # possible to have multiple ec_strings be reduced
+            # to a single ec_string
             if canonical.nil?
-              PP.pp exploded
               puts "canonical:#{canonical}, ec_string: #{ec_string}"
             end
             ecs[Digest::SHA256.hexdigest(canonical)] ||= features
             ecs[Digest::SHA256.hexdigest(canonical)].merge(features)
           end
         elsif (parsed_ec.keys.count == 1) && (parsed_ec['string'] == '')
-          # our enumchron was '' and explode couldn't find anything elsewhere in the
-          # MARC, so don't bother with it.
+          # our enumchron was '' and explode couldn't find anything
+          # elsewhere in the MARC, so don't bother with it.
           next
         else # we couldn't explode it.
           ecs[Digest::SHA256.hexdigest(ec_string)] ||= parsed_ec
@@ -484,12 +494,12 @@ module Registry
 
     # extract_holdings
     #
-    # Currently designed for HT records that have individual holding info in 974.
-    # Transform those into a coherent holdings field grouped by normalized/parsed
-    # enum_chrons.
+    # Currently designed for HT records that have individual holding
+    # info in 974. Transform those into a coherent holdings field grouped by
+    # normalized/parsed enum_chrons.
     # holdings = {<ec_string> :[<each holding>]
     # ht_item_ids = [<holding id>]
-    # todo: refactor with extract_enum_chrons. A lot of duplicate code/work being done
+    # todo: refactor with extract_enum_chrons. A lot of duplicate code/work
     def extract_holdings(m = nil)
       self.holdings = {}
       self.ht_item_ids = []
@@ -509,7 +519,7 @@ module Registry
           if !parsed_ec.nil?
             exploded = explode(parsed_ec, self)
             if exploded.keys.count.positive?
-              exploded.each do |canonical, _features|
+              exploded.each_key do |canonical|
                 ecs << canonical
               end
             else # parseable not explodeable
@@ -533,7 +543,7 @@ module Registry
                                    s: field['s'],
                                    u: field['u'] }
         end
-      end # each 974
+      end
       ht_item_ids.uniq!
     end
 
@@ -566,7 +576,8 @@ module Registry
     # and creation of new ECs.
     def add_to_registry(reason_str = '')
       ecs_in_reg = RegistryRecord.where(source_record_ids: self.source_id,
-                                        deprecated_timestamp: { "$exists": 0 }).no_timeout.pluck(:enumchron_display)
+                                        deprecated_timestamp: { "$exists": 0 })
+                                 .no_timeout.pluck(:enumchron_display)
       new_ecs = enum_chrons - ecs_in_reg
       new_ecs.each { |ec| add_enumchron(ec, reason_str) }
       # make sure it's "in_registry"
@@ -586,16 +597,19 @@ module Registry
       # in theory should only be one
       RegistryRecord.where(source_record_ids: self.source_id,
                            enumchron_display: ec,
-                           deprecated_timestamp: { "$exists": 0 }).no_timeout.each do |reg|
+                           deprecated_timestamp: { "$exists": 0 })
+                    .no_timeout
+                    .each do |reg|
         # just trash it if this is the only source
         if reg.source_record_ids.uniq.count == 1
           reg.deprecate(reason_str)
         # replace old cluster with new
         else
+          reason = "#{reason_str} Replaces #{reg.registry_id}."
           cluster = reg.source_record_ids - [self.source_id]
           repl_regrec = RegistryRecord.new(cluster,
                                            ec,
-                                           "#{reason_str} Replaces #{reg.registry_id}.")
+                                           reason)
           repl_regrec.save
           reg.deprecate(reason_str, [repl_regrec.registry_id])
         end
@@ -606,8 +620,9 @@ module Registry
     # Mostly reliant upon RR::cluster
     #
     def add_enumchron(ec, reason_str = '')
-      if regrec = RegistryRecord.cluster(self, ec)
-        regrec.add_source(self) # this is expensive if the src is already in the record
+      if (regrec = RegistryRecord.cluster(self, ec))
+        # this is expensive if the src is already in the record
+        regrec.add_source(self)
       else
         regrec = RegistryRecord.new([self.source_id], ec, reason_str)
       end
@@ -621,61 +636,92 @@ module Registry
     def series
       @series ||= []
       # try to set it
-      if (self.oclc_resolved.map(&:to_i) & Series::FederalRegister.oclcs).count.positive?
+      if (self.oclc_resolved.map(&:to_i) &
+          Series::FederalRegister.oclcs).count.positive?
         @series << 'FederalRegister'
       end
-      if (self.oclc_resolved.map(&:to_i) & Series::StatutesAtLarge.oclcs).count.positive?
+      if (self.oclc_resolved.map(&:to_i) &
+          Series::StatutesAtLarge.oclcs).count.positive?
         @series << 'StatutesAtLarge'
       end
-      if (self.oclc_resolved.map(&:to_i) & Series::AgriculturalStatistics.oclcs).count.positive?
+      if (self.oclc_resolved.map(&:to_i) &
+          Series::AgriculturalStatistics.oclcs).count.positive?
         @series << 'AgriculturalStatistics'
       end
-      if (self.oclc_resolved.map(&:to_i) & Series::MonthlyLaborReview.oclcs).count.positive?
+      if (self.oclc_resolved.map(&:to_i) &
+          Series::MonthlyLaborReview.oclcs).count.positive?
         @series << 'MonthlyLaborReview'
       end
-      if (self.oclc_resolved.map(&:to_i) & Series::MineralsYearbook.oclcs).count.positive?
+      if (self.oclc_resolved.map(&:to_i) &
+          Series::MineralsYearbook.oclcs).count.positive?
         @series << 'MineralsYearbook'
       end
-      if (self.oclc_resolved.map(&:to_i) & Series::StatisticalAbstract.oclcs).count.positive?
+      if (self.oclc_resolved.map(&:to_i) &
+          Series::StatisticalAbstract.oclcs).count.positive?
         @series << 'StatisticalAbstract'
       end
-      if ((self.oclc_resolved.map(&:to_i) & Series::UnitedStatesReports.oclcs).count.positive? ||
-        self.sudocs.grep(/^#{::Regexp.escape(Series::UnitedStatesReports.sudoc_stem)}/).count.positive?)
+      if (self.oclc_resolved.map(&:to_i) &
+         Series::UnitedStatesReports.oclcs).count.positive? ||
+         self.sudocs
+             .grep(/^#{::Regexp
+                        .escape(Series::UnitedStatesReports.sudoc_stem)}/)
+             .count.positive?
         @series << 'UnitedStatesReports'
       end
-      if self.sudocs.grep(/^#{::Regexp.escape(Series::CivilRightsCommission.sudoc_stem)}/).count.positive?
+      if self.sudocs
+             .grep(/^#{::Regexp
+                        .escape(Series::CivilRightsCommission.sudoc_stem)}/)
+             .count.positive?
         @series << 'CivilRightsCommission'
       end
-      if (self.oclc_resolved.map(&:to_i) & Series::CongressionalRecord.oclcs).count.positive?
+      if (self.oclc_resolved.map(&:to_i) &
+          Series::CongressionalRecord.oclcs).count.positive?
         @series << 'CongressionalRecord'
       end
-      if self.sudocs.grep(/^#{::Regexp.escape(Series::ForeignRelations.sudoc_stem)}/).count.positive?
+      if self.sudocs
+             .grep(/^#{::Regexp.escape(Series::ForeignRelations.sudoc_stem)}/)
+             .count.positive?
         @series << 'ForeignRelations'
       end
-      if ((self.oclc_resolved.map(&:to_i) & Series::CongressionalSerialSet.oclcs).count.positive? ||
-        self.sudocs.grep(/^#{::Regexp.escape(Series::CongressionalSerialSet.sudoc_stem)}/).count.positive?)
+      if (self.oclc_resolved.map(&:to_i) &
+          Series::CongressionalSerialSet.oclcs).count.positive? ||
+         self.sudocs
+             .grep(/^#{::Regexp
+                        .escape(Series::CongressionalSerialSet.sudoc_stem)}/)
+             .count.positive?
         @series << 'CongressionalSerialSet'
       end
-      if (self.sudocs.grep(/^#{::Regexp.escape(Series::EconomicReportOfThePresident.sudoc_stem)}/).count.positive? ||
-        (self.oclc_resolved.map(&:to_i) & Series::EconomicReportOfThePresident.oclcs).count.positive?)
+      if (self.oclc_resolved.map(&:to_i) &
+          Series::EconomicReportOfThePresident.oclcs).count.positive? ||
+         self.sudocs
+             .grep(/^#{::Regexp
+                        .escape(Series::EconomicReportOfThePresident
+                                .sudoc_stem)}/)
+             .count.positive?
         @series << 'EconomicReportOfThePresident'
       end
-      if (self.oclc_resolved.map(&:to_i) & Series::ReportsOfInvestigations.oclcs).count.positive?
+      if (self.oclc_resolved.map(&:to_i) &
+          Series::ReportsOfInvestigations.oclcs).count.positive?
         @series << 'ReportsOfInvestigations'
       end
-      if (self.oclc_resolved.map(&:to_i) & Series::DecisionsOfTheCourtOfVeteransAppeals.oclcs).count.positive?
+      if (self.oclc_resolved.map(&:to_i) &
+          Series::DecisionsOfTheCourtOfVeteransAppeals.oclcs).count.positive?
         @series << 'DecisionsOfTheCourtOfVeteransAppeals'
       end
-      if (self.oclc_resolved.map(&:to_i) & Series::JournalOfTheNationalCancerInstitute.oclcs).count.positive?
+      if (self.oclc_resolved.map(&:to_i) &
+          Series::JournalOfTheNationalCancerInstitute.oclcs).count.positive?
         @series << 'JournalOfTheNationalCancerInstitute'
       end
-      if (self.oclc_resolved.map(&:to_i) & Series::CancerTreatmentReport.oclcs).count.positive?
+      if (self.oclc_resolved.map(&:to_i) &
+          Series::CancerTreatmentReport.oclcs).count.positive?
         @series << 'CancerTreatmentReport'
       end
-      if (self.oclc_resolved.map(&:to_i) & Series::VitalStatistics.oclcs).count.positive?
+      if (self.oclc_resolved.map(&:to_i) &
+          Series::VitalStatistics.oclcs).count.positive?
         @series << 'VitalStatistics'
       end
-      if (self.oclc_resolved.map(&:to_i) & Series::PublicPapersOfThePresidents.oclcs).count.positive?
+      if (self.oclc_resolved.map(&:to_i) &
+          Series::PublicPapersOfThePresidents.oclcs).count.positive?
         @series << 'PublicPapersOfThePresidents'
       end
 
@@ -757,7 +803,7 @@ module Registry
       # some cleanup
       unless m.nil?
         ec = Hash[m.names.zip(m.captures)]
-        ec.delete_if { |_k, v| v.nil? }
+        ec.delete_if { |_k, value| value.nil? }
 
         # year unlikely. Probably don't know what we think we know.
         # From the regex, year can't be < 1800
@@ -766,17 +812,17 @@ module Registry
       ec
     end
 
-    def explode(ec, src = nil)
+    def explode(ec, _src = nil)
       # we would need to know something about the title to do this
       # accurately, so we're not really doing anything here
       enum_chrons = {}
       return {} if ec.nil?
 
       ecs = [ec]
-      ecs.each do |ec|
-        if (canon = canonicalize(ec))
-          ec['canon'] = canon
-          enum_chrons[ec['canon']] = ec.clone
+      ecs.each do |enum|
+        if (canon = canonicalize(enum))
+          enum['canon'] = canon
+          enum_chrons[enum['canon']] = enum.clone
         end
       end
       enum_chrons
@@ -785,7 +831,9 @@ module Registry
     def canonicalize(ec)
       # default order is:
       t_order = %w[year volume part number book sheet]
-      canon = t_order.reject { |t| ec[t].nil? }.collect { |t| t.to_s.capitalize + ':' + ec[t] }.join(', ')
+      canon = t_order.reject { |t| ec[t].nil? }
+                     .collect { |t| t.to_s.capitalize + ':' + ec[t] }
+                     .join(', ')
       canon = nil if canon == ''
       canon
     end
@@ -797,7 +845,8 @@ module Registry
       super
     end
 
-    # FLASUS has some wonky 955s that mongo chokes on, and messes up our enumchrons
+    # FLASUS has some wonky 955s that mongo chokes on,
+    # and messes up our enumchrons
     # org_code = string, hopefully flasus
     # src = parsed json
     def fix_flasus(org_code = nil, src = nil)
@@ -806,13 +855,13 @@ module Registry
       if org_code == 'flasus'
 
         # some 955s end up with keys of 'v.1'
-        f = src['fields'].find { |f| f['955'] }['955']['subfields']
-        v = f.select { |h| h['v'] }[0]
-        junk_sf = f.select { |h| h.keys[0] =~ /\./ }[0]
+        field = src['fields'].find { |f| f['955'] }['955']['subfields']
+        v = field.select { |h| h['v'] }[0]
+        junk_sf = field.select { |h| h.keys[0] =~ /\./ }[0]
         unless junk_sf.nil?
           junk = junk_sf.keys[0]
           v['v'] = junk.dup
-          f.delete_if { |h| h.keys[0] =~ /\./ }
+          field.delete_if { |h| h.keys[0] =~ /\./ }
         end
 
         # some subfield keys are simply '$' which causes problems.
@@ -828,11 +877,11 @@ module Registry
     def extracted_field(field = __callee__)
       return self[field.to_sym] unless self[field.to_sym].nil?
       @extracted ||= extracted
-      if @extracted[field.to_s].nil?
-        self[field.to_sym] = []
-      else
-        self[field.to_sym] = @extracted[field.to_s]
-      end
+      self[field.to_sym] = if @extracted[field.to_s].nil?
+                             []
+                           else
+                             @extracted[field.to_s]
+                           end
     end
     alias electronic_versions extracted_field
     alias related_electronic_resources extracted_field
@@ -868,7 +917,7 @@ module Registry
       names.each do |n|
         lccns << Authority.with(client: 'nauth') do |klass|
           auth = klass.search(n)
-          auth.sameAs unless auth.nil?
+          auth&.sameAs
         end
       end
       lccns.delete(nil)
@@ -876,15 +925,12 @@ module Registry
     end
 
     def self.marc_profiles
-      @@marc_profiles
-    end
-
-    def self.get_marc_profiles
+      @@marc_profiles unless @@marc_profiles.empty?
       Dir.glob(__dir__ + '/../../config/marc_profiles/*.yml').each do |profile|
         p = YAML.load_file(profile)
         @@marc_profiles[p['org_code']] = p
       end
     end
-    get_marc_profiles
+    marc_profiles
   end
 end

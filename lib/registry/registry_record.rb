@@ -6,6 +6,10 @@ require 'registry/collator'
 require 'mysql2'
 
 module Registry
+  # Registry Records are defined as a cluster of Source bib records and a
+  # unique enumeration/chronology string (sometimes the empty string).
+  # Fields are extracted from the base source fields and stored for
+  # convenience.
   class RegistryRecord
     include Mongoid::Document
     include Mongoid::Attributes::Dynamic
@@ -32,11 +36,11 @@ module Registry
 
     @@collator = Collator.new(__dir__ + '/../../config/'\
                                         'traject_registry_record_config.rb')
-    @@db_conn = Mysql2::Client.new(:host => ENV['db_host'],
-                                   :username => ENV['db_user'],
-                                   :password => ENV['db_pw'],
-                                   :database => ENV['db_name'],
-                                   :reconnect => true)
+    @@db_conn = Mysql2::Client.new(host: ENV['db_host'],
+                                   username: ENV['db_user'],
+                                   password: ENV['db_pw'],
+                                   database: ENV['db_name'],
+                                   reconnect: true)
 
     # Creates RegistryRecord.
     #
@@ -52,11 +56,11 @@ module Registry
       self.source_org_codes ||= []
       @sources = SourceRecord.where(:source_id.in => sid_cluster)
       @@collator.extract_fields(@sources)\
-        .each_with_index { |(k, v), _i| self[k] = v }
+                .each_with_index { |(k, v), _i| self[k] = v }
 
-      @sources.each do |s|
-        if !s.series.nil? && s.series.count.positive?
-          self.series = s.series.map { |s| s.gsub(/([A-Z])/, ' \1').strip }
+      @sources.each do |src|
+        if !src.series.nil? && src.series.count.positive?
+          self.series = src.series.map { |s| s.gsub(/([A-Z])/, ' \1').strip }
         end
       end
       series.uniq!
@@ -80,14 +84,14 @@ module Registry
                                'Limited View'
                              else
                                'Not In HathiTrust'
-                              end
+                             end
     end
 
     # Adds a source record to the cluster.
     #
     # source_record - SourceRecord object
     #
-    # So we don't have to recollate an entire cluster for the 
+    # So we don't have to recollate an entire cluster for the
     # addition of one rec
     def add_source(source_record)
       # if it's already in this record then we have to recollate.
@@ -105,7 +109,7 @@ module Registry
         source_record_ids.uniq!
         self.source_org_codes.uniq!
         if !source_record.series.nil? && source_record.series.count.positive?
-          self.series = source_record.series.map do |s| 
+          self.series = source_record.series.map do |s|
             s.gsub(/([A-Z])/, ' \1').strip
           end
           series.uniq!
@@ -122,7 +126,7 @@ module Registry
       self.source_org_codes = @sources.collect(&:org_code)
       self.source_org_codes.uniq!
       @@collator.extract_fields(@sources)
-        .each_with_index { |(k, v), _i| self[k] = v }
+                .each_with_index { |(k, v), _i| self[k] = v }
       save
     end
 
@@ -130,7 +134,7 @@ module Registry
     # Deprecates self.
     #
     # sid_clusters - hash of arrays to enum/chron
-    #                {[source_ids] => "enum_chron", [source_ids] => "enum_chron"}
+    #                {[source_ids]: "enum_chron", [source_ids]: "enum_chron"}
     # reason       - Why?
     #
     # Examples
@@ -143,7 +147,10 @@ module Registry
     def split(sid_clusters, reason)
       new_recs = []
       sid_clusters.each do |cluster, enum_chron|
-        new_recs << RegistryRecord.new(cluster, enum_chron, reason, [self.registry_id])
+        new_recs << RegistryRecord.new(cluster,
+                                       enum_chron,
+                                       reason,
+                                       [self.registry_id])
       end
 
       deprecate(reason, new_recs.collect(&:registry_id))
@@ -155,7 +162,7 @@ module Registry
     # Caused by splits, merges, or out of scope. Tracks successor records
     # from splits and merges.
     def deprecate(reason, successors = nil)
-      # successors is an optional array of new RegistryRecords that replaced this one
+      # successors is an optional array of new RegistryRecordsthat replaced this
       self.deprecated_reason = reason
       self.deprecated_timestamp = Time.now.utc
       self.suppressed = true

@@ -918,7 +918,7 @@ RSpec.describe Registry::SourceRecord, '#extract_issns' do
   end
 end
 
-RSpec.describe Registry::SourceRecord, '#has_approved_author?' do
+RSpec.describe Registry::SourceRecord, '#approved_author?' do
   before(:all) do
     @src = SourceRecord.new
     @src.org_code = 'miaahdl'
@@ -926,11 +926,11 @@ RSpec.describe Registry::SourceRecord, '#has_approved_author?' do
   end
 
   it 'tells us it has an approved author' do
-    expect(@src.has_approved_author?).to be_truthy
+    expect(@src.approved_author?).to be_truthy
   end
 end
 
-RSpec.describe Registry::SourceRecord, '#has_approved_added_entry?' do
+RSpec.describe Registry::SourceRecord, '#approved_added_entry?' do
   before(:all) do
     @src = SourceRecord.new
     @src.org_code = 'miaahdl'
@@ -939,7 +939,7 @@ RSpec.describe Registry::SourceRecord, '#has_approved_added_entry?' do
 
   it 'tells us it has an approved added entry author' do
     expect(@src.fed_doc?).to be_falsey
-    expect(@src.has_approved_added_entry?).to be_truthy
+    expect(@src.approved_added_entry?).to be_truthy
   end
 end
 
