@@ -11,7 +11,8 @@ describe 'Congressional Record' do
       misses = 0
       can_canon = 0
       cant_canon = 0
-      input = File.dirname(__FILE__) + '/data/congressional_record_enumchrons.txt'
+      input = File.dirname(__FILE__) + \
+              '/data/congressional_record_enumchrons.txt'
       open(input, 'r').each do |line|
         line.chomp!
         ec = src.parse_ec(line)
@@ -58,7 +59,8 @@ describe 'Congressional Record' do
     end
 
     it "parses 'V. 137:PT. 16 (1991:SEPT. 10/23)'" do
-      expect(src.parse_ec('V. 137:PT. 16 (1991:SEPT. 10/23)')['part']).to eq('16')
+      expect(src.parse_ec('V. 137:PT. 16 (1991:SEPT. 10/23)')['part']).to \
+        eq('16')
     end
 
     it "parses 'V. 97:15 (1951)'" do
@@ -98,7 +100,8 @@ describe 'Congressional Record' do
     end
 
     it "parses '51ST:1ST:V. 21:PT. 7 (1890:JUNE 13/JULY 9)'" do
-      expect(src.parse_ec('51ST:1ST:V. 21:PT. 7 (1890:JUNE 13/JULY 9)')['part']).to eq('7')
+      expect(src.parse_ec('51ST:1ST:V. 21:PT. 7 (1890:JUNE 13/JULY 9)')['part'])
+        .to eq('7')
     end
 
     it "parses '102/2:V. 138:PT. 25'" do
@@ -106,7 +109,9 @@ describe 'Congressional Record' do
     end
 
     it "parses '102ND CONG. , 1ST SES. V. 137 PT. 25 INDEX L-Z'" do
-      expect(src.parse_ec('102ND CONG. , 1ST SES. V. 137 PT. 25 INDEX L-Z')['part']).to eq('25')
+      expect(src
+        .parse_ec('102ND CONG. , 1ST SES. V. 137 PT. 25 INDEX L-Z')['part'])
+        .to eq('25')
     end
 
     it "parses 'V. 84. PT. 10 1939'" do
@@ -128,17 +133,20 @@ describe 'Congressional Record' do
 
   describe 'explode' do
     it 'returns a canonical form' do
-      expect(src.explode(src.parse_ec('V. 97:15 (1951)'), {})).to have_key('Volume:97, Part:15')
+      expect(src.explode(src.parse_ec('V. 97:15 (1951)'), {})).to \
+        have_key('Volume:97, Part:15')
     end
 
     it 'handles indexes' do
-      expect(src.explode(src.parse_ec('102/1-138/PT. 24/INDEX L-Z'), {})).to have_key('Volume:138, Part:24, Index:L-Z')
+      expect(src.explode(src.parse_ec('102/1-138/PT. 24/INDEX L-Z'), {})).to \
+        have_key('Volume:138, Part:24, Index:L-Z')
     end
   end
 
   describe 'canonicalize' do
     it 'returns a canonical form' do
-      expect(src.canonicalize(src.parse_ec('V. 97:15 (1951)'))).to eq('Volume:97, Part:15')
+      expect(src.canonicalize(src.parse_ec('V. 97:15 (1951)'))).to \
+        eq('Volume:97, Part:15')
     end
 
     it "returns nil if can't canonicalize" do

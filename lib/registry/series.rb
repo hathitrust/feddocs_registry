@@ -1,4 +1,5 @@
 module Registry
+  # Methods common to Series handling
   module Series
     # given a starting year with 4 digits and an ending year with 2 or 3 digits,
     # figure out the century and millenium
@@ -11,7 +12,7 @@ module Registry
                      (start_year[0, 2].to_i + 1).to_s + end_year
                    else
                      start_year[0, 2] + end_year
-        end
+                   end
       elsif /^\d\d\d$/.match?(end_year)
         end_year = correct_year(end_year)
       end
@@ -36,12 +37,9 @@ module Registry
     def self.lookup_month(m_abbrev)
       m_abbrev.chomp!('.')
       MONTHS.each do |month|
-        if /^#{m_abbrev}/i.match?(month)
-          return month
-        elsif (m_abbrev.length == 2) &&
-              /^#{m_abbrev[0]}.*#{m_abbrev[1]}/i =~ month
-          return month
-        end
+        return month if /^#{m_abbrev}/i.match?(month) ||
+                       ((m_abbrev.length == 2) &&
+                       /^#{m_abbrev[0]}.*#{m_abbrev[1]}/i =~ month)
       end
     end
   end

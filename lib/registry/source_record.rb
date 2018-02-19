@@ -200,7 +200,7 @@ module Registry
       # if fields.nil? #rare but happens let rescue handle it
       field008 = marc['008']
       f008 = if field008.nil?
-               f008 = ''
+               ''
              else
                field008.value
              end

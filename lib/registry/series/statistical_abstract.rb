@@ -258,29 +258,6 @@ module Registry
 
       def canonicalize(ec); end
 
-      def self.parse_file
-        @no_match = 0
-        @match = 0
-        src = Class.new { extend StatisticalAbstract }
-        input = File.dirname(__FILE__) + '/data/statabstract_enumchrons.txt'
-        open(input, 'r').each do |line|
-          line.chomp!
-
-          ec = src.parse_ec(line)
-          if ec.nil? || ec.empty?
-            @no_match += 1
-            # puts "no match: "+line
-          else
-            # puts "match: "+self.explode(ec).to_s
-            @match += 1
-          end
-        end
-
-        puts "StatAbstract match: #{@match}"
-        puts "StatAbstract no match: #{@no_match}"
-        [@match, @no_match]
-      end
-
       def self.load_context
         # Be able to look up the correct canonical string with any missing elements.
         canonical_items = File.dirname(__FILE__) + '/data/statistical_abstract_editions.tsv'
