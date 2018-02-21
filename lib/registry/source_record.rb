@@ -173,7 +173,7 @@ module Registry
         id = source['fields'].find { |f| f[field] }[field].delete(' ')
         # this will eliminate leading zeros but only for actual integer ids
         id.gsub!(/^0+/, '') if id.match?(/^[0-9]+$/)
-      rescue
+      rescue StandardError
         # the field doesn't exist
         id = ''
       end
@@ -288,7 +288,7 @@ module Registry
       # 035a and 035z
       marc.each_by_tag('035') do |field|
         if field['a'] && OCLCPAT.match(field['a'])
-          oclc = $1.to_i
+          oclc = ::Regexp.last_match(1).to_i
           self.oclc_alleged << oclc if oclc
         end
       end
@@ -298,7 +298,7 @@ module Registry
       marc.each_by_tag('001') do |field|
         if OCLCPAT.match(field.value) ||
            (@@contrib001[self.org_code] && field.value =~ /^(\d+)$/x)
-          self.oclc_alleged << $1.to_i
+          self.oclc_alleged << ::Regexp.last_match(1).to_i
         end
       end
 
@@ -307,7 +307,7 @@ module Registry
         marc.each_by_tag('955') do |field|
           field.subfields.each do |sf|
             if (sf.code == 'o') && sf.value =~ /(\d+)/
-              self.oclc_alleged << $1.to_i
+              self.oclc_alleged << ::Regexp.last_match(1).to_i
             end
           end
         end
@@ -318,7 +318,7 @@ module Registry
       marc.each_by_tag('776') do |field|
         subfield_ws = field.find_all { |subfield| subfield.code == 'w' }
         subfield_ws.each do |sub|
-          self.oclc_alleged << $1.to_i if OCLCPAT.match(sub.value)
+          self.oclc_alleged << ::Regexp.last_match(1).to_i if OCLCPAT.match(sub.value)
         end
       end
 
@@ -767,31 +767,31 @@ module Registry
 
       # match all or nothing
       patterns = [
-        %r{^#{v}$}xi,
+        /^#{v}$/xi,
 
         # risky business
-        %r{^(0+)?(?<volume>[1-9])$}xi,
+        /^(0+)?(?<volume>[1-9])$/xi,
 
-        %r{^#{n}$}xi,
+        /^#{n}$/xi,
 
-        %r{^#{pt}$}xi,
+        /^#{pt}$/xi,
 
-        %r{^#{y}$}xi,
+        /^#{y}$/xi,
 
-        %r{^#{b}$}xi,
+        /^#{b}$/xi,
 
-        %r{^#{sh}$}xi,
+        /^#{sh}$/xi,
 
         # compound patterns
-        %r{^#{v}#{div}#{pt}$}xi,
+        /^#{v}#{div}#{pt}$/xi,
 
-        %r{^#{y}#{div}#{pt}$}xi,
+        /^#{y}#{div}#{pt}$/xi,
 
-        %r{^#{y}#{div}#{v}$}xi,
+        /^#{y}#{div}#{v}$/xi,
 
-        %r{^#{v}[\(\s]\s?#{y}\)?$}xi,
+        /^#{v}[\(\s]\s?#{y}\)?$/xi,
 
-        %r{^#{v}#{div}#{n}#}xi
+        /^#{v}#{div}#{n}#/xi
 
       ] # patterns
 

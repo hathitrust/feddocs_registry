@@ -2,6 +2,7 @@ require 'pp'
 
 module Registry
   module Series
+    # Vital Statistics series
     module VitalStatistics
       # class << self; attr_accessor :volumes end
       # @volumes = {}
@@ -52,76 +53,76 @@ module Registry
           # Year:1943, Supplement
           # 1960,V. 2,PT. A
           # 1937 V. 2
-          %r{
+          /
             ^#{y}
             (#{div}#{v})?
             (#{div}#{p})?
             (#{div}#{sec})?
             (#{div}#{sup})?
             (#{div}#{app})?$
-          }xi,
+          /xi,
 
           # 1971:V. 2A
-          %r{
+          /
             ^#{y}
             #{div}#{v}(?<part>[A-Z])$
-          }x,
+          /x,
 
           # 1966:3
           # 1963:2A
           # 1985:2:A
           # 1984:V. 2:B
-          %r{
+          /
             ^#{y}
             #{div}
             (V\.\s)?(?<volume>\d)
             (:?(?<part>[A-Z]))?$
-          }x,
+          /x,
 
           # 1943SEC1
           # 1960V1SEC3
-          %r{
+          /
             ^#{y}
             (#{div})?
             (V(?<volume>\d))?
             (#{div})?
             #{sec}$
-          }x,
+          /x,
 
           # 938/2, -1938
           # 963/2A, -1963
           # 982/V. 2B, -1982
           # 986/2/A, -1986
-          %r{
+          /
             ^#{y}
             #{div}
             (V\.?\s?)?(?<volume>\d)
             (#{div})?
             (?<part>[A-Z])?
             ,\s-\d{4}$
-          }x,
+          /x,
 
           # 1986V. 2PT. B 1986
           # 1988V. 3 1988
           # 1992:V. 2/APP.
-          %r{
+          /
             ^#{y}
             (#{div})?
             #{v}
             ((#{div})?#{p})?
             (#{div}#{app})?
             ((#{div})?\d{4})?$
-          }x,
+          /x,
 
           # 977/V. 2 PT. A, -1977
           # 989/V. 2/PT. A, -1989
-          %r{
+          /
             ^#{y}
             #{div}
             #{v}
             (#{div}#{p})?
             ,\s-\d{4}$
-          }x,
+          /x,
 
           # 1986:V. 2:SEC. 6:1986
           # 1990/V. 2/PT. A (1990)
@@ -142,59 +143,59 @@ module Registry
           # V1 1939
           # V. 1(1988)
           # V. 1 (1990:NATALITY)
-          %r{
+          /
             ^#{v}
             (#{div})?\(?
             #{y}
             (:[A-Z]+)?\)?$
-          }x,
+          /x,
 
           # V. 2B (1978)
           # V. 2:PT. A(1988)
-          %r{
+          /
             ^#{v}
             (:PT\.\s)?(?<part>[A-Z])
             \s?\(#{y}\)$
-          }x,
+          /x,
 
           # V. 1950:3
           # V. 1960:2B
           # V. 1963:2:B
           # V. 1985:2:APPENDIX
-          %r{
+          /
             ^V\.\s(?<year>\d{4}):
             (?<volume>\d)
             (:?(?<part>[A-Z]))?
             (#{div}#{app})?$
-          }x,
+          /x,
 
           # 1991:V. 1:SUP.
 
           # Don't really tell us anything, but might as well parse and merge
           # 1927 PT1
           # 1937PT1
-          %r{
+          /
             ^#{y}
             (#{div})?
             #{p}$
-          }x,
+          /x,
           # PT. 1 (1943)
-          %r{
+          /
             ^#{p}
             #{div}
             #{y}\)?$
-          }x,
+          /x,
 
           # 1953V2
-          %r{
+          /
             ^#{y}
             V(?<volume>\d)$
-          }x,
+          /x,
 
           # simple year
-          %r{
+          /
             ^#{y}$
-          }x
+          /x
         ] # patterns
 
         patterns.each do |p|
@@ -209,7 +210,7 @@ module Registry
         ec
       end
 
-      def explode(ec, src = nil)
+      def explode(ec, _src = nil)
         enum_chrons = {}
         return {} if ec.nil?
 
@@ -217,7 +218,7 @@ module Registry
         ecs << ec
 
         ecs.each do |ec|
-          if canon = canonicalize(ec)
+          if (canon = canonicalize(ec))
             ec['canon'] = canon
             enum_chrons[ec['canon']] = ec.clone
           end
@@ -234,9 +235,7 @@ module Registry
         canon << "Section:#{ec['section']}" if ec['section']
         canon << 'Appendix' if ec['appendix']
         canon << 'Supplement' if ec['supplement']
-        if !canon.empty?
-          canon.join(', ')
-        end
+        canon.join(', ') unless canon.empty?
       end
 
       def remove_dupe_years(ec_string)

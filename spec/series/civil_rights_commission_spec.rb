@@ -9,7 +9,7 @@ describe 'CRC' do
   describe 'new' do
     it 'can create a new record without parsing/exploding' do
       sr = Registry::SourceRecord.new
-      sr.org_code == 'miaahdl'
+      sr.org_code = 'miaahdl'
       sr.source = open(File.dirname(__FILE__) + '/data/civil_rights_commission.json').read
       expect(sr.enum_chrons[0]).to eq('NOT A REAL ENUMCHRON')
       expect(sr.holdings.values[0][0][:ec]).to eq('NOT A REAL ENUMCHRON')

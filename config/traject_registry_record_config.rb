@@ -29,12 +29,12 @@ to_field 'text', extract_all_marc_values
 
 # title
 to_field 'title', extract_marc('245a')
-to_field 'title_display', extract_marc('245a', :trim_punctuation => true) do |_rec, acc|
+to_field 'title_display', extract_marc('245a', trim_punctuation: true) do |_rec, acc|
   acc.map! { |s| Normalize.normalize_title(s) }
 end
 
 to_field 'subtitle_t',          extract_marc('245b')
-to_field 'subtitle_display',    extract_marc('245b', :trim_punctuation => true)
+to_field 'subtitle_display',    extract_marc('245b', trim_punctuation: true)
 
 to_field 'title_addl_t',        extract_marc('245nps:130:240abcdefgklmnopqrs:210ab:222ab:242abcehnp:243abcdefgklmnopqrs:246abcdefgnp:247abcdefgnp')
 to_field 'title_added_entry_t', extract_marc('700gklmnoprst:710fgklmnopqrst:711fgklnpst:730abdefgklmnopqrst:740anp:505t:780abcrst:785abcrst:773abrst')
@@ -66,13 +66,13 @@ to_field 'author_display_facet', extract_marc('100abcdq:110abcdgnu:111acdegjnqu'
 to_field 'author_sort',         marc_sortable_author
 
 # not needed
-to_field 'author_facet',        extract_marc('100abcdq:110abcdgnu:111acdenqu:700abcdq:710abcdgnu:711acdenqu', :trim_punctuation => true)
+to_field 'author_facet',        extract_marc('100abcdq:110abcdgnu:111acdenqu:700abcdq:710abcdgnu:711acdenqu', trim_punctuation: true)
 
 # publisher
 to_field 'publisher_t', extract_marc('260abef:261abef:262ab:264ab')
 
 # place of publication
-to_field 'published_display',   extract_marc('260a:264|1*|abc', :trim_punctuation => true)
+to_field 'published_display',   extract_marc('260a:264|1*|abc', trim_punctuation: true)
 
 # lc call number
 to_field 'lc_callnum_display',  extract_marc('050ab')

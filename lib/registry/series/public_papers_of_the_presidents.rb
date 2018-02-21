@@ -46,66 +46,66 @@ module Registry
           # Year:1960, Book:2
           # Year:1960, Volume:2
           # Year:1990, President:Bush
-          %r{
+          /
             ^(#{y}|#{ys})
             (#{div}#{v})?
             (#{div}#{p})?
             (#{div}#{b})?
             (#{div}#{pres})?$
-          }xi,
+          /xi,
 
           # BK. 1 (1993)
           # BK. 1(2002)
-          %r{
+          /
             ^#{b}
             \s?\(#{y}\)?$
-          }x,
+          /x,
 
           # JOHNSON 1963-64: V. 2
-          %r{
+          /
             ^#{pres}
             #{div}(#{y}|#{ys})
             (#{div}#{v})?$
-          }x,
+          /x,
 
           # 1982PT2
           # 1982V. 1
           # 2007PT. 1 2007
-          %r{
+          /
             ^(#{y}|#{ys})
             (#{p})?
             (#{v})?
             (#{b})?
             (\s(#{y}|#{ys}))?$
-          }x,
+          /x,
 
           # V. 2 (1997)
           # V. 3
-          %r{
+          /
             ^#{v}
             (#{div}(#{y}|#{ys})\))?$
-          }x,
+          /x,
 
           # INDEX 1977/1981
           # INDEX 1993-2001 1993-2001
-          %r{
+          /
             ^#{ind}
              #{div}(#{y}|#{ys})
              (#{div}(#{y}|#{ys}))?$
-          }x,
+          /x,
 
           # 953-61/IND.
-          %r{
+          /
             ^(#{y}|#{ys})
             #{div}#{ind}$
-          }x,
+          /x,
 
           # 1963/64 2
           # 1965 1
-          %r{
+          /
             ^(#{y}|#{ys})
             \s(?<book>\d)$
-          }x,
+          /x,
 
           # we don't care about months/days, book tells us that already
           # 1993:BOOK 1 (1993:JAN. 20/JULY 31)
@@ -121,10 +121,10 @@ module Registry
           }x,
 
           # BK. 2 (1992/93)
-          %r{
+          /
             ^#{b}
             #{div}#{ys}\)$
-          }x,
+          /x,
 
           # BK. 2(2011:JULY 01/DEC. 31)
           %r{
@@ -135,9 +135,9 @@ module Registry
           }x,
 
           # simple year
-          %r{
+          /
             ^#{y}$
-          }x
+          /x
         ] # patterns
 
         patterns.each do |p|
@@ -155,7 +155,7 @@ module Registry
         ec
       end
 
-      def explode(ec, src = nil)
+      def explode(ec, _src = nil)
         enum_chrons = {}
         return {} if ec.nil?
 
@@ -183,9 +183,7 @@ module Registry
         canon << "Book:#{ec['book']}" if ec['book']
         canon << "President:#{ec['president']}" if ec['president']
         canon << 'Index' if ec['index']
-        if !canon.empty?
-          canon.join(', ')
-        end
+        canon.join(', ') unless canon.empty?
       end
 
       def remove_dupe_years(ec_string)

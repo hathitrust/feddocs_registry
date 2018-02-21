@@ -145,12 +145,12 @@ module Registry
 
       # take a parsed enumchron and expand it into its constituent parts
       # enum_chrons - { <canonical ec string> : {<parsed features>}, }
-      def explode(ec, src = nil)
+      def explode(ec, _src = nil)
         enum_chrons = {}
         return {} if ec.nil?
 
         if ec['number'] && ec['volume']
-          enum_chrons["Volume:#{ec["volume"]}, Number:#{ec["number"]}"] = ec
+          enum_chrons["Volume:#{ec['volume']}, Number:#{ec['number']}"] = ec
         elsif (ec['number_start'] && ec['volume']) ||
               ((ec.keys.count == 1) && ec['volume']) ||
               ((ec.keys.count == 2) && ec['volume'] && ec['year'])
@@ -158,7 +158,7 @@ module Registry
           ec['number_start'] ||= '1'
           ec['number_end'] ||= FederalRegister.nums_per_vol[ec['volume']]
           for n in (ec['number_start']..ec['number_end']) do
-            enum_chrons["Volume:#{ec["volume"]}, Number:#{n}"] = ec
+            enum_chrons["Volume:#{ec['volume']}, Number:#{n}"] = ec
           end
         end
 

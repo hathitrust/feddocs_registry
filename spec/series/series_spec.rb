@@ -55,7 +55,7 @@ describe 'all Series' do
 
     it "fails to explode if it can't canonicalize" do
       expect(s.respond_to?(:explode)).to be_truthy
-      expect(s.explode({ 'string' => 'cant_canonicalize_this' }).keys.count).to eq(0)
+      expect(s.explode('string' => 'cant_canonicalize_this').keys.count).to eq(0)
     end
   end
 end

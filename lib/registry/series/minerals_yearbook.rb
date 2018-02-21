@@ -39,156 +39,156 @@ module Registry
           # canonical
           # Year:1995, Volume:1, Part:3
           # Year:1995-1996, Volume:1, Part:3
-          %r{
+          /
             ^Year:(#{y}|(?<start_year>\d{4})-(?<end_year>\d{4}))
             (,\sVolume:(?<volume>\d))?
             (,\sPart:(?<part>\d))?
             (,\sDescription:(?<description>.*))?$
-          }x,
+          /x,
 
           # simple year
-          %r{
+          /
             ^#{y}$
-          }x,
+          /x,
 
           # the area regex is broad enough to eat appendixes if not careful
           # 1934 APPENDIX
-          %r{
+          /
             ^#{y}#{div}
             #{app}$
-          }x,
+          /x,
 
           # 1935/STAT. APP.
-          %r{
+          /
             ^#{y}#{div}#{stapp}$
-          }x,
-          %r{
+          /x,
+          /
             ^#{ys}#{div}#{stapp}$
-          }x,
+          /x,
 
           # 932-33/app.
-          %r{
+          /
             ^#{ys}#{div}#{app}$
-          }x,
+          /x,
 
           # 1982 (V. 1)
-          %r{
+          /
             ^#{y}(#{div})?\(#{v}
             (#{div}#{area})?\)$
-          }x,
+          /x,
 
           # V. 3(1956)
-          %r{
+          /
             ^#{v}\(#{y}\)$
-          }x,
+          /x,
 
           # V. 1-2(1968)
-          %r{
+          /
             ^V\.\s#{vs}\(#{y}\)$
-          }x,
+          /x,
 
           # 2009:3:1- AREA REPORTS: AFRICA AND THE MIDDLE EAST
-          %r{
+          /
             ^#{y}:(?<volume>\d):(?<part>\d)\s?(-\s?)?
             #{area}$
-          }x,
+          /x,
 
           # 981/V. 2
           # 1908V. 1
           # 2006:V. 3:LATIN AMERICA/CANADA
           # 2006:V. 2(DOMESTIC)
-          %r{
+          /
             ^#{y}(#{div})?#{v}
             ((#{div})?#{area})?$
-          }x,
+          /x,
 
           # 1955:3 #assume volume
           # 2005:2 - AREA REPORTS: DOMESTIC
           # 2007:3 PT. 3 (INTL:EUROPE AND CENTRAL EURASIA)
-          %r{
+          /
             ^#{y}#{div}(?<volume>\d)
             (#{div}#{p})?
             (\s?-?\s?#{area})?$
-          }x,
+          /x,
 
           # 1978-79:1
-          %r{
+          /
             ^#{ys}:(?<volume>\d)$
-          }x,
+          /x,
 
           # 989:V. 3:1
-          %r{
+          /
             ^#{y}#{div}#{v}#{div}
             (?<part>\d)$
-          }x,
+          /x,
 
           # 1968 V. 1-2
           # 1969 (V. 1-2)
-          %r{
+          /
             ^#{y}(#{div})?
             \(?(V\.\s?)?#{vs}\)?$
-          }x,
+          /x,
 
           # V. 3(2008:EUROPE/CENTRAL EURASIA)
-          %r{
+          /
             ^#{v}\((?<year>\d{4}):
             #{area}\)$
-          }x,
+          /x,
 
           # V. 32006:LATIN AMERICA/CANADA
-          %r{
+          /
             ^#{v}(?<year>\d{4})
            (#{div}#{area})$
-          }x,
+          /x,
 
           # MIDDLE EAST1989:V. 3
-          %r{
+          /
             ^#{area}(?<year>\d{4})#{div}#{v}$
-          }x,
+          /x,
 
           # 1910:PT. 1
-          %r{
+          /
             ^#{y}#{div}#{p}
             (#{div}#{area})?$
-          }x,
+          /x,
 
           # 993-94/V. 2
-          %r{
+          /
             ^#{ys}((#{div})?#{v}
                    (#{div}#{area})?)?$
-          }x,
+          /x,
 
           # 2003/V. 3/NO. 4 EUROPE AND CENTRAL EURASIA
-          %r{
+          /
             ^#{y}#{div}#{v}#{div}
             NO\.\s(?<number>\d)
             (#{div}#{area})?$
-          }x,
+          /x,
 
           # 1978/79 (V. 3)
-          %r{
+          /
             ^#{ys}#{div}
             \(?#{v}\)?
               (#{div}#{p})?$
-          }x,
+          /x,
 
           # 1996:V. 3:PT. 2/3
-          %r{
+          /
             ^#{y}#{div}#{v}#{div}PT\.\s#{ps}$
-          }x,
+          /x,
 
           # 995:V. 2 1995, V. 2
-          %r{
+          /
             ^#{y}#{div}#{v}#{div}
             #{y}(,\s#{v})?$
-          }x,
+          /x,
 
           # 2007 V. 3 PT. 3
           # 1989V. 3PT. 5
-          %r{
+          /
             ^#{y}(#{div})?#{v}(#{div})?#{p}
             (#{div}#{area})?$
-          }x
+          /x
         ] # patterns
 
         patterns.each do |p|
@@ -219,7 +219,7 @@ module Registry
         ec
       end
 
-      def explode(ec, src = nil)
+      def explode(ec, _src = nil)
         enum_chrons = {}
         return {} if ec.nil?
 

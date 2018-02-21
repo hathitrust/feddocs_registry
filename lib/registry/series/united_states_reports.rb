@@ -68,7 +68,7 @@ module Registry
         ec
       end
 
-      def explode(ec, src = nil)
+      def explode(ec, _src = nil)
         enum_chrons = {}
         return {} if ec.nil?
 

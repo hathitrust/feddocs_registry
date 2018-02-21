@@ -7,7 +7,7 @@ module Registry
       # include EC
       # class << self; attr_accessor :parts end
       # todo: make parts a constant?
-      @@parts = Hash.new { |hash, key| hash[key] = Array.new }
+      @@parts = Hash.new { |hash, key| hash[key] = [] }
 
       def self.sudoc_stem
         'Y 4.EC 7:EC 7/2/'
@@ -66,11 +66,11 @@ module Registry
           # remove nils
           ec.delete_if { |_k, v| v.nil? }
           if ec.key?('year') && (ec['year'].length == 3)
-            if (ec['year'][0] == '8') || (ec['year'][0] == '9')
-              ec['year'] = '1' + ec['year']
-            else
-              ec['year'] = '2' + ec['year']
-            end
+            ec['year'] = if (ec['year'][0] == '8') || (ec['year'][0] == '9')
+                           '1' + ec['year']
+                         else
+                           '2' + ec['year']
+                         end
           end
 
           if ec.key?('start_year') && (ec['start_year'].length == 3)
@@ -82,12 +82,12 @@ module Registry
           end
 
           if ec.key?('end_year') && /^\d\d$/.match(ec['end_year'])
-            if ec['end_year'].to_i < ec['start_year'][2, 2].to_i
-              # crosses century. e.g. 1998-01
-              ec['end_year'] = (ec['start_year'][0, 2].to_i + 1).to_s + ec['end_year']
-            else
-              ec['end_year'] = ec['start_year'][0, 2] + ec['end_year']
-            end
+            ec['end_year'] = if ec['end_year'].to_i < ec['start_year'][2, 2].to_i
+                               # crosses century. e.g. 1998-01
+                               (ec['start_year'][0, 2].to_i + 1).to_s + ec['end_year']
+                             else
+                               ec['start_year'][0, 2] + ec['end_year']
+                             end
           elsif ec.key?('end_year') && /^\d\d\d$/.match(ec['end_year'])
             if ec['end_year'].to_i < 700 # add a 2; 1699 and 2699 are both wrong, but...
               ec['end_year'] = '2' + ec['end_year']
@@ -135,7 +135,7 @@ module Registry
           @@parts[ec['year']].uniq!
         elsif ec['year'] && ec['start_part']
           for pt in ec['start_part']..ec['end_part']
-            canon = canonicalize({ 'year' => ec['year'], 'part' => pt })
+            canon = canonicalize('year' => ec['year'], 'part' => pt)
             enum_chrons[canon] = ec.clone
             @@parts[ec['year']] << pt
           end
@@ -159,7 +159,7 @@ module Registry
             #    enum_chrons[canon] = ec
             #  end
             # else
-            canon = canonicalize({ 'year' => y })
+            canon = canonicalize('year' => y)
             enum_chrons[canon] = ec.clone
             # end
           end
@@ -172,9 +172,7 @@ module Registry
         canon = []
         canon << "Year:#{ec['year']}" if ec['year']
         canon << "Part:#{ec['part']}" if ec['part']
-        if !canon.empty?
-          canon.join(', ')
-        end
+        canon.join(', ') unless canon.empty?
       end
 
       def self.parse_file

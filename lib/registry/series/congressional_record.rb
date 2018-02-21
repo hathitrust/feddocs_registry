@@ -34,13 +34,13 @@ module Registry
 
         patterns = [
           # canonical
-          %r{
+          /
             ^Volume:(?<volume>\d+)
             (,\sPart:(?<part>\d+))?
             (,\sIndex:(?<index>[A-Z]-[A-Z]))?
             (,\s(?<index>Index))?
             (,\s(?<appendix>Appendix))?$
-          }x,
+          /x,
 
           # V. 1:PT. 4
           # V. 105 PT. 35
@@ -62,11 +62,11 @@ module Registry
           /^#{congress}\/[12][:-](?<volume>\d+)\/#{p}#{y}?#{index}?$/,
 
           # V. 99:PT. 2 1953:FEB. 26-APR. 8
-          %r{
+          /
             ^#{v}:#{p}#{y}
             (?<start_month>#{month})\.?\s(?<start_day>\d{1,2})-
             (?<end_month>#{month})\.?\s(?<end_day>\d{1,2})
-          }x,
+          /x,
 
           # V. 137:PT. 16 (1991:SEPT. 10/23) /* 307 */
           %r{
@@ -143,11 +143,11 @@ module Registry
           }x,
 
           # V. 107 1961 APPX. PT. 7
-          %r{
+          /
             #{v}#{y}
             (?<appendix>APPX\.?)\s
             #{p}
-           }x,
+           /x,
 
           # 61ST:1ST:V. 44:PT. 2 (1909:APR. 3/MAY 22)
           # 51ST:1ST:V. 21:PT. 7 (1890:JUNE 13/JULY 9)
@@ -162,11 +162,11 @@ module Registry
           # Fine, I don't care about the dates
           # 61ST:1ST:V. 44:PT. 3 (1909:MAY/JUNE 16)
           # 59TH:1ST SESS. :V. 40:PT. 3 1906:FEB. 3/FEB. 26
-          %r{
+          /
             ^#{congress}(TH|ST|ND|RD):
             (?<session>\d)(TH|ST|ND|RD)(\sSESS\.\s)?:
             #{v}[\s,:]\s?#{p}#{y}(?!.*INDEX)(?!.*APP).*
-          }x,
+          /x,
 
           # V. 96 PT. 12 1950-1951
           /#{v}[\s:\/,]#{p}\s(?<start_year>\d{4})([-\/](?<end_year>\d{2,4}))?$/,
@@ -226,11 +226,11 @@ module Registry
           # remove nils
           ec.delete_if { |_k, v| v.nil? }
           if ec.key?('year') && (ec['year'].length == 3)
-            if (ec['year'][0] == '8') || (ec['year'][0] == '9')
-              ec['year'] = '1' + ec['year']
-            else
-              ec['year'] = '2' + ec['year']
-            end
+            ec['year'] = if (ec['year'][0] == '8') || (ec['year'][0] == '9')
+                           '1' + ec['year']
+                         else
+                           '2' + ec['year']
+                         end
           end
 
           if ec.key?('start_year') && (ec['start_year'].length == 3)
@@ -253,7 +253,7 @@ module Registry
       # enum_chrons - { <canonical ec string> : {<parsed features>}, }
       #
       # Canonical string format: <volume number>, <part>, <index/abstract>
-      def explode(ec, src = nil)
+      def explode(ec, _src = nil)
         enum_chrons = {}
         return {} if ec.nil?
 
@@ -272,11 +272,11 @@ module Registry
             canon += ", Part:#{ec['part']}"
           end
           if ec['index']
-            if ec['index'] == 'INDEX'
-              canon += ', Index'
-            else
-              canon += ", Index:#{ec['index']}"
-            end
+            canon += if ec['index'] == 'INDEX'
+                       ', Index'
+                     else
+                       ", Index:#{ec['index']}"
+                     end
           end
           canon += ', Appendix' if ec['appendix']
         end

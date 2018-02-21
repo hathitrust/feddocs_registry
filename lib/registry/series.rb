@@ -38,8 +38,8 @@ module Registry
       m_abbrev.chomp!('.')
       MONTHS.each do |month|
         return month if /^#{m_abbrev}/i.match?(month) ||
-                       ((m_abbrev.length == 2) &&
-                       /^#{m_abbrev[0]}.*#{m_abbrev[1]}/i =~ month)
+                        ((m_abbrev.length == 2) &&
+                        /^#{m_abbrev[0]}.*#{m_abbrev[1]}/i =~ month)
       end
     end
   end

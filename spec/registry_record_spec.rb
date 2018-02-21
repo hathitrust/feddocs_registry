@@ -12,7 +12,7 @@ RSpec.describe RR, '#initialize' do
     cluster = [
       'c6c38adb-2533-4997-85f5-328e91c224a8',
       'c514673d-f634-4f74-a8de-68cd4b281ced',
-      '55f97400-6497-46ce-9b9f-477dbbf5e78b',
+      '55f97400-6497-46ce-9b9f-477dbbf5e78b'
     ]
     ec = 'ec A'
     @new_rec = RR.new(cluster, ec, 'testing')
@@ -94,7 +94,7 @@ RSpec.describe RR, 'add_source' do
     cluster = [
       'c6c38adb-2533-4997-85f5-328e91c224a8',
       'c514673d-f634-4f74-a8de-68cd4b281ced',
-      '55f97400-6497-46ce-9b9f-477dbbf5e78b',
+      '55f97400-6497-46ce-9b9f-477dbbf5e78b'
     ]
     ec = 'ec A'
     @new_rec = RR.new(cluster, ec, 'testing')
@@ -308,7 +308,7 @@ end
 
 RSpec.describe RR, '#report_numbers' do
   before(:all) do
-    @src = SourceRecord.new(:org_code => 'miu')
+    @src = SourceRecord.new(org_code: 'miu')
     @src.source = open(File.dirname(__FILE__) + '/data/osti_record.json').read
     @src.save
     @rec = RR.new([@src.source_id], '', '')

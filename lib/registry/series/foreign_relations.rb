@@ -165,11 +165,11 @@ module Registry
           if ec.key?('year') && (ec['year'].length == 2)
             ec['year'] = '19' + ec['year']
           elsif ec.key?('year') && (ec['year'].length == 3)
-            if (ec['year'][0] == '8') || (ec['year'][0] == '9')
-              ec['year'] = '1' + ec['year']
-            else
-              ec['year'] = '2' + ec['year']
-            end
+            ec['year'] = if (ec['year'][0] == '8') || (ec['year'][0] == '9')
+                           '1' + ec['year']
+                         else
+                           '2' + ec['year']
+                         end
           end
 
           if ec.key?('start_year') && (ec['start_year'].length == 3)
@@ -190,7 +190,7 @@ module Registry
       # Take a parsed enumchron and expand it into its constituent parts
       # enum_chrons - { <canonical ec string> : {<parsed features>}, }
       #
-      def explode(ec, src = nil)
+      def explode(ec, _src = nil)
         enum_chrons = {}
         return {} if ec.nil?
 

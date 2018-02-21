@@ -28,7 +28,7 @@ end
 # author
 
 to_field 'author_t', extract_marc('100abcdgqu:110abcdgnu:111acdegjnqu')
-to_field 'author_parts', extract_marc('100abcdgqu:110abcdgnu:111acdegjnqu', :separator => nil)
+to_field 'author_parts', extract_marc('100abcdgqu:110abcdgnu:111acdegjnqu', separator: nil)
 to_field 'author_lccn_lookup', extract_marc('100abcd:110abntd')
 to_field 'added_entry_lccn_lookup', extract_marc('700abcd:710abntd')
 

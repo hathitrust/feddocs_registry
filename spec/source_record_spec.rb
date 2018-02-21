@@ -71,7 +71,7 @@ RSpec.describe Registry::SourceRecord do
   it 'defaults to HathiTrust org code' do
     sr = SourceRecord.new
     expect(sr.org_code).to eq('miaahdl')
-    sr = SourceRecord.new(:org_code => 'tacos')
+    sr = SourceRecord.new(org_code: 'tacos')
     expect(sr.org_code).to eq('tacos')
   end
 
@@ -83,7 +83,7 @@ RSpec.describe Registry::SourceRecord do
   it 'extracts normalized author/publisher/corp' do
     @sr.save
     sr_id = @sr.source_id
-    copy = SourceRecord.find_by(:source_id => sr_id)
+    copy = SourceRecord.find_by(source_id: sr_id)
     expect(copy.lccn_normalized).to eq(['65062399'])
     expect(copy.sudocs).to eq(['Y 4.R 86/2:SM 6/965'])
     expect(copy.publisher_headings).to include('U.S. Govt. Print. Off.,')
@@ -492,14 +492,14 @@ RSpec.describe Registry::SourceRecord, 'fed_doc?' do
   end
 
   it 'leverages OCLC blacklist' do
-    bad_oclc = File.read(File.expand_path(File.dirname(__FILE__)) + '/data/blacklisted_oclc.json').chomp
+    bad_oclc = File.read(__dir__ + '/data/blacklisted_oclc.json').chomp
     s = SourceRecord.new
     s.source = bad_oclc
     expect(s.fed_doc?).to be false
   end
 
   it 'uses OCLC whitelist' do
-    good_oclc = File.read(File.expand_path(File.dirname(__FILE__)) + '/data/whitelisted_oclc.json').chomp
+    good_oclc = File.read(__dir__ + '/data/whitelisted_oclc.json').chomp
     s = SourceRecord.new
     s.source = good_oclc
     expect(s.fed_doc?).to be true
@@ -579,9 +579,9 @@ RSpec.describe Registry::SourceRecord, '#extract_enum_chrons' do
   end
 
   it 'extracts enum chrons from non-GPO records' do
-    sr = SourceRecord.where({ oclc_resolved: 1_768_512, org_code: { "$ne": 'miaahdl' }, enum_chrons: /V. \d/ }).first
+    sr = SourceRecord.where(oclc_resolved: 1_768_512, org_code: { "$ne": 'miaahdl' }, enum_chrons: /V. \d/).first
     line = sr.source.to_json
-    sr_new = SourceRecord.new(:org_code => 'miu')
+    sr_new = SourceRecord.new(org_code: 'miu')
     sr_new.series = ['FederalRegister']
     sr_new.source = line
     expect(sr_new.series).to include('FederalRegister')
@@ -640,7 +640,7 @@ RSpec.describe Registry::SourceRecord, '#extract_enum_chron_strings' do
   end
 
   it 'ignores contributors without enum chrons' do
-    sr = SourceRecord.where({ sudocs: 'Y 4.P 84/11:AG 8', org_code: 'cic' }).first
+    sr = SourceRecord.where(sudocs: 'Y 4.P 84/11:AG 8', org_code: 'cic').first
     expect(sr.extract_enum_chron_strings).to eq([])
   end
 

@@ -91,11 +91,11 @@ module Registry
           # remove nils
           ec.delete_if { |_k, v| v.nil? }
           if ec.key?('year') && (ec['year'].length == 3)
-            if (ec['year'][0] == '8') || (ec['year'][0] == '9')
-              ec['year'] = '1' + ec['year']
-            else
-              ec['year'] = '2' + ec['year']
-            end
+            ec['year'] = if (ec['year'][0] == '8') || (ec['year'][0] == '9')
+                           '1' + ec['year']
+                         else
+                           '2' + ec['year']
+                         end
           end
 
           if ec.key?('start_year') && (ec['start_year'].length == 3)
@@ -107,12 +107,12 @@ module Registry
           end
 
           if ec.key?('end_year') && /^\d\d$/.match(ec['end_year'])
-            if ec['end_year'].to_i < ec['start_year'][2, 2].to_i
-              # crosses century. e.g. 1998-01
-              ec['end_year'] = (ec['start_year'][0, 2].to_i + 1).to_s + ec['end_year']
-            else
-              ec['end_year'] = ec['start_year'][0, 2] + ec['end_year']
-            end
+            ec['end_year'] = if ec['end_year'].to_i < ec['start_year'][2, 2].to_i
+                               # crosses century. e.g. 1998-01
+                               (ec['start_year'][0, 2].to_i + 1).to_s + ec['end_year']
+                             else
+                               ec['start_year'][0, 2] + ec['end_year']
+                             end
           elsif ec.key?('end_year') && /^\d\d\d$/.match(ec['end_year'])
             if ec['end_year'].to_i < 700 # add a 2; 1699 and 2699 are both wrong, but...
               ec['end_year'] = '2' + ec['end_year']
@@ -129,7 +129,7 @@ module Registry
       # enum_chrons - { <canonical ec string> : {<parsed features>}, }
       #
       # Canonical string format: Serial Number:<serial number>, Part:<part number>
-      def explode(ec, src = nil)
+      def explode(ec, _src = nil)
         enum_chrons = {}
         return {} if ec.nil?
 

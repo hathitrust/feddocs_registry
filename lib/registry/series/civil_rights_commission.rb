@@ -10,7 +10,7 @@ module Registry
 
       def self.oclcs; end
 
-      def parse_ec(ec_string)
+      def parse_ec(_ec_string)
         # our match
         m = nil
       end
@@ -19,12 +19,12 @@ module Registry
       # enum_chrons - { <canonical ec string> : {<parsed features>}, }
       #
       #
-      def explode(ec, src = nil)
+      def explode(_ec, _src = nil)
         enum_chrons = {}
         enum_chrons
       end
 
-      def canonicalize(ec)
+      def canonicalize(_ec)
         nil
       end
 

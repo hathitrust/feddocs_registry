@@ -3,6 +3,7 @@ require 'pp'
 
 module Registry
   module Series
+    # Agricultural Statistics series
     module AgriculturalStatistics
       # include EC
       # attr_accessor :number_counts, :volume_year
@@ -67,7 +68,7 @@ module Registry
       # real simple for this series
       # enum_chrons - { <canonical ec string> : {<parsed features>}, }
       #
-      def explode(ec, src = nil)
+      def explode(ec, _src = nil)
         enum_chrons = {}
         return {} if ec.nil?
 
