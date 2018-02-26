@@ -80,12 +80,12 @@ module Registry
 
     # OCLCPAT taken from traject, except middle o made optional
     OCLCPAT =
-      /
+      %r{
           \A\s*
           (?:(?:\(OCo?LC\)) |
       (?:\(OCo?LC\))?(?:(?:ocm)|(?:ocn)|(?:on))
       )(\d+)
-      /x
+      }x
 
     def initialize(*args)
       super
@@ -663,14 +663,14 @@ module Registry
       if (self.oclc_resolved.map(&:to_i) &
          Series::UnitedStatesReports.oclcs).count.positive? ||
          self.sudocs
-             .grep(/^#{::Regexp
-                        .escape(Series::UnitedStatesReports.sudoc_stem)}/)
+             .grep(%r{^#{::Regexp
+                        .escape(Series::UnitedStatesReports.sudoc_stem)}})
              .count.positive?
         @series << 'UnitedStatesReports'
       end
       if self.sudocs
-             .grep(/^#{::Regexp
-                        .escape(Series::CivilRightsCommission.sudoc_stem)}/)
+             .grep(%r{^#{::Regexp
+                        .escape(Series::CivilRightsCommission.sudoc_stem)}})
              .count.positive?
         @series << 'CivilRightsCommission'
       end
@@ -686,17 +686,17 @@ module Registry
       if (self.oclc_resolved.map(&:to_i) &
           Series::CongressionalSerialSet.oclcs).count.positive? ||
          self.sudocs
-             .grep(/^#{::Regexp
-                        .escape(Series::CongressionalSerialSet.sudoc_stem)}/)
+             .grep(%r{^#{::Regexp
+                        .escape(Series::CongressionalSerialSet.sudoc_stem)}})
              .count.positive?
         @series << 'CongressionalSerialSet'
       end
       if (self.oclc_resolved.map(&:to_i) &
           Series::EconomicReportOfThePresident.oclcs).count.positive? ||
          self.sudocs
-             .grep(/^#{::Regexp
+             .grep(%r{^#{::Regexp
                         .escape(Series::EconomicReportOfThePresident
-                                .sudoc_stem)}/)
+                                .sudoc_stem)}})
              .count.positive?
         @series << 'EconomicReportOfThePresident'
       end

@@ -3,3 +3,6 @@ Style/NumericPredicate:
 
 Style/FrozenStringLiteralComment:
   Enabled: false
+
+Style/RegexpLiteral:
+  EnforcedStyle: mixed

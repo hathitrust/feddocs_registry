@@ -49,18 +49,18 @@ module Registry
 
         patterns = [
           # canonical form
-          /
+          %r{
             ^Edition:(?<edition>\d{1,3}),\s
             Year:(?<year>\d{4})$
-          /xi,
-          /
+          }xi,
+          %r{
             ^Edition:(?<edition>\d{1,3}),\s
             Year:(?<start_year>\d{4})-(?<end_year>\d{4})$
-          /xi,
-          /
+          }xi,
+          %r{
             ^Edition:(?<start_edition>\d{1,3})-(?<end_edition>\d{1,3}),\s
             Year:(?<year>\d{4})$
-          /xi,
+          }xi,
 
           # simple year
           # 2008 /* 257 */
@@ -74,10 +74,10 @@ module Registry
           # 101ST (1980)
           # 101ST ED. 1980
           # 101ST ED. (1980)
-          /
+          %r{
             ^(?<edition>\d{1,3})(TH|ST|ND|RD)?\s(ED\.)?\s?
             \(?(?<year>\d{4})\)?$
-          /xi,
+          }xi,
 
           # V. 120
           /^V\.\s?(?<edition>\d{1,3})$/xi,
@@ -87,20 +87,20 @@ module Registry
           # V. 81 1960
           # V. 81 (1960)
           # V. 81 (960)
-          /
+          %r{
             ^V\.\s?(NO\.?\s)?(?<edition>\d{1,3})?\s
             \(?(?<year>\d{3,4})\)?$
-          /xi,
+          }xi,
 
           # just edition/volume /* 55 */
           /^(V\.?\s?\s)?(?<edition>\d{1,3})$/xi,
 
           # 1971 (92ND ED. ) /* 83 */
           # 1971 92ND ED.
-          /
+          %r{
             ^(?<year>\d{4})\s
             \(?(?<edition>\d{1,3})(TH|ST|ND|RD)\sED\.\s?\)?$
-          /xi,
+          }xi,
 
           # 1930 (NO. 52) /* 54 */
           /^(?<year>\d{4})\s\(NO\.\s(?<edition>\d{1,3})\)$/xi,
@@ -130,10 +130,10 @@ module Registry
           # 989-990
           # 1961-1963
           # V. 2004-2005 124
-          /
+          %r{ 
             ^(V\.\s)?(?<start_year>\d{4})[-\/](?<end_year>\d{2,4})
             (\s(?<edition>\d{1,3}))?$
-          /xi,
+          }xi,
 
           # 122ND ED. (2002/2003)
           # 103RD (1982-1983)
@@ -141,28 +141,28 @@ module Registry
           # 122ND ED. (2002/2003)
           # 122ND EDITION 2002
           # 103RD ED. (1982-1983)
-          /
+          %r{ 
             ^(?<edition>\d{1,3})(TH|ST|ND|RD)(\sED\.|\sEDITION)?\s
             \(?((?<year>\d{4})|(?<start_year>\d{4})[\/-]
                 (?<end_year>\d{2,4}))\)?$
-          /xi,
+          }xi,
 
           # ED. 127 2008
           # V. 103 1982-83
           # V. 103 1982/83
-          /
+          %r{ 
             ^(ED\.|V\.)\s(?<edition>\d{1,3})\s
             ((?<year>\d{4})|(?<start_year>\d{4})[-\/]
              (?<end_year>\d{2,4}))$
-          /xi,
+          }xi,
 
           # 26-27 (903-904)
-          /
+          %r{
             ^(?<start_edition>\d{1,2})
             -(?<end_edition>\d{1,2})\s
             \((?<start_year>\d{3,4})-
             (?<end_year>\d{3,4})\)$
-          /xi,
+          }xi,
 
           # 1973-1974 P83-1687
           /^(?<start_year>\d{4})-(?<end_year>\d{2,4})\sP83.*/xi,
@@ -170,50 +170,50 @@ module Registry
           # 1878-82 (NO. 1-5)
           # 1883-87 (NO. 6-10)
           # 1944-45 (NO. 66)
-          /
+          %r{
             ^(?<start_year>\d{4})-(?<end_year>\d{2,4})\s
             \(NO\.\s((?<start_edition>\d{1,3})
                      -(?<end_edition>\d{1,3})|(?<edition>\d{1,3}))\)$
-          /xi,
+          }xi,
 
           # 101(1980)
           # 103 1982-83
           # 103D 1982-83
           # 103RD,1982/83
-          /
+          %r{ 
             ^(?<edition>\d{1,3})(TH|ST|ND|RD|D)?[\(\s,]
             \(?((?<start_year>\d{4})[-\/]
                 (?<end_year>\d{2,4})|(?<year>\d{4}))\)?$
-          /xi,
+          }xi,
 
           # V. 16-17 1893-94
           # V. 7-8 1884-85
           # V. 9-11 1887-1889
-          /
+          %r{
             ^V\.\s(?<start_edition>\d{1,3})-(?<end_edition>\d{1,3})\s
             (?<start_year>\d{4})-(?<end_year>\d{2,4})$
-          /xi,
+          }xi,
 
           # (2004-2005)
-          /
+          %r{
             ^\((?<start_year>\d{4})-(?<end_year>\d{2,4})\)$
-          /xi,
+          }xi,
 
           # 11 (888)
           # 49 (926 )
           # NO. 20(1897)
-          /
+          %r{
             ^(NO\.\s)?(?<edition>\d{1,3})\s?
             \((?<year>\d{3,4})\s?\)$
-          /xi,
+          }xi,
 
           # 130H ED. (2011)
           # 130TH ED. ,2011
           # 131ST ED. ,2012
-          /
+          %r{
             ^(?<edition>\d{1,3})(H|TH|ST|ND|RD|D)?
               \sED[\.,]\s[\(,]?(?<year>\d{4})\)?$
-          /xi,
+          }xi,
 
           # 12TH-13TH,1889-90
           # 12TH-13TH NO. 1889-1890
@@ -221,41 +221,41 @@ module Registry
           # 16TH-17TH,1893-94
           # 1ST-4TH NO. 1878-1881
           # 10TH-11TH NO. 1887-1888
-          /
+          %r{
             ^(?<start_edition>\d{1,3})(TH|ST|ND|RD)-
             (?<end_edition>\d{1,3})(TH|ST|ND|RD)(,|\sNO\.\s)
             (?<start_year>\d{4})-(?<end_year>\d{2,4})$
-          /xi,
+          }xi,
 
           # 1982-83 (103RD ED.)
           # 1982/83 (103RD ED.)
-          /
+          %r{ 
             ^(?<start_year>\d{4})[-\/]
             (?<end_year>\d{2,4})\s
             \(?(?<edition>\d{1,3})(TH|ST|ND|RD)\sED\.\)?$
-          /xi,
+          }xi,
 
           # broader than it should be, but run close to last it should be okay
           # 1988 (108TH EDITION)
           # 2006, 125TH ED.
-          /
+          %r{
             ^(V\.\s)?(?<year>\d{4})[,\s]\D+
               (?<edition>\d{1,3})(\D+|$)
-          /xi,
+          }xi,
 
           # hypothetical
           # 7TH-9TH
-          /
+          %r{
             ^(?<start_edition>\d{1,3})(TH|ST|ND|RD)-
             (?<end_edition>\d{1,3})(TH|ST|ND|RD)$
-          /xi,
+          }xi,
 
           # 129TH ED. 2010 129 ED.
           # 129 2010 ED. 129
-          /
+          %r{
             ^(?<edition>\d{1,3})(TH|ST|ND|RD|\s)\D*
               (?<year>\d{4})(\D|$)
-          /xi
+          }xi
         ] # patterns
 
         patterns.each do |p|

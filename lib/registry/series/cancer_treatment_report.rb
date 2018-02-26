@@ -38,7 +38,7 @@ module Registry
           # V. 1
           # Volume:32, Numbers:4-6, Year:1964
           # Volume:10, Years:1964-1965
-          /
+          %r{
             ^#{v}
             (,\s#{n})?
             (,\s#{ns})?
@@ -46,38 +46,38 @@ module Registry
             (,\sYears:(?<start_year>\d{4})-(?<end_year>\d{4}))?
             (,\s#{mon})?
             (,\sMonths:#{months})?$
-          /x,
+          }x,
 
           # NO. 10 1990
-          /^NO\.\s(?<number>\d{1,2})
+          %r{^NO\.\s(?<number>\d{1,2})
             \s(?<year>\d{4})$
-          /x,
+          }x,
 
           # V. 32 NO. 4-6 1964
           # V. 87NO. 1-8 1995
           # V. 71:NO. 4-6
           # V. 92 NO. 17-24 2000 SEP-DEC
           # V. 67:NO. 7-12 1983:JULY-DEC
-          /^#{v}
+          %r{^#{v}
             (\s|:|,)?\s?NOS?\.\s(?<start_number>\d+)-(?<end_number>\d+)
             (\s\(?(?<year>\d{4})
             ((\s|:)#{months})?\)?)?$
-          /x,
+          }x,
 
           # V. 92:1-4 (JAN-FEB 2000)
-          /^#{v}
+          %r{^#{v}
              :(?<start_number>\d{1,2})-
                (?<end_number>\d{1,2})
              \s\(#{months}\s(?<year>\d{4})\)$
-          /x,
+          }x,
 
           # V. 62,NO. 7-9,1978
-          /^#{v}
+          %r{^#{v}
               #{div}
               NO.\s(?<start_number>\d{1,2})-(?<end_number>\d{1,2})
               #{div}
               (?<year>\d{4})$
-          /x,
+          }x,
 
           # 66/6-12
           %r{^(?<volume>\d{1,2})
@@ -89,19 +89,19 @@ module Registry
           # V. 93,OCT-DEC 2001
           # V. 64 (JAN. -MAR. 1986)
           # V. 90:JULY-SEPT. (1998)
-          /^#{v}
+          %r{^#{v}
              (\s|,|:)\(?#{months}
              (\s\(?(?<year>\d{4}))?\)?$
-          /x,
+          }x,
 
           # V. 88:NO. 13-18<P. 853-1328> (1996:JULY-SEPT. )
-          /^#{v}
+          %r{^#{v}
             ((\s|:|,)?\s?NOS?\.\s(?<start_number>\d+)-
               (?<end_number>\d+))?
             \s?<?#{pages}>?\s?
             \((?<year>\d{4}):
             #{months}\s?\)$
-          /x,
+          }x,
 
           # V. 91:NO. 9/16=P. 739-1436 1999:MAY/AUG.
           # V. 83:NO. 13/18 1991:JULY/SEPT.
@@ -115,11 +115,11 @@ module Registry
           }x,
 
           # V. 76:1986:JAN. -FEB. P. 1-362
-          /^#{v}
+          %r{^#{v}
             :(?<year>\d{4})
             :#{months}
             \s#{pages}$
-          /x,
+          }x,
 
           # V. 3 (1942/43:AUG. /JUNE)
           %r{^#{v}
@@ -128,77 +128,77 @@ module Registry
           }x,
 
           # V. 1,AUG-JUN 1940-41
-          /^#{v}
+          %r{^#{v}
             ,#{months}
             \s(?<start_year>\d{4})-(?<end_year>\d{2,4})$
-          /x,
+          }x,
 
           # V. 7 (AUG. 1946-JUNE 1947)
-          /^#{v}
+          %r{^#{v}
               \s\((?<start_month>[A-z]+)\.?\s
               (?<start_year>\d{4})-
               (?<end_month>[A-z]+)\.?\s
               (?<end_year>\d{4})\)$
-          /x,
+          }x,
 
           # V. 91 1999 PP. 1599-2168
-          /^#{v}
+          %r{^#{v}
              \s(?<year>\d{4})
              \s#{pages}$
-          /x,
+          }x,
 
           # V. 59 1977 JUL-SEP
-          /^#{v}
+          %r{^#{v}
              \s(?<year>\d{4})
              \s#{months}$
-          /x,
+          }x,
 
           # V. 76 (1986:APR. -JUNE)
           # V. 97(2005:APR. -JUNE)
           # V. 81 NO. 1-6 (1989:JAN-MAR)
           # V. 81 NO. 13-19 (1989:JULY 5-OCT 4)
           # V. 100:NO. 13-18(2008)
-          /^#{v}
+          %r{^#{v}
             ((\s|:)?\s?NO.\s(?<start_number>\d{1,2})-
               (?<end_number>\d{1,2}))?
              \s?\((?<year>\d{4})
              (:#{months}\s?)?\)$
-          /x,
+          }x,
 
           # V. 85:NO. 13-24 (1993:JULY-1993:DEC)
           # V. 81 NO. 20-24 (1989:OCT-1989:DEC)
-          /^#{v}
+          %r{^#{v}
             (\s|:|,)?\s?NO\.\s(?<start_number>\d{1,2})-(?<end_number>\d{1,2})
             \s\((?<start_year>\d{4})
             :(?<start_month>[A-z]{3,4})\.?\s?
             -(?<end_year>\d{4})
             :(?<end_month>[A-z]{3,4})\)$
-          /x,
+          }x,
           # V. 95:NO. 5(2003:MAR. 01)
           # V. 93:NO. 19 (2001:OCT. 03)
           # V. 76:NO. 5 1986
-          /^#{v}
+          %r{^#{v}
             (\s|:|,)?\s?NO\.\s(?<number>\d{1,2})
             \s?\(?(?<year>\d{4})
             (:(?<month>[A-Z]{3,4})\.?\s?\d{1,2})?
             \)?$
-          /x,
+          }x,
 
           # V. 70 JAN-MAR 1983 PP. 1-580
           # V. 84 MAY-AUG 1992 (PP. 657-1304)
           # V. 12FEB-JUNE
           # V. 89:JAN. -JUNE(1997)
-          /^#{v}
+          %r{^#{v}
              (:|\s)?#{months}
              (\s?\(?(?<year>\d{4})\)?)?
              (\s\(?#{pages}\)?)?$
-          /x,
+          }x,
 
           # V. 91 PP. 1263-1702 1999
-          /^#{v}
+          %r{^#{v}
              \s#{pages}
              \s(?<year>\d{4})$
-          /x,
+          }x,
 
           # 47/1-3 (1971:JULY-SEPT. )
           %r{^(?<volume>\d{1,3})
@@ -219,15 +219,15 @@ module Registry
           }x,
 
           # NO. 23 (1998)
-          /^NO\.\s(?<number>\d{1,2})
+          %r{^NO\.\s(?<number>\d{1,2})
              \s\((?<year>\d{4})\)$
-          /x,
+          }x,
 
           # NO. 27-28 (2000)
-          /^NOS?\.\s(?<start_number>\d{1,2})
+          %r{^NOS?\.\s(?<start_number>\d{1,2})
             -(?<end_number>\d{1,2})
             \s\((?<year>\d{4})\)$
-          /x,
+          }x,
 
           # V. 3 1942-43
           # V. 9 1948-1949
@@ -238,16 +238,16 @@ module Registry
 
           # V. 12 NOS. 1-3 (AUG. -DEC. 1951)
           # V. 94, NO. 17-24 (SEPT. -DEC. 2002)
-          /^#{v}
+          %r{^#{v}
              ,?\s?NOS?\.\s(?<start_number>\d{1,2})-
                (?<end_number>\d{1,2})\s?
              \(#{months}\s(?<year>\d{4})\)$
-          /x,
+          }x,
 
           # simple year
-          /
+          %r{
             ^#{y}$
-          /x
+          }x
         ] # patterns
 
         patterns.each do |p|

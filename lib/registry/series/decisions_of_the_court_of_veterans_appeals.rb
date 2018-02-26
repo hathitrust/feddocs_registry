@@ -31,11 +31,11 @@ module Registry
           # canonical
           # Number:98-8551
           # Number:98-8551-3, Decision Date:2005-05-16
-          /
+          %r{
             ^#{n}
             (-(?<decision>\d))?
             (,\sDecision\sDate:(?<year>\d{4})(-(?<month>\d{2}))?(-(?<day>\d{2}))?)?$
-          /x,
+          }x,
 
           # NO. 98-1348 (2001:JAN. 10)
           # NO. 95-1100/999 (1999:APR. 1)
@@ -68,16 +68,16 @@ module Registry
 
           # stupid
           # 91-5041992:FEB. 21
-          /
+          %r{
             ^(?<number>\d{2}-\d{2,4})
             ((?<year>\d{4}):#{month}\s?
             (?<day>\d{1,2})?)?$
-          /x,
+          }x,
 
           # simple year
-          /
+          %r{
             ^#{y}$
-          /x
+          }x
         ] # patterns
 
         patterns.each do |p|

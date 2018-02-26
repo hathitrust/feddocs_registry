@@ -33,90 +33,90 @@ module Registry
         patterns = [
           # canonical
           # Number:8551
-          /
+          %r{
             ^(Year:(?<year>\d{4}))?
             ((,\s)?#{n})?$
-          /x,
+          }x,
 
-          /
+          %r{
             ^Year:(?<start_year>\d{4})-(?<end_year>\d{4})
             ((,\s)?#{n})?$
-          /x,
+          }x,
 
           # simple year
-          /
+          %r{
             ^#{y}$
-          /x,
+          }x,
 
           # NO. 8828-8829
-          /
+          %r{
             ^#{ns}$
-          /x,
+          }x,
 
-          /
+          %r{
             ^#{n}$
-          /x,
+          }x,
 
-          /
+          %r{
             ^#{vs}$
-          /x,
+          }x,
 
-          /
+          %r{
             ^#{v}$
-          /x,
+          }x,
 
           # NO. 8897-8918 YR. 1984
-          /
+          %r{
             ^(#{n}|#{ns})#{div}#{y}$
-          /x,
+          }x,
 
           # NO. 4840-4859 1952
-          /
+          %r{
             ^(#{n}|#{ns})\s
             (?<year>19\d\d)$
-          /x,
+          }x,
 
           # 2575 (1924)
-          /
+          %r{
             ^(?<number>[2-9]\d{3})\s
             \((?<year>19\d\d)\)$
-          /x,
+          }x,
 
           # NO. 8653 (1982)
           # NO. 7936 YR. 1974
-          /
+          %r{
             ^#{n}\s
             (YR\.\s)?
             \(?(?<year>19\d\d)\)?$
-          /x,
+          }x,
 
           # 8510-8525 (1981)
-          /
+          %r{
             ^(?<start_number>[2-9]\d{3})-
             (?<end_number>\d{4})\s
             \((?<year>19\d\d)\)$
-          /x,
+          }x,
 
           # NO. 3471-3480 1939-1940
           # 7955-7964 (1974-75)
           # NO. 5377-5390 YR. 1957-58
-          /
+          %r{
             ^(NO\.\s)?(?<start_number>[2-9]\d{3})-
             (?<end_number>\d{4})\s
             (YR\.\s)?
             \(?(?<start_year>19\d{2})-
             (?<end_year>\d{2,4})\)?$
-          /x,
+          }x,
 
           # 1919-1921
-          /
+          %r{
             ^(?<start_year>19\d\d)-(?<end_year>\d{2,4})$
-          /x,
+          }x,
 
           # 6630
-          /
+          %r{
             ^(?<number>[2-9]\d\d\d)$
-          /x
+          }x
 
         ] # patterns
 
