@@ -470,6 +470,27 @@ RSpec.describe Registry::SourceRecord, 'extract_sudocs' do
   end
 end
 
+RSpec.describe Registry::SourceRecord, 'u_and_f?' do
+  before(:all) do
+    has_u_and_f = open(File.dirname(__FILE__) + '/data/has_u_and_f.json').read
+    has_u_not_f = open(File.dirname(__FILE__) + '/data/has_u_not_f.json').read
+    has_no_008 = open(File.dirname(__FILE__) + '/data/missing_008.json').read
+
+    @u_and_f = SourceRecord.new(org_code: 'miu', source: has_u_and_f)
+    @u_not_f = SourceRecord.new(org_code: 'miu', source: has_u_not_f)
+    @no_008 = SourceRecord.new(org_code: 'miu', source: has_no_008)
+  end
+
+  it 'detects u and f' do
+    expect(@u_and_f.u_and_f?).to be_truthy
+    expect(@u_not_f.u_and_f?).to be_falsey
+  end
+
+  it 'returns false if there is no 008' do
+    expect(@no_008.u_and_f?).to be_falsey
+  end
+end
+
 RSpec.describe Registry::SourceRecord, 'fed_doc?' do
   before(:all) do
     # this file has both a Fed SuDoc and a state okdoc
@@ -477,6 +498,8 @@ RSpec.describe Registry::SourceRecord, 'fed_doc?' do
     @marc = MARC::Record.new_from_hash(JSON.parse(@fed_state))
     @innd = open(File.dirname(__FILE__) + '/data/innd_record.json').read
     @innd_marc = MARC::Record.new_from_hash(JSON.parse(@innd))
+    has_u_and_f = open(File.dirname(__FILE__) + '/data/has_u_and_f.json').read
+    @u_and_f = SourceRecord.new(org_code: 'miu', source: has_u_and_f)
   end
 
   it 'detects govdociness' do
@@ -489,6 +512,10 @@ RSpec.describe Registry::SourceRecord, 'fed_doc?' do
     s.source = @innd
     expect(s.fed_doc?).to be_truthy
     expect(s.fed_doc?(@innd_marc)).to be_truthy
+  end
+
+  it 'uses u_and_f?' do
+    expect(@u_and_f.fed_doc?).to be_truthy
   end
 
   it 'leverages OCLC blacklist' do

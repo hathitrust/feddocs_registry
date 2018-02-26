@@ -197,24 +197,25 @@ module Registry
     def fed_doc?(m = nil)
       @marc = m unless m.nil?
 
-      # if fields.nil? #rare but happens let rescue handle it
-      field008 = marc['008']
-      f008 = if field008.nil?
-               ''
-             else
-               field008.value
-             end
-      extract_identifiers
       # check the blacklist
       self.oclc_resolved.each do |o|
         return true if Whitelist.oclcs.include? o
         return false if Blacklist.oclcs.include? o
       end
-      (/^.{17}u.{10}f/ === f008) ||
+
+      u_and_f? ||
         self.sudocs.count.positive? ||
         extract_sudocs(marc).count.positive? ||
         gpo_item_numbers.count.positive? ||
         approved_author?
+    end
+
+    # The 008 field contains a place of publication code at the 17th position,
+    # and a governemnt publication code at the 28th.
+    # https://www.loc.gov/marc/bibliographic/bd008.html
+    def u_and_f?(m = nil)
+      @marc = m unless m.nil?
+      /^.{17}u.{10}f/.match? @marc['008']&.value
     end
 
     # Check author_lccns against the list of approved authors
