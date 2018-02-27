@@ -130,7 +130,7 @@ module Registry
           # 989-990
           # 1961-1963
           # V. 2004-2005 124
-          %r{ 
+          %r{
             ^(V\.\s)?(?<start_year>\d{4})[-\/](?<end_year>\d{2,4})
             (\s(?<edition>\d{1,3}))?$
           }xi,
@@ -141,7 +141,7 @@ module Registry
           # 122ND ED. (2002/2003)
           # 122ND EDITION 2002
           # 103RD ED. (1982-1983)
-          %r{ 
+          %r{
             ^(?<edition>\d{1,3})(TH|ST|ND|RD)(\sED\.|\sEDITION)?\s
             \(?((?<year>\d{4})|(?<start_year>\d{4})[\/-]
                 (?<end_year>\d{2,4}))\)?$
@@ -150,7 +150,7 @@ module Registry
           # ED. 127 2008
           # V. 103 1982-83
           # V. 103 1982/83
-          %r{ 
+          %r{
             ^(ED\.|V\.)\s(?<edition>\d{1,3})\s
             ((?<year>\d{4})|(?<start_year>\d{4})[-\/]
              (?<end_year>\d{2,4}))$
@@ -180,7 +180,7 @@ module Registry
           # 103 1982-83
           # 103D 1982-83
           # 103RD,1982/83
-          %r{ 
+          %r{
             ^(?<edition>\d{1,3})(TH|ST|ND|RD|D)?[\(\s,]
             \(?((?<start_year>\d{4})[-\/]
                 (?<end_year>\d{2,4})|(?<year>\d{4}))\)?$
@@ -229,7 +229,7 @@ module Registry
 
           # 1982-83 (103RD ED.)
           # 1982/83 (103RD ED.)
-          %r{ 
+          %r{
             ^(?<start_year>\d{4})[-\/]
             (?<end_year>\d{2,4})\s
             \(?(?<edition>\d{1,3})(TH|ST|ND|RD)\sED\.\)?$
