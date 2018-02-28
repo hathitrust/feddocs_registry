@@ -16,6 +16,8 @@ module Registry
       end
 
       def parse_ec(ec_string)
+        m = nil
+
         # some junk in the front
         ec_string.gsub!(/^HD1751 . A43 /, '')
         ec_string.gsub!(/^V\. /, '')
@@ -36,22 +38,38 @@ module Registry
         # fix the three digit years
         ec_string = '1' + ec_string if ec_string.match?(/^9\d\d[^0-9]*/)
 
-        # simple year
-        # 2008 /* 264 */
-        m ||= /^(?<year>\d{4})$/.match(ec_string)
+        patterns = [
+          # simple year
+          # 2008 /* 264 */
+          %r{
+          ^(?<year>\d{4})$
+          }x,
 
-        # year range /* 79 */
-        # 989-990
-        # 1961-1963
-        m ||= /^(?<start_year>\d{4})[-\/](?<end_year>\d{2,4})$/.match(ec_string)
+          # year range /* 79 */
+          # 989-990
+          # 1961-1963
+          %r{
+          ^(?<start_year>\d{4})[-\/](?<end_year>\d{2,4})$
+          }x,
 
-        # multiple years
-        # 1946, 1948
-        # 1995/1996-1997
-        # we'll leave this for explode ?
-        # basically we know what they are but it doesn't make sense to handle them here
-        m ||= /^(?<multi_year_comma>\d{4}(, \d{4})+)$/.match(ec_string)
-        m ||= /^(?<multi_year_ec>\d{4}\/\d{4}-\d{4})$/.match(ec_string)
+          # multiple years
+          # 1946, 1948
+          # 1995/1996-1997
+          # we'll leave this for explode ?
+          # basically we know what they are but it doesn't make sense to handle
+          # them here
+          %r{
+            ^(?<multi_year_comma>\d{4}(,\s\d{4})+)$
+          }x,
+          %r{
+            ^(?<multi_year_ec>\d{4}\/\d{4}-\d{4})$
+          }x
+        ]
+
+        patterns.each do |p|
+          break unless m.nil?
+          m ||= p.match(ec_string)
+        end
 
         unless m.nil?
           ec = Hash[m.names.zip(m.captures)]
@@ -79,13 +97,13 @@ module Registry
           if (ec['start_year'] == '1995') && (ec['end_year'] == '1996')
             enum_chrons['1995-1996'] = ec
           else
-            for year in ec['start_year']..ec['end_year']
-              enum_chrons[year] = ec
+            (ec['start_year']..ec['end_year']).each do |y|
+              enum_chrons[y] = ec
             end
           end
         elsif ec['multi_year_comma']
-          ec['multi_year_comma'].split(/, */).each do |year|
-            enum_chrons[year] = ec
+          ec['multi_year_comma'].split(/, */).each do |y|
+            enum_chrons[y] = ec
           end
         elsif ec['multi_year_ec'] == '1995/1996-1997' # so dumb
           enum_chrons['1995-1996'] = ec
