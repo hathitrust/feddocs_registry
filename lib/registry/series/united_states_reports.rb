@@ -15,40 +15,71 @@ module Registry
       end
 
       def parse_ec(ec_string)
+        m = nil
         reporters = %w[DALLAS CRANCH WHEATON PETERS HOWARD BLACK WALLACE]
         v = 'V\.\s?(?<volume>\d+)'
-        ot = '(?<october>OCT\.? (TERM)?)'
+        ot = '(?<october>OCT\.?\s(TERM)?)'
         y = '(YR\.\s)?(?<year>\d{4})'
         ys = '(?<start_year>\d{4})[/-](?<end_year>\d{2,4})'
-        rpt = '(?<reporter>(' + reporters.join('|') + ')) (?<number>\d{1,2})'
+        rpt = '(?<reporter>(' + reporters.join('|') + '))\s(?<number>\d{1,2})'
 
-        # canonical
-        # Volume: 1, Year:1982-1983, WALLACE 5, October Term
-        m ||= /^Volume:(?<volume>\d+)(, Years?:(#{ys}|(?<year>\d{4})))?(, #{rpt})?(, (?<october>October Term))?$/.match(ec_string)
-        m ||= /^Volume:(?<volume>\d+), Part:(?<part>\d+)$/.match(ec_string)
+        patterns = [
+          # canonical
+          # Volume: 1, Year:1982-1983, WALLACE 5, October Term
+          %r{
+            ^Volume:(?<volume>\d+)(,\sYears?:(#{ys}|(?<year>\d{4})))?
+              (,\s#{rpt})?(,\s(?<october>October\sTerm))?$
+            }x,
+          %r{
+            ^Volume:(?<volume>\d+),\sPart:(?<part>\d+)$
+            }x,
 
-        m ||= /^#{v} ?\(?(#{ot})? ?(#{y}|#{ys})\)?$/.match(ec_string)
-        m ||= /^#{v}$/.match(ec_string)
-        # V. 65 (HOWARD 24)
-        m ||= /^#{v} \(#{rpt}\)$/.match(ec_string)
+          %r{
+            ^#{v}\s?\(?(#{ot})?\s?(#{y}|#{ys})\)?$
+            }x,
+          %r{
+            ^#{v}$
+            }x,
+          # V. 65 (HOWARD 24)
+          %r{
+            ^#{v}\s\(#{rpt}\)$
+            }x,
 
-        # just a number
-        m ||= /^(?<volume>\d+)$/.match(ec_string)
+          # just a number
+          %r{
+            ^(?<volume>\d+)$
+            }x,
 
-        # V. 203-214
-        m ||= /^V\. (?<start_volume>\d+)-(?<end_volume>\d+) ?/.match(ec_string)
+          # V. 203-214
+          %r{
+            ^V\.\s (?<start_volume>\d+)-(?<end_volume>\d+)\s?
+            }x,
 
-        # V. 556PT. 2
-        m ||= /^#{v}PT\. (?<part>\d)$/.match(ec_string)
+          # V. 556PT. 2
+          %r{
+            ^#{v}PT\.\s(?<part>\d)$
+            }x,
 
-        # V496PT1
-        m ||= /^V(?<volume>\d+)(PT(?<part>\d))?$/.match(ec_string)
+          # V496PT1
+          %r{
+            ^V(?<volume>\d+)(PT(?<part>\d))?$
+            }x,
 
-        # V. 546:1
-        m ||= /^#{v}:(?<part>\d)$/.match(ec_string)
+          # V. 546:1
+          %r{
+            ^#{v}:(?<part>\d)$
+            }x,
 
-        # we'll just take the volume number
-        m ||= /^#{v}[, \(]/.match(ec_string)
+          # we'll just take the volume number
+          %r{
+            ^#{v}[,\s\(]
+            }x
+        ]
+
+        patterns.each do |p|
+          break unless m.nil?
+          m ||= p.match(ec_string)
+        end
 
         unless m.nil?
           ec = Hash[m.names.zip(m.captures)]
@@ -80,7 +111,7 @@ module Registry
         end
 
         ecs.each do |ec|
-          if canon = canonicalize(ec)
+          if (canon = canonicalize(ec))
             ec['canon'] = canon
             enum_chrons[ec['canon']] = ec.clone
           end
