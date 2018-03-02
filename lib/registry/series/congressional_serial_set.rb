@@ -2,8 +2,8 @@ require 'pp'
 
 module Registry
   module Series
-    # The Congressional Serial Set consists of 10s of thousands of 
-    # Congressional reports. 
+    # The Congressional Serial Set consists of 10s of thousands of
+    # Congressional reports.
     module CongressionalSerialSet
       # include EC
       class << self; attr_accessor :years, :editions end
