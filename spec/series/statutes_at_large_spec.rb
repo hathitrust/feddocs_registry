@@ -156,14 +156,6 @@ describe 'StatutesAtLarge' do
     end
   end
 
-  describe 'parse_file' do
-    it 'parses a file of enumchrons' do
-      match, no_match = StatutesAtLarge.parse_file
-      expect(match).to be > 1934
-      # expect(match).to eq(2385)
-    end
-  end
-
   describe 'oclcs' do
     it 'has an oclcs field' do
       expect(StatutesAtLarge.oclcs).to include(1_768_474)
