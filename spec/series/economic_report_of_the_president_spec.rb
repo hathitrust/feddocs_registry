@@ -1,4 +1,6 @@
 require 'json'
+Dotenv.load
+Mongoid.load!(ENV['MONGOID_CONF'])
 SourceRecord = Registry::SourceRecord
 ER = Registry::Series::EconomicReportOfThePresident
 describe 'EconomicReportOfThePresident' do

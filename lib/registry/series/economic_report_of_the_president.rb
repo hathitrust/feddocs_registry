@@ -1,8 +1,10 @@
 require 'pp'
-#   Yearly, sometimes in multiple parts. We need to look at pub_date for monographs.
+# Yearly, sometimes in multiple parts. We need to look at pub_date for
+# monographs.
 
 module Registry
   module Series
+    # Economic Report of the President, a small series. 
     module EconomicReportOfThePresident
       # include EC
       # class << self; attr_accessor :parts end
@@ -18,48 +20,81 @@ module Registry
       end
 
       def parse_ec(ec_string)
+        m = nil 
+
         # C. 1 crap from beginning and end
         ec_string.sub!(/ ?C\. 1 ?/, '')
 
         # occassionally a '-' at the end. not much we can do with that
         ec_string.sub!(/-$/, '')
 
-        # own canonical format
-        m ||= /^Year:(?<year>\d{4})(, Part:(?<part>\d{1}))?/.match(ec_string)
+        patterns = [
 
-        # simple sudoc
-        m ||= /^Y ?4\.? EC ?7:EC ?7\/2\/(?<year>\d{3,4})$/.match(ec_string)
+          # own canonical format
+          %r{
+            ^Year:(?<year>\d{4})(,\sPart:(?<part>\d{1}))?
+            }x,
 
-        # stupid sudoc
-        # Y 4. EC 7:EC 7/2/993/PT. 1-
-        m ||= /^Y ?4\.? EC ?7:EC ?7\/2\/(?<year>\d{3,4}) ?\/PT. (?<part>\d{1})(\D|$)/.match(ec_string)
+          # simple sudoc
+          %r{
+            ^Y\s?4\.?\sEC\s?7:EC\s?7\/2\/(?<year>\d{3,4})$
+            }x,
 
-        # 1972/PT. 1
-        m ||= /^(?<year>\d{3,4})\/PT. (?<part>\d{1})$/.match(ec_string)
-        # 1972/PT. 1-5
-        m ||= /^(?<year>\d{3,4})\/PT. (?<start_part>\d{1})-(?<end_part>\d{1})$/.match(ec_string)
+          # stupid sudoc
+          # Y 4. EC 7:EC 7/2/993/PT. 1-
+          %r{
+            ^Y\s?4\.?\sEC\s?7:EC\s?7\/2\/(?<year>\d{3,4})\s?\/PT.\s
+            (?<part>\d{1})(\D|$)
+            }x,
 
-        # simple year
-        # 2008  /* 28 */
-        # (2008)
-        # 2008.
-        m ||= /^\(?(?<year>\d{4})\.?\)?$/.match(ec_string)
+          # 1972/PT. 1
+          %r{
+            ^(?<year>\d{3,4})\/PT.\s(?<part>\d{1})$
+            }x,
+          # 1972/PT. 1-5
+          %r{
+            ^(?<year>\d{3,4})\/PT.\s(?<start_part>\d{1})-(?<end_part>\d{1})$
+            }x,
 
-        # year with part  /* 33 */
-        # 1973 PT. 1
-        m ||= /^(?<year>\d{4}) PT\. (?<part>\d{1})$/.match(ec_string)
-        # year with parts
-        # 1973 PT. 1-3
-        m ||= /^(?<year>\d{4}) PT\. (?<start_part>\d{1})-(?<end_part>\d{1})$/.match(ec_string)
+          # simple year
+          # 2008  /* 28 */
+          # (2008)
+          # 2008.
+          %r{
+            ^\(?(?<year>\d{4})\.?\)?$
+            }x,
 
-        # multiple years /* 2 */
-        m ||= /^(?<start_year>\d{4})-(?<end_year>\d{4})$/.match(ec_string)
+          # year with part  /* 33 */
+          # 1973 PT. 1
+          %r{
+            ^(?<year>\d{4})\sPT\.\s(?<part>\d{1})$
+            }x,
+          # year with parts
+          # 1973 PT. 1-3
+          %r{
+            ^(?<year>\d{4})\sPT\.\s(?<start_part>\d{1})-(?<end_part>\d{1})$
+            }x,
 
-        # only part /* 11 */
-        # PT. 1-5
-        # PT. 2
-        m ||= /^PT\. (?<start_part>\d{1})-(?<end_part>\d{1})$/.match(ec_string)
-        m ||= /^P(AR)?T\.? (?<part>\d{1})$/.match(ec_string)
+          # multiple years /* 2 */
+          %r{
+            ^(?<start_year>\d{4})-(?<end_year>\d{4})$
+            }x,
+
+          # only part /* 11 */
+          # PT. 1-5
+          # PT. 2
+          %r{
+            ^PT\.\s(?<start_part>\d{1})-(?<end_part>\d{1})$
+            }x,
+          %r{
+            ^P(AR)?T\.?\s(?<part>\d{1})$
+            }x
+        ]
+
+        patterns.each do |p|
+          break unless m.nil?
+          m ||= p.match(ec_string)
+        end
 
         unless m.nil?
           ec = Hash[m.names.zip(m.captures)]
@@ -84,12 +119,13 @@ module Registry
           if ec.key?('end_year') && /^\d\d$/.match(ec['end_year'])
             ec['end_year'] = if ec['end_year'].to_i < ec['start_year'][2, 2].to_i
                                # crosses century. e.g. 1998-01
-                               (ec['start_year'][0, 2].to_i + 1).to_s + ec['end_year']
+                               (ec['start_year'][0, 2].to_i + 1).to_s +
+                                 ec['end_year']
                              else
                                ec['start_year'][0, 2] + ec['end_year']
                              end
           elsif ec.key?('end_year') && /^\d\d\d$/.match(ec['end_year'])
-            if ec['end_year'].to_i < 700 # add a 2; 1699 and 2699 are both wrong, but...
+            if ec['end_year'].to_i < 700 # 1699 and 2699 are both wrong, but...
               ec['end_year'] = '2' + ec['end_year']
             else
               ec['end_year'] = '1' + ec['end_year']
@@ -109,7 +145,8 @@ module Registry
         # some of these are monographs with the year info in pub_date or sudocs
         if ec['year'].nil? && ec['start_year'].nil?
           # try sudocs first
-          if !src[:sudocs].nil? && !src[:sudocs].select { |s| s =~ /Y 4\.EC 7:EC 7\/2\/\d{3}/ }[0].nil?
+          if !src[:sudocs].nil? &&
+              !src[:sudocs].select { |s| s =~ /Y 4\.EC 7:EC 7\/2\/\d{3}/ }[0].nil?
             sudoc = src[:sudocs].select { |s| s =~ /Y 4\.EC 7:EC 7\/2\/\d{3}/ }[0]
             unless sudoc.nil?
               m = /EC 7\/2\/(?<year>\d{3,4})(\/.*)?$/.match(sudoc)
@@ -134,7 +171,7 @@ module Registry
           @@parts[ec['year']] << ec['part']
           @@parts[ec['year']].uniq!
         elsif ec['year'] && ec['start_part']
-          for pt in ec['start_part']..ec['end_part']
+          (ec['start_part']..ec['end_part']).each do |pt|
             canon = canonicalize('year' => ec['year'], 'part' => pt)
             enum_chrons[canon] = ec.clone
             @@parts[ec['year']] << pt
@@ -152,7 +189,7 @@ module Registry
           enum_chrons[canon] = ec.clone
           # end
         elsif ec['start_year']
-          for y in ec['start_year']..ec['end_year']
+          (ec['start_year']..ec['end_year']).each do |y|
             # if @parts[y].count > 0
             #  for pt in @parts[y]
             #    canon = "Year: #{y}, Part: #{pt}"
