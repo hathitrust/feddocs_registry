@@ -1,7 +1,6 @@
-require 'pp'
-
 module Registry
   module Series
+    # Foreign Relations series
     module ForeignRelations
       include Registry::Series
       class << self; attr_accessor :years, :editions end
@@ -20,6 +19,8 @@ module Registry
         v = 'V\.?\s?(?<volume>\d{1,2})'
         p = 'PT\.?\s?(?<part>\d{1,2})'
         div = '[\s:,;\/-]\s?'
+
+        m = nil
 
         # some junk in the back
         ec_string.gsub!(/ COPY$/, '')
@@ -47,121 +48,196 @@ module Registry
         ec_string.gsub!(/(\d{2,4})V/, '\1 V')
         ec_string.gsub!(/(\d)PT/, '\1 PT')
 
-        # canonical
-        m ||= /^Year:(?<year>\d{4})(, Volume:(?<volume>\d+))?(, Part:(?<part>\d+))?$/.match(ec_string)
-        m ||= /^Years:(?<start_year>\d{4})-(?<end_year>\d{4})(, Volume:(?<volume>\d+))?(, Part:(?<part>\d+))?$/.match(ec_string)
+        patterns = [
+          # canonical
+          %r{
+            ^Year:(?<year>\d{4})(,\sVolume:(?<volume>\d+))?
+            (,\sPart:(?<part>\d+))?$
+          }x,
+          %r{
+            ^Years:(?<start_year>\d{4})-(?<end_year>\d{4})
+            (,\sVolume:(?<volume>\d+))?(,\sPart:(?<part>\d+))?$
+          }x,
 
-        # simple year
-        # 2008 /* 68 */
-        # (2008)
-        m ||= /^\(?(?<year>\d{4})\)?$/.match(ec_string)
+          # simple year
+          # 2008 /* 68 */
+          # (2008)
+          %r{
+            ^\(?(?<year>\d{4})\)?$
+          }x,
 
-        # V. 4 1939 /* 154 */
-        m ||= /^V\. (?<volume>\d{1,3}) (?<year>\d{4})$/.match(ec_string)
+          # V. 4 1939 /* 154 */
+          %r{
+            ^V\.\s(?<volume>\d{1,3})\s(?<year>\d{4})$
+          }x,
 
-        # V. 1969-76:9 /* 140 */
-        # V. 1969-76/V. 1
-        m ||= /^V\. (?<start_year>\d{4})-(?<end_year>\d{2})#{div}(V\. )?(?<volume>\d{1,2})$/.match(ec_string)
+          # V. 1969-76:9 /* 140 */
+          # V. 1969-76/V. 1
+          %r{
+            ^V\.\s(?<start_year>\d{4})-(?<end_year>\d{2})#{div}
+            (V\.\s)?(?<volume>\d{1,2})$
+          }x,
 
-        # 1906 PT. 1
-        # 1906,PT. 1
-        # 1906:PT. 1
-        # 1906/PT. 1
-        # V. 1906/PT. 2
-        m ||= /^(V\. )?(?<year>\d{4})#{div}#{p}$/.match(ec_string)
-        # 1864-65 PT. 4
-        m ||= /^(V\. )?(?<start_year>\d{4})#{div}(?<end_year>\d{2,4})#{div}#{p}$/.match(ec_string)
+          # 1906 PT. 1
+          # 1906,PT. 1
+          # 1906:PT. 1
+          # 1906/PT. 1
+          # V. 1906/PT. 2
+          %r{
+            ^(V\.\s)?(?<year>\d{4})#{div}#{p}$
+          }x,
+          # 1864-65 PT. 4
+          %r{
+            ^(V\.\s)?(?<start_year>\d{4})#{div}(?<end_year>\d{2,4})#{div}#{p}$
+          }x,
 
-        # V. 1950/V. 3 /* 149 */
-        m ||= /^V\. (?<year>\d{4})#{div}#{v}$/.match(ec_string)
+          # V. 1950/V. 3 /* 149 */
+          %r{
+            ^V\.\s(?<year>\d{4})#{div}#{v}$
+          }x,
 
-        # V. 3(1928) /* 370 */
-        m ||= /^#{v}\((?<year>\d{4})\)$/.match(ec_string)
+          # V. 3(1928) /* 370 */
+          %r{
+            ^#{v}\((?<year>\d{4})\)$
+          }x,
 
-        # V. 2 1958-1960 /* 98 */
-        m ||= /^#{v} (?<start_year>\d{4})-(?<end_year>\d{2,4})$/.match(ec_string)
+          # V. 2 1958-1960 /* 98 */
+          %r{
+            ^#{v}\s(?<start_year>\d{4})-(?<end_year>\d{2,4})$
+          }x,
 
-        # wut?
-        # V. 1914  /* 41 */
-        m ||= /^V\. (?<year>\d{4})$/.match(ec_string)
+          # wut?
+          # V. 1914  /* 41 */
+          %r{
+            ^V\.\s(?<year>\d{4})$
+          }x,
 
-        # V. 1951/V. 7/PT. 2 /* 7 */
-        m ||= /^V\. (?<year>\d{4})#{div}#{v}#{div}#{p}$/.match(ec_string)
+          # V. 1951/V. 7/PT. 2 /* 7 */
+          %r{
+            ^V\.\s(?<year>\d{4})#{div}#{v}#{div}#{p}$
+          }x,
 
-        # V. 1952-54/V. 11/PT. 1 /* 31 */
-        m ||= /^V\. (?<start_year>\d{4})-(?<end_year>\d{2,4})#{div}#{v}#{div}#{p}$/.match(ec_string)
+          # V. 1952-54/V. 11/PT. 1 /* 31 */
+          %r{
+            ^V\.\s(?<start_year>\d{4})-(?<end_year>\d{2,4})#{div}#{v}#{div}#{p}$
+          }x,
 
-        # V. -54/V. 5/PT. 1
-        # V. 54/V. 5/PT. 1
-        m ||= /^V\. -?(?<year>\d{2})\/#{v}(\/#{p})?$/.match(ec_string)
+          # V. -54/V. 5/PT. 1
+          # V. 54/V. 5/PT. 1
+          %r{
+            ^V\.\s-?(?<year>\d{2})\/#{v}(\/#{p})?$
+          }x,
 
-        # 1934, V. 5 /* 743 */
-        # 1934,V. 5
-        # 1934: V. 5
-        # 1934:V. 5
-        # 1919/V. 2
-        m ||= /^(?<year>\d{4})#{div}#{v}$/.match(ec_string)
+          # 1934, V. 5 /* 743 */
+          # 1934,V. 5
+          # 1934: V. 5
+          # 1934:V. 5
+          # 1919/V. 2
+          %r{
+            ^(?<year>\d{4})#{div}#{v}$
+          }x,
 
-        # 1969-76:V. 14 /* 890 */
-        m ||= /^(?<start_year>\d{4})-(?<end_year>\d{2,4})#{div}#{v}$/.match(ec_string)
+          # 1969-76:V. 14 /* 890 */
+          %r{
+            ^(?<start_year>\d{4})-(?<end_year>\d{2,4})#{div}#{v}$
+          }x,
 
-        # 952-954/V. 11:PT. 1 /* 25 */
-        m ||= /^(?<start_year>\d{4})-(?<end_year>\d{2,4})#{div}#{v}#{div}#{p}$/.match(ec_string)
-        # 948/V. 1:PT. 1
-        # 1951 V. 3 PT. 1
-        m ||= /^(?<year>\d{4})#{div}#{v}#{div}#{p}$/.match(ec_string)
+          # 952-954/V. 11:PT. 1 /* 25 */
+          %r{
+            ^(?<start_year>\d{4})-(?<end_year>\d{2,4})#{div}#{v}#{div}#{p}$
+          }x,
+          # 948/V. 1:PT. 1
+          # 1951 V. 3 PT. 1
+          %r{
+            ^(?<year>\d{4})#{div}#{v}#{div}#{p}$
+          }x,
 
-        # V. 1/PT. 1
-        # V. 9 PT. 1
-        m ||= /^#{v}#{div}#{p}$/.match(ec_string)
+          # V. 1/PT. 1
+          # V. 9 PT. 1
+          %r{
+            ^#{v}#{div}#{p}$
+          }x,
 
-        # V. 7 PT. 1 1949
-        # V. 6, PT. 2 1952-1954
-        m ||= /^#{v}#{div}#{p} (?<year>\d{4})$/.match(ec_string)
-        m ||= /^#{v}#{div}#{p} (?<start_year>\d{4})-(?<end_year>\d{2,4})$/.match(ec_string)
+          # V. 7 PT. 1 1949
+          # V. 6, PT. 2 1952-1954
+          %r{
+            ^#{v}#{div}#{p}\s(?<year>\d{4})$
+          }x,
+          %r{
+            ^#{v}#{div}#{p}\s(?<start_year>\d{4})-(?<end_year>\d{2,4})$
+          }x,
 
-        #  V. 1872/PT. 2/V. 1
-        m ||= /^(V\. )?(?<year>\d{4})#{div}#{p}#{div}#{v}$/.match(ec_string)
+          #  V. 1872/PT. 2/V. 1
+          %r{
+            ^(V\.\s)?(?<year>\d{4})#{div}#{p}#{div}#{v}$
+          }x,
 
-        # PARIS V. 10 1919 /* 13 */
-        m ||= /^(?<paris>PARIS) V\. (?<volume>\d{1,2}) (?<year>\d{4})$/.match(ec_string)
+          # PARIS V. 10 1919 /* 13 */
+          %r{
+            ^(?<paris>PARIS)\sV\.\s(?<volume>\d{1,2})\s(?<year>\d{4})$
+          }x,
 
-        # 1969/76:V. 14 /* 214 */
-        # 1969/1976:V. 14
-        # 1952-54:V. 9/PT. 2
-        # 1952/54:V. 9 PT. 2
-        m ||= /^(?<start_year>\d{4})[-\/](?<end_year>\d{2,4})#{div}#{v}(#{div}#{p})?$/.match(ec_string)
+          # 1969/76:V. 14 /* 214 */
+          # 1969/1976:V. 14
+          # 1952-54:V. 9/PT. 2
+          # 1952/54:V. 9 PT. 2
+          %r{
+            ^(?<start_year>\d{4})[-\/](?<end_year>\d{2,4})#{div}#{v}
+            (#{div}#{p})?$
+          }x,
 
-        # 23
-        # 23/PT. 1
-        m ||= /^(?<volume>\d{1,2})(#{div}#{p})?$/.match(ec_string)
+          # 23
+          # 23/PT. 1
+          %r{
+            ^(?<volume>\d{1,2})(#{div}#{p})?$
+          }x,
 
-        # 1951 V. 6:2
-        m ||= /^(?<year>\d{4})#{div}#{v}#{div}(?<part>\d)$/.match(ec_string)
+          # 1951 V. 6:2
+          %r{
+            ^(?<year>\d{4})#{div}#{v}#{div}(?<part>\d)$
+          }x,
 
-        # 1964-1968 V. 31 2004
-        # pretty sure that last 4 digits is something else
-        m ||= /^(?<start_year>\d{4})(#{div}(?<end_year>\d{2,4}))?#{div}#{v}#{div}(?<junk>\d{4})$/.match(ec_string)
+          # 1964-1968 V. 31 2004
+          # pretty sure that last 4 digits is something else
+          %r{
+            ^(?<start_year>\d{4})(#{div}(?<end_year>\d{2,4}))?#{div}#{v}#{div}
+            (?<junk>\d{4})$
+          }x,
 
-        # 1952/54:V. 5:PT. 2:FICHE 1-5
-        # 1952/54:V. 5:PT. 2:FICHE 6-9
-        # 1952-54 V. 6:1
-        m ||= /^(?<start_year>\d{4})#{div}(?<end_year>\d{2,4})#{div}#{v}#{div}(PT\. )?(?<part>\d)(:FICHE \d(-\d)?)?$/.match(ec_string)
+          # 1952/54:V. 5:PT. 2:FICHE 1-5
+          # 1952/54:V. 5:PT. 2:FICHE 6-9
+          # 1952-54 V. 6:1
+          %r{
+            ^(?<start_year>\d{4})#{div}(?<end_year>\d{2,4})#{div}#{v}#{div}
+            (PT\.\s)?(?<part>\d)(:FICHE\s\d(-\d)?)?$
+          }x,
 
-        # 1958-1960
-        # 1969/76 (V. 34)
-        m ||= /^(?<start_year>\d{4})#{div}(?<end_year>\d{2,4})( \(#{v}\))?$/.match(ec_string)
+          # 1958-1960
+          # 1969/76 (V. 34)
+          %r{
+            ^(?<start_year>\d{4})#{div}(?<end_year>\d{2,4})(\s\(#{v}\))?$
+          }x,
 
-        m ||= /^#{v}$/.match(ec_string)
+          %r{
+            ^#{v}$
+          }x,
 
-        # 1944:4
-        # 1944:5
-        m ||= /^(?<year>\d{4}):(?<part>\d)$/.match(ec_string)
+          # 1944:4
+          # 1944:5
+          %r{
+            ^(?<year>\d{4}):(?<part>\d)$
+          }x
+        ]
+
+        patterns.each do |pat|
+          break unless m.nil?
+          m ||= pat.match(ec_string)
+        end
 
         unless m.nil?
           ec = Hash[m.names.zip(m.captures)]
           # remove nils
-          ec.delete_if { |_k, v| v.nil? }
+          ec.delete_if { |_k, val| val.nil? }
           if ec.key?('year') && (ec['year'].length == 2)
             ec['year'] = '19' + ec['year']
           elsif ec.key?('year') && (ec['year'].length == 3)
@@ -181,7 +257,8 @@ module Registry
           end
 
           if ec.key? 'end_year'
-            ec['end_year'] = Series.calc_end_year(ec['start_year'], ec['end_year'])
+            ec['end_year'] = Series.calc_end_year(ec['start_year'],
+                                                  ec['end_year'])
           end
         end
         ec # ec string parsed into hash
@@ -194,7 +271,7 @@ module Registry
         enum_chrons = {}
         return {} if ec.nil?
 
-        if canon = canonicalize(ec)
+        if (canon = canonicalize(ec))
           ec['canon'] = canon
           enum_chrons[ec['canon']] = ec.clone
         end
