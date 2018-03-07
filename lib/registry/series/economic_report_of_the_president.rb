@@ -212,34 +212,6 @@ module Registry
         canon.join(', ') unless canon.empty?
       end
 
-      def self.parse_file
-        @no_match = 0
-        @match = 0
-        src = Class.new { extend EconomicReportOfThePresident }
-        input = File.dirname(__FILE__) + '/data/econreport_enumchrons.txt'
-
-        open(input, 'r').each do |line|
-          line.chomp!
-
-          ec = src.parse_ec(line)
-
-          if ec.nil? || ec.empty?
-            @no_match += 1
-            # puts "no match: "+line
-          else
-            # puts "match: "+self.explode(ec).to_s
-            src.explode(ec, {})
-            @match += 1
-          end
-        end
-        # this creates our econreport parts file
-        # parts_out = open(File.dirname(__FILE__)+'/data/econreport_parts.json', 'w')
-        # parts_out.puts @parts.to_json
-        # puts "Economic Reports match: #{@match}"
-        # puts "Economic Reports no match: #{@no_match}"
-        [@match, @no_match]
-      end
-
       def load_context
         ps = open(File.dirname(__FILE__) + '/data/econreport_parts.json', 'r')
         # copy individually so we don't clobber the @parts definition
