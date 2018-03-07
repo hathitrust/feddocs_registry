@@ -126,14 +126,6 @@ describe 'FederalRegister' do
     end
   end
 
-  describe 'parse_file' do
-    it 'parses a file of enumchrons' do
-      match, no_match = FederalRegister.parse_file
-      expect(match).to be >= 25_757
-      # expect(match).to eq(27082) #actual in file: 27082
-    end
-  end
-
   describe 'load_context' do
     it 'loads the volume/year/numbers data' do
       expect(FederalRegister.year_to_vol['1981']).to eq('46')

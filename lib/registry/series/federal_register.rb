@@ -261,28 +261,6 @@ module Registry
 
       def canonicalize(ec); end
 
-      def self.parse_file
-        @no_match = 0
-        @match = 0
-        src = Class.new { extend FederalRegister }
-        input = File.dirname(__FILE__) + '/data/fr_enumchrons.txt'
-        open(input, 'r').each do |line|
-          line.chomp!
-
-          ec = src.parse_ec(line)
-          if ec.nil?
-            @no_match += 1
-            # puts "no match: "+line
-          else
-            @match += 1
-          end
-        end
-
-        # puts "Fed Reg match: #{@match}"
-        # puts "Fed Reg no match: #{@no_match}"
-        [@match, @no_match]
-      end
-
       def self.load_context
         ncs = File.dirname(__FILE__) + '/data/fr_number_counts.tsv'
         open(ncs).each do |line|
