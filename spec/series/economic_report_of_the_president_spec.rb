@@ -92,14 +92,6 @@ describe 'EconomicReportOfThePresident' do
     end
   end
 
-  describe 'parse_file' do
-    it 'parses a file of enumchrons' do
-      match, no_match = ER.parse_file
-      expect(match).to be >= 186
-      # expect(match).to eq(206) #actual number in test file is 206
-    end
-  end
-
   describe 'load_context' do
     it 'has a hash of years => parts' do
       expect(ER.class_eval('@@parts')['1975']).to include('2')
