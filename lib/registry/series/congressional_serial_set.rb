@@ -15,7 +15,9 @@ module Registry
       end
 
       def self.oclcs
-        [191_710_879]
+        [191_710_879,
+         3_888_071,
+         4_978_913]
       end
 
       def parse_ec(ec_string)
@@ -31,6 +33,7 @@ module Registry
         dn = '(?<document_number>\d+)'
         rn = '(?<report_number>\d+)'
         sn = '(?<serial_number>\d{4,5}[A-Z]?)'
+        p = 'P(art|T\.?)?[:\s]?(?<part>\w{1,2})'
 
         ec_string.sub!(/^V\. (V\. )?/, '')
         ec_string.sub!(/^NO\. /, '')
@@ -42,6 +45,11 @@ module Registry
         ec_string.sub!(/( \(\d{4}\)).*/, '\1')
 
         patterns = [
+          # PT. 13 (1885)
+          %r{
+            ^#{p}#{yc}?$
+          }x,
+
           # 14097 YR. 1992
           %r{
             ^#{sn}#{yc}?$
@@ -123,9 +131,9 @@ module Registry
             }x
         ]
 
-        patterns.each do |p|
+        patterns.each do |pat|
           break unless m.nil?
-          m ||= p.match(ec_string)
+          m ||= pat.match(ec_string)
         end
 
         unless m.nil?
@@ -190,30 +198,6 @@ module Registry
       end
 
       def canonicalize(ec); end
-
-      def self.parse_file
-        @no_match = 0
-        @match = 0
-        src = Class.new { extend CongressionalSerialSet }
-        input = File.dirname(__FILE__) +
-                '/data/congressional_serial_set_enumchrons.txt'
-        open(input, 'r').each do |line|
-          line.chomp!
-
-          ec = src.parse_ec(line)
-          if ec.nil? || ec.empty?
-            @no_match += 1
-            # puts "no match: "+line
-          else
-            # puts "match: "+self.explode(ec).to_s
-            @match += 1
-          end
-        end
-
-        # puts "Congressional Serial Set match: #{@match}"
-        # puts "Congressional Serial Set no match: #{@no_match}"
-        [@match, @no_match]
-      end
 
       def self.load_context; end
       load_context
