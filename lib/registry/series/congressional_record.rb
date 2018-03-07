@@ -47,19 +47,32 @@ module Registry
           # V. 155:PT. 26(2009)
           # V. 84. PT. 10 1939
           # V. 91:PT. 14:INDEX (1945)
-          /^#{v}[:,\.; ] ?#{p}([: ](?<index>INDEX))?(#{y}(?<end_year>\d{2,4})?)?#{index}?$/,
+          %r{
+            ^#{v}[:,\.;\s]\s?#{p}([:\s](?<index>INDEX))?(#{y}
+            (?<end_year>\d{2,4})?)?#{index}?$
+          }x,
 
           # V. 78 PT. 12 1934 INDEX
-          /^#{v}[:,\s;]#{p}#{y}(?<index>INDEX)?$/,
+          %r{
+            ^#{v}[:,\s;]#{p}#{y}(?<index>INDEX)?$
+          }x,
 
           # V. 152:PT. 16(2006:SEPT. 29)
-          /^#{v}[:, ]#{p}#{y}#{month}\.? (?<day>\d{1,2})(\)|\z)?$/,
+          %r{
+            ^#{v}[:,\s]#{p}#{y}#{month}\.?\s(?<day>\d{1,2})(\)|\z)?$
+          }x,
+
           # V. 129:PT. 2 1983:FEB. 2-22
-          /^#{v}[:, ]#{p}#{y}#{month}\.? (?<start_day>\d{1,2})-(?<end_day>\d{1,2})(\)|\z)?$/,
+          %r{
+            ^#{v}[:,\s]#{p}#{y}#{month}\.?\s(?<start_day>\d{1,2})
+            -(?<end_day>\d{1,2})(\)|\z)?$
+          }x,
 
           # 104/2-142/PT. 15
           # 64/1:53/PT. 1
-          /^#{congress}\/[12][:-](?<volume>\d+)\/#{p}#{y}?#{index}?$/,
+          %r{
+            ^#{congress}\/[12][:-](?<volume>\d+)\/#{p}#{y}?#{index}?$
+          }x,
 
           # V. 99:PT. 2 1953:FEB. 26-APR. 8
           %r{
@@ -90,27 +103,46 @@ module Registry
           }x,
 
           # 102/2:V. 138:PT. 25 /* 7 */
-          /^#{congress}\/(?<session>\d): ?#{v}[\/:]#{p}(\/(?<index>INDEX))?#{index}?$/,
+          %r{
+            ^#{congress}\/(?<session>\d):\s?#{v}[\/:]#{p}(\/(?<index>INDEX))?
+              #{index}?$
+          }x,
 
           # V. 43 INDEX 1908-09 /* 83 */
-          /^#{v}[\s|:](?<index>INDEX)((\s|\s?\()(?<start_year>\d{4})-(?<end_year>\d{2,4})\)?)?$/,
-          /^#{v}[\s|:](?<index>INDEX)#{y}?$/,
+          %r{
+            ^#{v}[\s|:](?<index>INDEX)((\s|\s?\()(?<start_year>\d{4})
+                                       -(?<end_year>\d{2,4})\)?)?$
+          }x,
+          %r{
+            ^#{v}[\s|:](?<index>INDEX)#{y}?$
+          }x,
 
           # V. 5 1877 INDEX /* 40 */
-          /^#{v}#{y}(?<index>INDEX)$/,
+          %r{
+            ^#{v}#{y}(?<index>INDEX)$
+          }x,
 
           # 108/PT. 17/INDEX A-K /* 1918 */
-          /^(?<volume>\d+)\/#{p}#{index}?$/,
+          %r{
+            ^(?<volume>\d+)\/#{p}#{index}?$
+          }x,
           # 126/PT. 26/INDEX
           # 127/PT. 25/INDEX/A-K
-          /^(?<volume>\d+)\/#{p}\/INDEX\/(?<index>[A-Z]-[A-Z])$/,
-          /^(?<volume>\d+)\/#{p}\/(?<index>INDEX)\/?$/,
+          %r{
+            ^(?<volume>\d+)\/#{p}\/INDEX\/(?<index>[A-Z]-[A-Z])$
+          }x,
+          %r{^(?<volume>\d+)\/#{p}\/(?<index>INDEX)\/?$
+          }x,
           # 137/PT. 25/L-Z/INDEX
-          /^(?<volume>\d+)\/#{p}\/(?<index>[A-Z]-[A-Z])\/INDEX$/,
+          %r{
+            ^(?<volume>\d+)\/#{p}\/(?<index>[A-Z]-[A-Z])\/INDEX$
+          }x,
 
           # 91/PT. 13 AND APPENDIX
           # 92/PT. 10+APPENDIX
-          /^(?<volume>\d+)\/#{p}(\+| AND )(?<appendix>APPENDIX)$/,
+          %r{
+            ^(?<volume>\d+)\/#{p}(\+|\sAND\s)(?<appendix>APPENDIX)$
+          }x,
 
           # 98/1: V. 129/PT. 25/INDEX/A-L
           %r{
@@ -192,10 +224,14 @@ module Registry
           }x,
 
           # some congressional junk ... V. 84. PT. 10 1939
-          /[^0-9]#{v}[:,\. ] ?#{p}#{y}?#{index}?$/,
+          %r{
+            [^0-9]#{v}[:,\.\s]\s?#{p}#{y}?#{index}?$
+          }x,
 
           # 25/INDEX (assuming first is volume)
-          /^(?<volume>[0-9]{1,3})\/(?<index>INDEX)$/,
+          %r{
+            ^(?<volume>[0-9]{1,3})\/(?<index>INDEX)$
+          }x,
 
           # it has a volume and a part and no index and no DAILY digest
           # ( a hail mary )

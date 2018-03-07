@@ -1,8 +1,9 @@
 require 'pp'
-#   Does nothing. Just filler.
+# Does nothing. Just filler.
 
 module Registry
   module Series
+    # Civil Rights Commission "series"
     module CivilRightsCommission
       def self.sudoc_stem
         'CR'
@@ -17,8 +18,6 @@ module Registry
 
       # Take a parsed enumchron and expand it into its constituent parts
       # enum_chrons - { <canonical ec string> : {<parsed features>}, }
-      #
-      #
       def explode(_ec, _src = nil)
         enum_chrons = {}
         enum_chrons

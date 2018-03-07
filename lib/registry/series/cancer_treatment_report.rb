@@ -298,7 +298,7 @@ module Registry
         ecs = []
 
         if ec['start_number']
-          for num in ec['start_number']..ec['end_number']
+          (ec['start_number']..ec['end_number']).each do |num|
             copy = ec.clone
             copy['number'] = num
             ecs << copy
@@ -308,7 +308,7 @@ module Registry
         end
 
         ecs.each do |ec|
-          if canon = canonicalize(ec)
+          if (canon = canonicalize(ec))
             ec['canon'] = canon
             enum_chrons[ec['canon']] = ec.clone
           end
@@ -322,7 +322,6 @@ module Registry
         canon << "Volume:#{ec['volume']}" if ec['volume']
         if ec['number']
           canon << "Number:#{ec['number']}"
-          # ec['month'] = JournalOfTheNationalCancerInstitute.month_from_number(ec['number'])
         end
         if !ec['number'] && ec['start_number']
           canon << "Numbers:#{ec['start_number']}-#{ec['end_number']}"

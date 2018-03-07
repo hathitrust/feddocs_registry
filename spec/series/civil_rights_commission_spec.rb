@@ -26,9 +26,6 @@ describe 'CRC' do
   describe 'explode' do
   end
 
-  describe 'parse_file' do
-  end
-
   describe 'sudoc_stem' do
     it 'has an sudocs field' do
       expect(CRC.sudoc_stem).to eq('CR')
