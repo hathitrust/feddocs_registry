@@ -115,28 +115,6 @@ module Registry
 
       def canonicalize(ec); end
 
-      def self.parse_file
-        @no_match = 0
-        @match = 0
-        input = File.dirname(__FILE__) + '/data/agstats_enumchrons.txt'
-        open(input, 'r').each do |line|
-          line.chomp!
-
-          ec = SourceRecord.new.extend(AgriculturalStatistics).parse_ec(line)
-          if ec.nil?
-            @no_match += 1
-            # puts "no match: "+line
-          else
-            # puts "match: "+self.explode(ec).to_s
-            @match += 1
-          end
-        end
-
-        # puts "AgStats match: #{@match}"
-        # puts "AgStats no match: #{@no_match}"
-        [@match, @no_match]
-      end
-
       def self.load_context; end
       load_context
     end

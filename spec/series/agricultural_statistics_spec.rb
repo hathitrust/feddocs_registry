@@ -7,6 +7,31 @@ describe 'AgriculturalStatistics' do
   let(:src) { Class.new { extend AgriculturalStatistics } }
 
   describe 'parse_ec' do
+    it 'can parse them all' do
+      matches = 0
+      misses = 0
+      input = File.dirname(__FILE__) + '/data/agricultural_statistics_ecs.txt'
+      open(input, 'r').each do |line|
+        line.chomp!
+        ec = src.parse_ec(line)
+        if ec.nil? || ec.empty?
+          misses += 1
+          # puts "no match: "+line
+        else
+          res = src.explode(ec)
+          res.each do |canon, features|
+            # puts canon
+          end
+          matches += 1
+        end
+      end
+      puts "Ag Statistics match: #{matches}"
+      puts "Ag Statistics no match: #{misses}"
+      # actual number in test file is 367
+      expect(matches).to eq(361)
+      # expect(matches).to eq(matches+misses)
+    end
+
     it "parses '2002 1 CD WITH CASE IN BINDER.'" do
       expect(src.parse_ec('2002 1 CD WITH CASE IN BINDER.')).to be_truthy
       expect(src.parse_ec('2002 1 CD WITH CASE IN BINDER.')['year']).to eq('2002')
@@ -38,13 +63,6 @@ describe 'AgriculturalStatistics' do
       expect(src.explode(src.parse_ec('1995/1996-1997')).count).to eq(2)
       expect(src.explode(src.parse_ec('1995/1996-1997'))).to have_key('1995-1996')
       expect(src.explode(src.parse_ec('1995/1996-1997'))).to have_key('1997')
-    end
-  end
-
-  describe 'parse_file' do
-    it 'parses a file of enumchrons' do
-      match, no_match = AgriculturalStatistics.parse_file
-      expect(match).to eq(361) # actual number in test file is 367
     end
   end
 
