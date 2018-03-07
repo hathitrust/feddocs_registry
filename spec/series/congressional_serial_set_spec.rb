@@ -34,7 +34,7 @@ describe 'CongressionalSerialSet' do
       puts "Congressional Serial Set no match: #{misses}"
       puts "Congressional Serial Set can canonicalize: #{can_canon}"
       puts "Congressional Serial Set can't canonicalize: #{cant_canon}"
-      expect(matches).to eq(50_001)
+      expect(matches).to eq(40_800)
       # expect(matches).to eq(matches+misses)
     end
 
