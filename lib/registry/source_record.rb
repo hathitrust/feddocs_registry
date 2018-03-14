@@ -204,9 +204,9 @@ module Registry
       end
 
       u_and_f? ||
-        self.sudocs.count.positive? ||
-        extract_sudocs(marc).count.positive? ||
-        gpo_item_numbers.count.positive? ||
+        self.sudocs.any? ||
+        extract_sudocs(marc).any? ||
+        gpo_item_numbers.any? ||
         approved_author?
     end
 
@@ -220,12 +220,12 @@ module Registry
 
     # Check author_lccns against the list of approved authors
     def approved_author?
-      AuthorityList.lccns.intersection(author_lccns).count.positive?
+      author_lccns.any? {|a| AuthorityList.lccns.include? a}
     end
 
     # Check added_entry_lccns against the list of approved authors
     def approved_added_entry?
-      AuthorityList.lccns.intersection(added_entry_lccns).count.positive?
+      added_entry_lccns.any? {|a| AuthorityList.lccns.include? a}
     end
 
     # Extracts SuDocs
@@ -406,7 +406,7 @@ module Registry
       tag, subcode = @@marc_profiles[self.org_code]['enum_chrons'].split(/ /)
       marc.each_by_tag(tag) do |field|
         subfield_codes = field.find_all { |subfield| subfield.code == subcode }
-        if subfield_codes.count.positive?
+        if subfield_codes.any?
           if self.org_code == 'dgpo'
             # take the second one if it's from gpo?
             if subfield_codes.count > 1
@@ -465,7 +465,7 @@ module Registry
         # anything we can do with it?
         # .explode might be able to use ec_string == '' if there is a relevant
         # pub_date/sudoc in the MARC
-        if exploded.keys.count.positive?
+        if exploded.keys.any?
           exploded.each do |canonical, features|
             # series may return exploded items all referencing the
             # same feature set.
@@ -519,7 +519,7 @@ module Registry
           parsed_ec = parse_ec ec_string
           if !parsed_ec.nil?
             exploded = explode(parsed_ec, self)
-            if exploded.keys.count.positive?
+            if exploded.keys.any?
               exploded.each_key do |canonical|
                 ecs << canonical
               end
@@ -638,95 +638,93 @@ module Registry
       @series ||= []
       # try to set it
       if (self.oclc_resolved.map(&:to_i) &
-          Series::FederalRegister.oclcs).count.positive?
+          Series::FederalRegister.oclcs).any?
         @series << 'FederalRegister'
       end
       if (self.oclc_resolved.map(&:to_i) &
-          Series::StatutesAtLarge.oclcs).count.positive?
+          Series::StatutesAtLarge.oclcs).any?
         @series << 'StatutesAtLarge'
       end
       if (self.oclc_resolved.map(&:to_i) &
-          Series::AgriculturalStatistics.oclcs).count.positive?
+          Series::AgriculturalStatistics.oclcs).any?
         @series << 'AgriculturalStatistics'
       end
       if (self.oclc_resolved.map(&:to_i) &
-          Series::MonthlyLaborReview.oclcs).count.positive?
+          Series::MonthlyLaborReview.oclcs).any?
         @series << 'MonthlyLaborReview'
       end
       if (self.oclc_resolved.map(&:to_i) &
-          Series::MineralsYearbook.oclcs).count.positive?
+          Series::MineralsYearbook.oclcs).any?
         @series << 'MineralsYearbook'
       end
       if (self.oclc_resolved.map(&:to_i) &
-          Series::StatisticalAbstract.oclcs).count.positive?
+          Series::StatisticalAbstract.oclcs).any?
         @series << 'StatisticalAbstract'
       end
       if (self.oclc_resolved.map(&:to_i) &
-         Series::UnitedStatesReports.oclcs).count.positive? ||
+         Series::UnitedStatesReports.oclcs).any? ||
          self.sudocs
              .grep(%r{^#{::Regexp
-                        .escape(Series::UnitedStatesReports.sudoc_stem)}})
-             .count.positive?
+                        .escape(Series::UnitedStatesReports.sudoc_stem)}}).any?
         @series << 'UnitedStatesReports'
       end
       if self.sudocs
              .grep(%r{^#{::Regexp
                         .escape(Series::CivilRightsCommission.sudoc_stem)}})
-             .count.positive?
+             .any?
         @series << 'CivilRightsCommission'
       end
       if (self.oclc_resolved.map(&:to_i) &
-          Series::CongressionalRecord.oclcs).count.positive?
+          Series::CongressionalRecord.oclcs).any?
         @series << 'CongressionalRecord'
       end
       if self.sudocs
              .grep(/^#{::Regexp.escape(Series::ForeignRelations.sudoc_stem)}/)
-             .count.positive?
+             .any?
         @series << 'ForeignRelations'
       end
       if (self.oclc_resolved.map(&:to_i) &
-          Series::CongressionalSerialSet.oclcs).count.positive? ||
+          Series::CongressionalSerialSet.oclcs).any? ||
          self.sudocs
              .grep(%r{^#{::Regexp
                         .escape(Series::CongressionalSerialSet.sudoc_stem)}})
-             .count.positive?
+             .any?
         @series << 'CongressionalSerialSet'
       end
       if (self.oclc_resolved.map(&:to_i) &
-          Series::EconomicReportOfThePresident.oclcs).count.positive? ||
+          Series::EconomicReportOfThePresident.oclcs).any? ||
          self.sudocs
              .grep(%r{^#{::Regexp
                         .escape(Series::EconomicReportOfThePresident
-                                .sudoc_stem)}})
-             .count.positive?
+                                .sudoc_stem)}}).any?
         @series << 'EconomicReportOfThePresident'
       end
       if (self.oclc_resolved.map(&:to_i) &
-          Series::ReportsOfInvestigations.oclcs).count.positive?
+          Series::ReportsOfInvestigations.oclcs).any?
         @series << 'ReportsOfInvestigations'
       end
       if (self.oclc_resolved.map(&:to_i) &
-          Series::DecisionsOfTheCourtOfVeteransAppeals.oclcs).count.positive?
+          Series::DecisionsOfTheCourtOfVeteransAppeals.oclcs).any?
         @series << 'DecisionsOfTheCourtOfVeteransAppeals'
       end
       if (self.oclc_resolved.map(&:to_i) &
-          Series::JournalOfTheNationalCancerInstitute.oclcs).count.positive?
+          Series::JournalOfTheNationalCancerInstitute.oclcs).any?
         @series << 'JournalOfTheNationalCancerInstitute'
       end
       if (self.oclc_resolved.map(&:to_i) &
-          Series::CancerTreatmentReport.oclcs).count.positive?
+          Series::CancerTreatmentReport.oclcs).any?
         @series << 'CancerTreatmentReport'
       end
       if (self.oclc_resolved.map(&:to_i) &
-          Series::VitalStatistics.oclcs).count.positive?
+          Series::VitalStatistics.oclcs).any?
         @series << 'VitalStatistics'
       end
       if (self.oclc_resolved.map(&:to_i) &
-          Series::PublicPapersOfThePresidents.oclcs).count.positive?
+          Series::PublicPapersOfThePresidents.oclcs).any?
         @series << 'PublicPapersOfThePresidents'
       end
 
-      if !@series.nil? && @series.count.positive?
+      if @series&.any?
         @series.uniq!
         extend(Module.const_get('Registry::Series::' + @series.first))
         load_context

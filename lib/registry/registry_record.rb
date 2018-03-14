@@ -59,7 +59,7 @@ module Registry
                 .each_with_index { |(k, v), _i| self[k] = v }
 
       @sources.each do |src|
-        if !src.series.nil? && src.series.count.positive?
+        if src.series&.any?
           self.series = src.series.map { |s| s.gsub(/([A-Z])/, ' \1').strip }
         end
       end
@@ -71,16 +71,16 @@ module Registry
       self.enumchron_display = enum_chron
       set_ht_availability
       if (print_holdings_t.nil? || print_holdings_t.count.zero?) &&
-         oclcnum_t.count.positive?
+         oclcnum_t.any?
         print_holdings
       end
     end
 
     # Sets HT availability based on ht_ids_fv and ht_ids_lv fields
     def set_ht_availability
-      self.ht_availability = if ht_ids_fv.count.positive?
+      self.ht_availability = if ht_ids_fv.any?
                                'Full View'
-                             elsif ht_ids_lv.count.positive?
+                             elsif ht_ids_lv.any?
                                'Limited View'
                              else
                                'Not In HathiTrust'
@@ -108,7 +108,7 @@ module Registry
         end
         source_record_ids.uniq!
         self.source_org_codes.uniq!
-        if !source_record.series.nil? && source_record.series.count.positive?
+        if source_record.series&.any?
           self.series = source_record.series.map do |s|
             s.gsub(/([A-Z])/, ' \1').strip
           end
@@ -198,7 +198,7 @@ module Registry
     # If any of the source records are for monograph bibs
     # return true
     def monograph?
-      sources.select { |s| s.source['leader'] =~ /^.{7}m/ }.count.positive?
+      sources.select { |s| s.source['leader'] =~ /^.{7}m/ }.any?
     end
 
     def save
@@ -215,31 +215,31 @@ module Registry
     # enum_chron - an enumchron string
     def self.cluster(s, enum_chron)
       # OCLC first
-      if s.oclc_resolved.count.positive?
+      if s.oclc_resolved.any?
         rec = RegistryRecord.where(oclcnum_t: s.oclc_resolved,
                                    enumchron_display: enum_chron,
                                    deprecated_timestamp: { "$exists": 0 }).first
       end
       # lccn
-      if s.lccn_normalized.count.positive? && !rec
+      if s.lccn_normalized.any? && !rec
         rec = RegistryRecord.where(lccn_t: s.lccn_normalized,
                                    enumchron_display: enum_chron,
                                    deprecated_timestamp: { "$exists": 0 }).first
       end
       # isbn
-      if s.isbns_normalized.count.positive? && !rec
+      if s.isbns_normalized.any? && !rec
         rec = RegistryRecord.where(isbn_t: s.isbns_normalized,
                                    enumchron_display: enum_chron,
                                    deprecated_timestamp: { "$exists": 0 }).first
       end
       # issn
-      if s.issn_normalized.count.positive? && !rec
+      if s.issn_normalized.any? && !rec
         rec = RegistryRecord.where(issn_t: s.issn_normalized,
                                    enumchron_display: enum_chron,
                                    deprecated_timestamp: { "$exists": 0 }).first
       end
       # sudoc
-      if s.sudocs.count.positive? && !rec
+      if s.sudocs.any? && !rec
         rec = RegistryRecord.where(sudoc_display: s.sudocs,
                                    enumchron_display: enum_chron,
                                    deprecated_timestamp: { "$exists": 0 }).first
@@ -250,7 +250,7 @@ module Registry
     def print_holdings(oclcs = nil)
       oclcs ||= oclcnum_t
       self.print_holdings_t = []
-      if oclcs.count.positive?
+      if oclcs.any?
         get_holdings = "SELECT DISTINCT(member_id) from holdings_memberitem
                         WHERE oclc IN(#{@@db_conn.escape(oclcs.join(','))})"
         @results = @@db_conn.query(get_holdings)
