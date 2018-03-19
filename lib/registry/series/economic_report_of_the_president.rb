@@ -4,7 +4,7 @@ require 'pp'
 
 module Registry
   module Series
-    # Economic Report of the President, a small series. 
+    # Economic Report of the President, a small series.
     module EconomicReportOfThePresident
       # include EC
       # class << self; attr_accessor :parts end
@@ -20,7 +20,7 @@ module Registry
       end
 
       def parse_ec(ec_string)
-        m = nil 
+        m = nil
 
         # C. 1 crap from beginning and end
         ec_string.sub!(/ ?C\. 1 ?/, '')
@@ -146,7 +146,7 @@ module Registry
         if ec['year'].nil? && ec['start_year'].nil?
           # try sudocs first
           if !src[:sudocs].nil? &&
-              !src[:sudocs].select { |s| s =~ /Y 4\.EC 7:EC 7\/2\/\d{3}/ }[0].nil?
+             !src[:sudocs].select { |s| s =~ /Y 4\.EC 7:EC 7\/2\/\d{3}/ }[0].nil?
             sudoc = src[:sudocs].select { |s| s =~ /Y 4\.EC 7:EC 7\/2\/\d{3}/ }[0]
             unless sudoc.nil?
               m = /EC 7\/2\/(?<year>\d{3,4})(\/.*)?$/.match(sudoc)

@@ -220,12 +220,12 @@ module Registry
 
     # Check author_lccns against the list of approved authors
     def approved_author?
-      author_lccns.any? {|a| AuthorityList.lccns.include? a}
+      author_lccns.any? { |a| AuthorityList.lccns.include? a }
     end
 
     # Check added_entry_lccns against the list of approved authors
     def approved_added_entry?
-      added_entry_lccns.any? {|a| AuthorityList.lccns.include? a}
+      added_entry_lccns.any? { |a| AuthorityList.lccns.include? a }
     end
 
     # Extracts SuDocs
