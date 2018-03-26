@@ -327,6 +327,26 @@ module Registry
       # if it's bigger than 8 bytes, definitely not valid.
       # (and can't be saved to Mongo anyway)
       self.oclc_alleged.delete_if { |x| x.size > 8 }
+      self.oclc_alleged = remove_incorrect_substring_oclcs
+    end
+
+    # Remove errant oclcs
+    # Some records have OCLCs that have dropped leading significant digits.
+    # They have multiple OCLCs where one is affectively a substring of the
+    # correct OCLC.
+    def remove_incorrect_substring_oclcs(oclcs = nil)
+      oclcs ||= oclc_alleged
+
+      bad_oclcs = []
+      oclcs.each do |o1|
+        oclcs.each do |o2|
+          # substring must be greater than 9999 as smaller OCLCs may match by
+          # coincidence
+          next if o2 < 10_000
+          bad_oclcs << o2 if o1.to_s.match?(/.+#{o2.to_s}$/)
+        end
+      end
+      oclcs - bad_oclcs
     end
 
     #######

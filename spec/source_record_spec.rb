@@ -132,6 +132,25 @@ RSpec.describe Registry::SourceRecord, '#resolve_oclc' do
   end
 end
 
+RSpec.describe Registry::SourceRecord, '#remove_incorrect_substring_oclcs' do
+  it 'removes incorrect OCLCS from an array' do
+    sr = SourceRecord.new
+    expect(
+      sr.remove_incorrect_substring_oclcs([1_234_567, 234_567])
+    ).to eq([1_234_567])
+  end
+
+  it 'OCLCS < 10000 are not deemed incorrect' do
+    sr = SourceRecord.new
+    expect(
+      sr.remove_incorrect_substring_oclcs([1_234_567, 567])
+    ).to eq([1_234_567, 567])
+    expect(
+      sr.remove_incorrect_substring_oclcs([1_234_567, 234_567, 567])
+    ).to eq([1_234_567, 567])
+  end
+end
+
 RSpec.describe Registry::SourceRecord, '#extracted_field' do
   before(:all) do
     @sr = SourceRecord.new
@@ -405,10 +424,18 @@ RSpec.describe Registry::SourceRecord, 'extract_oclcs' do
     rec = open(File.dirname(__FILE__) + '/data/bogus_oclc.json').read
     @marc = MARC::Record.new_from_hash(JSON.parse(rec))
     @s = SourceRecord.new
+    rec = open(File.dirname(__FILE__) + '/data/weird_oclcs.json').read
+    @cou_marc = MARC::Record.new_from_hash(JSON.parse(rec))
   end
 
   it 'ignores out of range OCLCs' do
     expect(@s.extract_oclcs(@marc)).not_to include(155_503_032_044_020_955_233)
+  end
+
+  it 'removes incorrect oclcs' do
+    @s.org_code = "cou"
+    PP.pp @s.extract_oclcs(@cou_marc)
+    expect(@s.extract_oclcs(@cou_marc)).not_to include(1_038_488)
   end
 end
 
