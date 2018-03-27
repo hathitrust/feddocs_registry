@@ -531,7 +531,8 @@ end
 RSpec.describe Registry::SourceRecord, 'fed_doc?' do
   before(:all) do
     # this file has both a Fed SuDoc and a state okdoc
-    @fed_state = open(File.dirname(__FILE__) + '/data/fed_state_sudoc.json').read
+    @fed_state = open(File.dirname(__FILE__) +
+                      '/data/fed_state_sudoc.json').read
     @marc = MARC::Record.new_from_hash(JSON.parse(@fed_state))
     @innd = open(File.dirname(__FILE__) + '/data/innd_record.json').read
     @innd_marc = MARC::Record.new_from_hash(JSON.parse(@innd))
@@ -593,6 +594,14 @@ RSpec.describe Registry::SourceRecord, 'fed_doc?' do
     expect(auth_only.fed_doc?).to be_truthy
   end
 
+  it 'uses approved added entry' do
+    s = SourceRecord.new(
+      org_code: 'miaahdl',
+      source: open(File.dirname(__FILE__) + '/data/added_entry_gd.json').read
+    )
+    expect(s.fed_doc?).to be_truthy
+  end
+
   it 'returns true/false not 0 or nil' do
     gd = SourceRecord.new
     gd.org_code = 'miaahdl'
@@ -614,7 +623,6 @@ RSpec.describe Registry::SourceRecord, '#extract_identifiers' do
       break if count > 20 # arbitrary
       old_oclc_alleged = rec.oclc_alleged
       old_lccn = rec.lccn_normalized
-      old_sudocs = rec.sudocs
       old_issn = rec.issn_normalized
       old_isbn = rec.isbns_normalized
       rec.extract_identifiers
@@ -639,11 +647,15 @@ RSpec.describe Registry::SourceRecord, '#extract_enum_chrons' do
     src = SourceRecord.new
     src.org_code = 'dgpo'
     src.source = line
-    expect(src.extract_enum_chrons.collect { |_k, ec| ec['string'] }).to eq(['V. 1', 'V. 2'])
+    expect(
+      src.extract_enum_chrons.collect { |_k, ec| ec['string'] }
+    ).to eq(['V. 1', 'V. 2'])
   end
 
   it 'extracts enum chrons from non-GPO records' do
-    sr = SourceRecord.where(oclc_resolved: 1_768_512, org_code: { "$ne": 'miaahdl' }, enum_chrons: /V. \d/).first
+    sr = SourceRecord.where(oclc_resolved: 1_768_512,
+                            org_code: { "$ne": 'miaahdl' },
+                            enum_chrons: /V. \d/).first
     line = sr.source.to_json
     sr_new = SourceRecord.new(org_code: 'miu')
     sr_new.series = ['FederalRegister']
@@ -656,7 +668,8 @@ RSpec.describe Registry::SourceRecord, '#extract_enum_chrons' do
   it 'properly extracts enumchrons for series' do
     sr = SourceRecord.new
     sr.org_code = 'miaahdl'
-    sr.source = open(File.dirname(__FILE__) + '/series/data/econreport.json').read
+    sr.source = open(File.dirname(__FILE__) +
+                     '/series/data/econreport.json').read
     expect(sr.series).to include('EconomicReportOfThePresident')
     expect(sr.enum_chrons).to include('Year:1966, Part:3')
   end
@@ -664,14 +677,16 @@ RSpec.describe Registry::SourceRecord, '#extract_enum_chrons' do
   it 'doesnt clobber enumchron features' do
     sr = SourceRecord.new
     sr.org_code = 'miaahdl'
-    sr.source = open(File.dirname(__FILE__) + '/series/data/statabstract_multiple_ecs.json').read
+    sr.source = open(File.dirname(__FILE__) +
+                     '/series/data/statabstract_multiple_ecs.json').read
     expect(sr.enum_chrons).to include('Edition:1, Year:1878')
   end
 
   it 'returns [""] for records without enum_chrons, with series' do
     sr = SourceRecord.new
     sr.org_code = 'miaahdl'
-    sr.source = open(File.dirname(__FILE__) + '/series/data/econreport_no_enums.json').read
+    sr.source = open(File.dirname(__FILE__) +
+                     '/series/data/econreport_no_enums.json').read
     expect(sr.enum_chrons.count).to eq(1)
     expect(sr.enum_chrons[0]).to eq('')
   end
@@ -679,7 +694,8 @@ RSpec.describe Registry::SourceRecord, '#extract_enum_chrons' do
   it 'returns [""] for records without enum_chrons, without series' do
     sr = SourceRecord.new
     sr.org_code = 'miaahdl'
-    sr.source = open(File.dirname(__FILE__) + '/data/no_enums_no_series_src.json').read
+    sr.source = open(File.dirname(__FILE__) +
+                     '/data/no_enums_no_series_src.json').read
     expect(sr.enum_chrons.count).to eq(1)
     expect(sr.enum_chrons[0]).to eq('')
   end
@@ -711,7 +727,8 @@ RSpec.describe Registry::SourceRecord, '#extract_enum_chron_strings' do
   it 'properly extracts enumchron strings for series' do
     sr = SourceRecord.new
     sr.org_code = 'miaahdl'
-    sr.source = open(File.dirname(__FILE__) + '/series/data/econreport.json').read
+    sr.source = open(File.dirname(__FILE__) +
+                     '/series/data/econreport.json').read
     expect(sr.extract_enum_chron_strings).to include('PT. 1-4')
   end
 
@@ -725,7 +742,8 @@ RSpec.describe Registry::SourceRecord, '#extract_enum_chron_strings' do
   it 'filters out some bogus enum chrons' do
     sr = SourceRecord.new
     sr.org_code = 'vifgm'
-    sr.source = open(File.dirname(__FILE__) + '/data/vifgm_1959_december.json').read
+    sr.source = open(File.dirname(__FILE__) +
+                     '/data/vifgm_1959_december.json').read
     expect(sr.extract_enum_chron_strings).to eq([])
   end
 
@@ -1002,7 +1020,6 @@ RSpec.describe Registry::SourceRecord, '#approved_added_entry?' do
   end
 
   it 'tells us it has an approved added entry author' do
-    expect(@src.fed_doc?).to be_falsey
     expect(@src.approved_added_entry?).to be_truthy
   end
 end

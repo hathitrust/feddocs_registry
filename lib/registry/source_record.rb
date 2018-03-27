@@ -207,7 +207,8 @@ module Registry
         self.sudocs.any? ||
         extract_sudocs(marc).any? ||
         gpo_item_numbers.any? ||
-        approved_author?
+        approved_author? ||
+        approved_added_entry?
     end
 
     # The 008 field contains a place of publication code at the 17th position,
@@ -331,9 +332,9 @@ module Registry
 
     # Get OCLCs from 955$o
     def oclcs_from_955o_fields(m = nil, oc = nil)
-      @marc = m unless m.nil?
       @org_code = oc unless oc.nil?
       return [] unless org_code == 'inu'
+      @marc = m unless m.nil?
       oclcs = []
       marc.each_by_tag('955') do |field|
         field.subfields.each do |sf|
