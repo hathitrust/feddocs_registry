@@ -304,30 +304,45 @@ module Registry
       end
 
       # Indiana told us 955$o. Not likely, but...
-      if self.org_code == 'inu'
-        marc.each_by_tag('955') do |field|
-          field.subfields.each do |sf|
-            if (sf.code == 'o') && sf.value =~ /(\d+)/
-              self.oclc_alleged << ::Regexp.last_match(1).to_i
-            end
-          end
-        end
-      end
+      self.oclc_alleged << oclcs_from_955o_fields
 
       # We don't care about different physical forms so
       # 776s are valid too.
-      marc.each_by_tag('776') do |field|
-        subfield_ws = field.find_all { |subfield| subfield.code == 'w' }
-        subfield_ws.each do |sub|
-          self.oclc_alleged << ::Regexp.last_match(1).to_i if OCLCPAT.match(sub.value)
-        end
-      end
+      self.oclc_alleged << oclcs_from_776_fields
 
       self.oclc_alleged = self.oclc_alleged.flatten.uniq
       # if it's bigger than 8 bytes, definitely not valid.
       # (and can't be saved to Mongo anyway)
       self.oclc_alleged.delete_if { |x| x.size > 8 }
       self.oclc_alleged = remove_incorrect_substring_oclcs
+    end
+
+    # Get OCLCs from 776 field
+    def oclcs_from_776_fields(m = nil)
+      @marc = m unless m.nil?
+      oclcs = []
+      marc.each_by_tag('776') do |f|
+        f.find_all { |subfield| subfield.code == 'w' }.each do |sub|
+          oclcs << ::Regexp.last_match(1).to_i if OCLCPAT.match(sub.value)
+        end
+      end
+      oclcs
+    end
+
+    # Get OCLCs from 955$o
+    def oclcs_from_955o_fields(m = nil, oc = nil)
+      @marc = m unless m.nil?
+      @org_code = oc unless oc.nil?
+      return [] unless org_code == 'inu'
+      oclcs = []
+      marc.each_by_tag('955') do |field|
+        field.subfields.each do |sf|
+          if (sf.code == 'o') && sf.value =~ /(\d+)/
+            oclcs << ::Regexp.last_match(1).to_i
+          end
+        end
+      end
+      oclcs
     end
 
     # Remove errant oclcs

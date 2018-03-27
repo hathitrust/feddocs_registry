@@ -93,6 +93,7 @@ RSpec.describe Registry::SourceRecord do
 
   it 'extracts oclc number from 001, 035, 776' do
     expect(@sr.oclc_resolved).to eq([38, 812_424_058])
+    expect(@sr.oclcs_from_776_fields).to eq([812_424_058])
   end
 
   it 'can extract local id from MARC' do
@@ -104,7 +105,8 @@ RSpec.describe Registry::SourceRecord do
   end
 
   it 'performs reasonably well' do
-    line = open(File.dirname(__FILE__) + '/data/ht_record_different_3_items.json').read
+    line = open(File.dirname(__FILE__) +
+                '/data/ht_record_different_3_items.json').read
     call_count = 0
     name = :new_from_hash
     TracePoint.trace(:call) do |t|
@@ -129,6 +131,15 @@ RSpec.describe Registry::SourceRecord, '#resolve_oclc' do
     # 1198154
     expect(sr.oclc_alleged).to eq([1_198_154, 244_155])
     expect(sr.oclc_resolved).to eq([1_198_154, 227_681])
+  end
+end
+
+RSpec.describe Registry::SourceRecord, '#oclcs_from_955o_fields' do
+  it 'extracts OCLCS from strange INU records' do
+    sr = SourceRecord.new(org_code: 'inu',
+                          source: open(File.dirname(__FILE__) +
+                          '/data/inu_record.json').read)
+    expect(sr.oclcs_from_955o_fields).to eq([857_794_111])
   end
 end
 
@@ -433,8 +444,7 @@ RSpec.describe Registry::SourceRecord, 'extract_oclcs' do
   end
 
   it 'removes incorrect oclcs' do
-    @s.org_code = "cou"
-    PP.pp @s.extract_oclcs(@cou_marc)
+    @s.org_code = 'cou'
     expect(@s.extract_oclcs(@cou_marc)).not_to include(1_038_488)
   end
 end
