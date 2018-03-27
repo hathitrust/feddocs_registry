@@ -215,31 +215,31 @@ module Registry
     # enum_chron - an enumchron string
     def self.cluster(s, enum_chron)
       # OCLC first
-      if s.oclc_resolved.any?
-        rec = RegistryRecord.where(oclcnum_t: s.oclc_resolved,
+      if s.oclc_resolved&.any?
+        rec = RegistryRecord.where(oclcnum_t:{"$in":s.oclc_resolved},
                                    enumchron_display: enum_chron,
                                    deprecated_timestamp: { "$exists": 0 }).first
       end
       # lccn
-      if s.lccn_normalized.any? && !rec
+      if s.lccn_normalized&.any? && !rec
         rec = RegistryRecord.where(lccn_t: s.lccn_normalized,
                                    enumchron_display: enum_chron,
                                    deprecated_timestamp: { "$exists": 0 }).first
       end
       # isbn
-      if s.isbns_normalized.any? && !rec
+      if s.isbns_normalized&.any? && !rec
         rec = RegistryRecord.where(isbn_t: s.isbns_normalized,
                                    enumchron_display: enum_chron,
                                    deprecated_timestamp: { "$exists": 0 }).first
       end
       # issn
-      if s.issn_normalized.any? && !rec
+      if s.issn_normalized&.any? && !rec
         rec = RegistryRecord.where(issn_t: s.issn_normalized,
                                    enumchron_display: enum_chron,
                                    deprecated_timestamp: { "$exists": 0 }).first
       end
       # sudoc
-      if s.sudocs.any? && !rec
+      if s.sudocs&.any? && !rec
         rec = RegistryRecord.where(sudoc_display: s.sudocs,
                                    enumchron_display: enum_chron,
                                    deprecated_timestamp: { "$exists": 0 }).first

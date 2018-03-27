@@ -79,6 +79,11 @@ RSpec.describe RR, '#cluster' do
   before(:all) do
     @source_has_oclc = Registry::SourceRecord.where(source_id: '7386d49d-2c04-44ea-97aa-fb87b241f56f').first
     @source_only_sudoc = Registry::SourceRecord.where(source_id: '31f7bdf5-0d68-4d38-abf2-266be181a07f').first
+    @src = Registry::SourceRecord.new(org_code:'miaahdl', 
+                                      oclc_resolved:[5,25])
+    @rr = RR.new([1,2], '', '')
+    @rr.oclcnum_t = [5]
+    @rr.save
   end
 
   it 'finds a matching cluster for a source record' do
@@ -86,6 +91,18 @@ RSpec.describe RR, '#cluster' do
     expect(RR.cluster(@source_has_oclc, 'New Enumchron')).to be_nil
     expect(RR.cluster(@source_only_sudoc, 'NO. 11-16')).to be_instance_of(RR)
     expect(RR.cluster(@source_only_sudoc, 'New Enumchron')).to be_nil
+  end
+
+  it 'finds a matching cluster for any oclc' do
+    expect(RR.cluster(@src, '')).to eq(@rr)
+    @rr.oclcnum_t << 50
+    @rr.save
+    expect(RR.cluster(@src, '')).to eq(@rr)
+  end
+
+  after(:all) do
+    @rr.delete
+    @src.delete
   end
 end
 
