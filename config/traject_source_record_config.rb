@@ -38,9 +38,6 @@ to_field 'publisher_heading', extract_marc('260b')
 # pubdate
 to_field 'pub_date', marc_publication_date
 
-# gpo item number
-to_field 'gpo_item_number', extract_marc('074a')
-
 # electronic_resources
 to_field 'electronic_resources', extract_marc('856|4 |u:856|40|u')
 to_field 'electronic_versions', extract_marc('856|41|u')
