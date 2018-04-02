@@ -105,7 +105,7 @@ module Registry
       @marc = MARC::Record.new_from_hash(source)
       @extracted = @@extractor.map_record marc
       self.pub_date = @extracted['pub_date']
-      gpo_item_numbers 
+      gpo_item_numbers
       self.publisher_headings = @extracted['publisher_heading'] || []
       self.author_headings = @extracted['author_t'] || []
       self.author_parts = @extracted['author_parts'] || []
@@ -765,6 +765,10 @@ module Registry
       if (self.oclc_resolved.map(&:to_i) &
           Series::PublicPapersOfThePresidents.oclcs).any?
         @series << 'PublicPapersOfThePresidents'
+      end
+      if (self.oclc_resolved.map(&:to_i) &
+          Series::DepartmentOfAgricultureLeaflet.oclcs).any?
+        @series << 'DepartmentOfAgricultureLeaflet'
       end
 
       if @series&.any?

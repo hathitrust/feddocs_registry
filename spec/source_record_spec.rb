@@ -1042,13 +1042,21 @@ RSpec.describe Registry::SourceRecord, '#series' do
   end
 
   it 'detects Vital Statistics' do
-    @src.source = open(File.dirname(__FILE__) + '/series/data/vital_statistics.json').read
+    @src.source = open(File.dirname(__FILE__) +
+                       '/series/data/vital_statistics.json').read
     expect(@src.series).to eq(['VitalStatistics'])
   end
 
   it 'detects PublicPapers' do
-    @src.source = open(File.dirname(__FILE__) + '/series/data/public_papers.json').read
+    @src.source = open(File.dirname(__FILE__) +
+                       '/series/data/public_papers.json').read
     expect(@src.series).to eq(['PublicPapersOfThePresidents'])
+  end
+
+  it 'detects DAGLs' do
+    @src.source = open(File.dirname(__FILE__) +
+                       '/series/data/dept_agr_leaflet.json').read
+    expect(@src.series).to eq(['DepartmentOfAgricultureLeaflet'])
   end
 
   after(:each) do
