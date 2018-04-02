@@ -105,7 +105,7 @@ module Registry
       @marc = MARC::Record.new_from_hash(source)
       @extracted = @@extractor.map_record marc
       self.pub_date = @extracted['pub_date']
-      self.gpo_item_numbers = @extracted['gpo_item_number'] || []
+      gpo_item_numbers 
       self.publisher_headings = @extracted['publisher_heading'] || []
       self.author_headings = @extracted['author_t'] || []
       self.author_parts = @extracted['author_parts'] || []
@@ -227,6 +227,13 @@ module Registry
     # Check added_entry_lccns against the list of approved authors
     def approved_added_entry?
       added_entry_lccns.any? { |a| AuthorityList.lccns.include? a }
+    end
+
+    # Extracts gpo item numbers from 074
+    def gpo_item_numbers(m = nil)
+      @marc = m unless m.nil?
+      @gpo_item_numbers ||= Traject::MarcExtractor.cached('074a').extract(marc)
+      self.gpo_item_numbers = @gpo_item_numbers
     end
 
     # Extracts SuDocs

@@ -576,6 +576,11 @@ RSpec.describe Registry::SourceRecord, 'fed_doc?' do
     s.source = source
     expect(s.gpo_item_numbers).to eq(['123'])
     expect(s.fed_doc?).to be true
+    s.unset(:gpo_item_numbers)
+    expect(s.gpo_item_numbers).to  eq(['123'])
+    s.save
+    s_copy = SourceRecord.where(source_id:s.source_id).first
+    s.delete
   end
 
   it "doesn't choke if there is no 074" do
