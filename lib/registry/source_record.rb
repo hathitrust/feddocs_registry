@@ -216,7 +216,7 @@ module Registry
     # https://www.loc.gov/marc/bibliographic/bd008.html
     def u_and_f?(m = nil)
       @marc = m unless m.nil?
-      /^.{17}u.{10}f/.match? @marc['008']&.value
+      /^.{17}u.{10}f/.match? marc['008']&.value
     end
 
     # Check author_lccns against the list of approved authors
