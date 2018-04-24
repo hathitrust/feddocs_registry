@@ -26,6 +26,10 @@ describe 'Series.lookup_month' do
   it 'returns June for JE.' do
     expect(Series.lookup_month('JE.')).to eq('June')
   end
+
+  it 'returns nil for SUP' do
+    expect(Series.lookup_month('SUP')).to be_nil
+  end
 end
 
 describe 'Series.correct_year' do

@@ -41,6 +41,7 @@ module Registry
                         ((m_abbrev.length == 2) &&
                         /^#{m_abbrev[0]}.*#{m_abbrev[1]}/i =~ month)
       end
+      nil
     end
   end
 end
