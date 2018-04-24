@@ -770,6 +770,11 @@ module Registry
           Series::DepartmentOfAgricultureLeaflet.oclcs).any?
         @series << 'DepartmentOfAgricultureLeaflet'
       end
+      if (self.oclc_resolved.map(&:to_i) &
+          Series::PublicHealthReports.oclcs).any?
+        @series << 'PublicHealthReports'
+      end
+
 
       if @series&.any?
         @series.uniq!
