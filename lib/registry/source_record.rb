@@ -961,10 +961,7 @@ module Registry
       lccns = []
       names ||= []
       names.each do |n|
-        lccns << Authority.with(client: 'nauth') do |klass|
-          auth = klass.search(n)
-          auth&.sameAs
-        end
+        lccns << Authority.search(n)&.sameAs
       end
       lccns.delete(nil)
       lccns.uniq
