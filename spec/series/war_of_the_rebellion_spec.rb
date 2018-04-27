@@ -1,6 +1,11 @@
 # frozen_string_literal: true
 
+require 'dotenv'
 require 'json'
+
+Dotenv.load
+Mongoid.load!(ENV['MONGOID_CONF'])
+SourceRecord = Registry::SourceRecord
 
 WOTR = Registry::Series::WarOfTheRebellion
 
@@ -81,6 +86,11 @@ describe 'WOTR' do
 
     it 'ignores everything after reports or correspondence is mentioned' do
       expect(src.parse_ec('SER. 1:V. 49:PT. 1:REPORTS AND CORR')['part']).to \
+        eq('1')
+    end
+
+    it 'parses "SER. 1:V. 42:PT. 1:REPORTS"' do
+      expect(src.parse_ec('SER. 1:V. 42:PT. 1:REPORTS')['part']).to \
         eq('1')
     end
 
@@ -185,6 +195,11 @@ describe 'WOTR' do
   end
 
   describe 'explode' do
+    it 'explodes to a single ec with a canonical' do
+      ec = src.parse_ec('SER. 1:V. 42:PT. 1:REPORTS')
+      expect(src.explode(ec).first[0]).to \
+        eq('Series:1, Volume:42, Part:1')
+    end
   end
 
   describe 'title' do
@@ -197,6 +212,17 @@ describe 'WOTR' do
     it 'has an oclcs field' do
       expect(WOTR.oclcs).to eq([427_057,
                                 471_419_901])
+    end
+  end
+
+  describe 'everything' do
+    it 'actually works' do
+      wotr_src = File.open(File.dirname(__FILE__) +
+                         '/data/wotr_rec.json').read
+      wotr = SourceRecord.new
+      wotr.org_code = 'miaahdl'
+      wotr.source = wotr_src
+      expect(wotr.enum_chrons).not_to include('SER. 1:V. 42:PT. 1:REPORTS')
     end
   end
 end

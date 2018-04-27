@@ -140,7 +140,7 @@ module Registry
                  .sub(/^V\. ([^0-9])/, '\1')
       end
 
-      def explode(ec, _rec)
+      def explode(ec, _rec=nil)
         enum_chrons = {}
         return {} if ec.nil?
 
