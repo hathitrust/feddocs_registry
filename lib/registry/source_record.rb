@@ -774,6 +774,11 @@ module Registry
           Series::PublicHealthReports.oclcs).any?
         @series << 'PublicHealthReports'
       end
+      if (self.oclc_resolved.map(&:to_i) &
+          Series::WarOfTheRebellion.oclcs).any?
+        @series << 'WarOfTheRebellion'
+      end
+
 
 
       if @series&.any?
