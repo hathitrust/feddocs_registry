@@ -19,13 +19,16 @@ RSpec.describe RR, '#initialize' do
     @new_rec.save
 
     @dgpo_src = Registry::SourceRecord.new
-    @dgpo_src.source = open(File.dirname(__FILE__) + '/data/dgpo_has_ecs.json').read
+    @dgpo_src.source = File.open(File.dirname(__FILE__) +
+                                 '/data/dgpo_has_ecs.json').read
     @dgpo_src.save
-    @dgpo_reg = Registry::RegistryRecord.new([@dgpo_src.source_id], '', 'testing')
+    @dgpo_reg = Registry::RegistryRecord.new([@dgpo_src.source_id], '',
+                                             'testing')
 
     @pd_sr = SourceRecord.new
     @pd_sr.org_code = 'miaahdl'
-    @pd_sr.source = open(File.dirname(__FILE__) + '/data/ht_pd_record.json').read
+    @pd_sr.source = File.open(File.dirname(__FILE__) +
+                         '/data/ht_pd_record.json').read
     @pd_sr.save
   end
 
@@ -98,6 +101,22 @@ RSpec.describe RR, '#cluster' do
     @rr.oclcnum_t << 50
     @rr.save
     expect(RR.cluster(@src, '')).to eq(@rr)
+  end
+
+  it 'does not cluster using abbreviated sudocs' do
+    srcs = File.readlines(File.dirname(__FILE__) +
+                     '/data/abbreviated_sudocs.ndj')
+    src = SourceRecord.new(org_code:"dgpo", source:srcs.first)
+    src.save
+
+    rec = RR.new([src.source_id], '', 'testing')
+    rec.save
+    src2 = SourceRecord.new(org_code:"dgpo", source:srcs.last)
+    src2.save
+    expect(RR.cluster(src2, '')).to be_nil
+    rec.delete
+    src.delete
+    src2.delete
   end
 
   after(:all) do
