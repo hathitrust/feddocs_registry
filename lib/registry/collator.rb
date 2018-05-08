@@ -29,6 +29,7 @@ module Registry
       fields[:isbn_t] = sources.collect(&:isbns_normalized).flatten.uniq
       fields[:issn_t] = sources.collect(&:issn_normalized).flatten.uniq
       fields[:lccn_t] = sources.collect(&:lccn_normalized).flatten.uniq
+      fields[:author_t] = sources.collect(&:author_headings).flatten.uniq
       fields[:author_lccns] = sources.collect(&:author_lccns).flatten.uniq
       fields[:report_numbers] = sources.collect(&:report_numbers).flatten.uniq
       fields[:added_entry_lccns] = sources.collect(&:added_entry_lccns).flatten.uniq
