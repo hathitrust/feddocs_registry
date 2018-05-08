@@ -82,9 +82,9 @@ RSpec.describe RR, '#cluster' do
   before(:all) do
     @source_has_oclc = Registry::SourceRecord.where(source_id: '7386d49d-2c04-44ea-97aa-fb87b241f56f').first
     @source_only_sudoc = Registry::SourceRecord.where(source_id: '31f7bdf5-0d68-4d38-abf2-266be181a07f').first
-    @src = Registry::SourceRecord.new(org_code:'miaahdl',
-                                      oclc_resolved:[5,25])
-    @rr = RR.new([1,2], '', '')
+    @src = Registry::SourceRecord.new(org_code: 'miaahdl',
+                                      oclc_resolved: [5, 25])
+    @rr = RR.new([1, 2], '', '')
     @rr.oclcnum_t = [5]
     @rr.save
   end
@@ -106,12 +106,12 @@ RSpec.describe RR, '#cluster' do
   it 'does not cluster using abbreviated sudocs' do
     srcs = File.readlines(File.dirname(__FILE__) +
                      '/data/abbreviated_sudocs.ndj')
-    src = SourceRecord.new(org_code:"dgpo", source:srcs.first)
+    src = SourceRecord.new(org_code: 'dgpo', source: srcs.first)
     src.save
 
     rec = RR.new([src.source_id], '', 'testing')
     rec.save
-    src2 = SourceRecord.new(org_code:"dgpo", source:srcs.last)
+    src2 = SourceRecord.new(org_code: 'dgpo', source: srcs.last)
     src2.save
     expect(RR.cluster(src2, '')).to be_nil
     rec.delete
@@ -368,7 +368,7 @@ RSpec.describe RR, '#print_holdings' do
   end
 
   it 'retrieves member ids from the print holdings database' do
-    expect(@rec.print_holdings([10_210_704]).count).to eq(13)
+    expect(@rec.print_holdings([10_210_704]).count).to eq(14)
     expect(@rec.print_holdings([10_210_704])).to include('umich')
   end
 

@@ -216,7 +216,7 @@ module Registry
     def self.cluster(s, enum_chron)
       # OCLC first
       if s.oclc_resolved&.any?
-        rec = RegistryRecord.where(oclcnum_t:{"$in":s.oclc_resolved},
+        rec = RegistryRecord.where(oclcnum_t: { "$in": s.oclc_resolved },
                                    enumchron_display: enum_chron,
                                    deprecated_timestamp: { "$exists": 0 }).first
       end
@@ -239,11 +239,11 @@ module Registry
                                    deprecated_timestamp: { "$exists": 0 }).first
       end
       # sudoc
-      full_sudocs = s.sudocs&.select {|sud| sud =~ /:.+/}
-      if full_sudocs&.any? && !rec && 
-        rec = RegistryRecord.where(sudoc_display: full_sudocs,
-                                   enumchron_display: enum_chron,
-                                   deprecated_timestamp: { "$exists": 0 }).first
+      full_sudocs = s.sudocs&.select { |sud| sud =~ /:.+/ }
+      if full_sudocs&.any? && !rec &&
+         rec = RegistryRecord.where(sudoc_display: full_sudocs,
+                                    enumchron_display: enum_chron,
+                                    deprecated_timestamp: { "$exists": 0 }).first
       end
       rec
     end

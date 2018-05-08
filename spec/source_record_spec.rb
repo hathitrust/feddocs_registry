@@ -104,7 +104,7 @@ RSpec.describe Registry::SourceRecord do
     expect(@sr.formats).to eq(%w[Book Print])
   end
 
-  it 'performs reasonably well' do
+  xit 'performs reasonably well' do
     line = open(File.dirname(__FILE__) +
                 '/data/ht_record_different_3_items.json').read
     call_count = 0
@@ -577,9 +577,9 @@ RSpec.describe Registry::SourceRecord, 'fed_doc?' do
     expect(s.gpo_item_numbers).to eq(['123'])
     expect(s.fed_doc?).to be true
     s.unset(:gpo_item_numbers)
-    expect(s.gpo_item_numbers).to  eq(['123'])
+    expect(s.gpo_item_numbers).to eq(['123'])
     s.save
-    s_copy = SourceRecord.where(source_id:s.source_id).first
+    s_copy = SourceRecord.where(source_id: s.source_id).first
     s.delete
   end
 
@@ -1059,7 +1059,7 @@ RSpec.describe Registry::SourceRecord, '#series' do
     expect(@src.series).to eq(['DepartmentOfAgricultureLeaflet'])
   end
 
-  it 'detects PHRs' do 
+  it 'detects PHRs' do
     @src.source = open(File.dirname(__FILE__) +
                        '/series/data/public_health_report.json').read
     expect(@src.series).to eq(['PublicHealthReports'])
