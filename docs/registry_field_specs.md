@@ -21,9 +21,9 @@ ancestors
 
 ~~author_addl_normalized~~
 ----------------------
-~~  type: Array of strings~~
-~~  Collected from source records. A remnant of the VIAF processing. Could be ~~
-~~  removed.~~
+  ~~type: Array of strings~~
+  ~~Collected from source records. A remnant of the VIAF processing. Could be~~
+  ~~removed.~~
   Deprecated.
 
 author_addl_t
@@ -32,9 +32,9 @@ author_addl_t
 
 ~~author_addl_viaf_ids~~
 ----------------------
-~~  type: Array of strings~~
-~~  Collected from source records. A remnant of the VIAF processing. Could be ~~
-~~  removed.~~
+  ~~type: Array of strings~~
+  ~~Collected from source records. A remnant of the VIAF processing. Could be ~~
+  ~~removed.~~
   Deprecated.
 
 author_display
@@ -43,19 +43,19 @@ author_display
 
 ~~author_display_facet~~
 --------------------
-~~  100abcdq:110abcdgnu:111acdegjnqu~~
+  ~~100abcdq:110abcdgnu:111acdegjnqu~~
   Deprecated.
 
 ~~author_facet~~
 ------------
-~~  100abcdq:110abcdgnu:111acdenqu:700abcdq:710abcdgnu:711acdenqu~~
-~~  Not needed. ~~
+  ~~100abcdq:110abcdgnu:111acdenqu:700abcdq:710abcdgnu:711acdenqu~~
+  ~~Not needed. ~~
   Deprecated.
 
 ~~author_headings~~
 ---------------
-~~  A redundancy of author_t. One of these could/should be removed. ~~
-~~  100abcdgqu:110abcdgnu:111acdegjnqu~~
+  ~~A redundancy of author_t. One of these could/should be removed. ~~
+  ~~100abcdgqu:110abcdgnu:111acdegjnqu~~
   Deprecated.
 
 author_lccns
@@ -67,8 +67,8 @@ author_lccns
 
 ~~author_normalized~~
 -----------------
-~~  Collected from source records. A remnant of the VIAF processing. Could be ~~
-~~  removed.~~
+  ~~Collected from source records. A remnant of the VIAF processing. Could be ~~
+  ~~removed.~~
   Deprecated.
 
 author_parts
@@ -88,7 +88,7 @@ author_t
 
 ~~author_viaf_ids~~
 ---------------
-~~  Remnant of the VIAF processing. Could be removed. ~~
+  ~~Remnant of the VIAF processing. Could be removed. ~~
   Deprecated.
 
 creation_notes
@@ -210,8 +210,8 @@ publisher_t
 
 ~~publisher_viaf_ids~~
 ------------------
-~~  type: Array of Strings~~
-~~  A remnant of the VIAF processing. Could be removed. Present in the Solr configs. ~~
+  ~~type: Array of Strings~~
+  ~~A remnant of the VIAF processing. Could be removed. Present in the Solr configs. ~~
   Deprecated.
 
 registry_id
