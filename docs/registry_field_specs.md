@@ -33,7 +33,7 @@ author_addl_t
 ~~author_addl_viaf_ids~~
 ----------------------
   ~~type: Array of strings~~
-  ~~Collected from source records. A remnant of the VIAF processing. Could be ~~
+  ~~Collected from source records. A remnant of the VIAF processing. Could be~~
   ~~removed.~~
   Deprecated.
 
@@ -49,12 +49,12 @@ author_display
 ~~author_facet~~
 ------------
   ~~100abcdq:110abcdgnu:111acdenqu:700abcdq:710abcdgnu:711acdenqu~~
-  ~~Not needed. ~~
+  ~~Not needed.~~
   Deprecated.
 
 ~~author_headings~~
 ---------------
-  ~~A redundancy of author_t. One of these could/should be removed. ~~
+  ~~A redundancy of author_t. One of these could/should be removed.~~
   ~~100abcdgqu:110abcdgnu:111acdegjnqu~~
   Deprecated.
 
@@ -67,7 +67,7 @@ author_lccns
 
 ~~author_normalized~~
 -----------------
-  ~~Collected from source records. A remnant of the VIAF processing. Could be ~~
+  ~~Collected from source records. A remnant of the VIAF processing. Could be~~
   ~~removed.~~
   Deprecated.
 
@@ -88,7 +88,7 @@ author_t
 
 ~~author_viaf_ids~~
 ---------------
-  ~~Remnant of the VIAF processing. Could be removed. ~~
+  ~~Remnant of the VIAF processing. Could be removed.~~
   Deprecated.
 
 creation_notes
@@ -211,7 +211,7 @@ publisher_t
 ~~publisher_viaf_ids~~
 ------------------
   ~~type: Array of Strings~~
-  ~~A remnant of the VIAF processing. Could be removed. Present in the Solr configs. ~~
+  ~~A remnant of the VIAF processing. Could be removed. Present in the Solr configs.~~
   Deprecated.
 
 registry_id
