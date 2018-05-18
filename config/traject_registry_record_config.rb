@@ -61,11 +61,7 @@ end
 #
 to_field 'author_addl_t',       extract_marc('700abcdegqu:710abcdegnu:711acdegjnqu:720a:505r:245c:191abcdegqu')
 to_field 'author_display',      extract_marc('100abcdq:110abcdgnu:111acdegjnqu')
-to_field 'author_display_facet', extract_marc('100abcdq:110abcdgnu:111acdegjnqu')
 to_field 'author_sort',         marc_sortable_author
-
-# not needed
-to_field 'author_facet',        extract_marc('100abcdq:110abcdgnu:111acdenqu:700abcdq:710abcdgnu:711acdenqu', trim_punctuation: true)
 
 # publisher
 to_field 'publisher_t', extract_marc('260abef:261abef:262ab:264ab')

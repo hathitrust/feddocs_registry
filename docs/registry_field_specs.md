@@ -12,45 +12,51 @@ ancestors
 	An array of registry IDs for records that have been superseded by this record,
 	e.g. through merging.
 
-author_addl_headings
+~~author_addl_headings~~
 --------------------
-  type: Array of strings
-  Collected from source records. A remnant of the VIAF processing. Could be 
-  removed. Present in the Solr schema.
+  ~~type: Array of strings~~
+  ~~Collected from source records. A remnant of the VIAF processing. Could be~~
+  ~~removed. Present in the Solr schema.~~
+  Deprecated.
 
-author_addl_normalized
+~~author_addl_normalized~~
 ----------------------
-  type: Array of strings
-  Collected from source records. A remnant of the VIAF processing. Could be 
-  removed.
+~~  type: Array of strings~~
+~~  Collected from source records. A remnant of the VIAF processing. Could be ~~
+~~  removed.~~
+  Deprecated.
 
 author_addl_t
 -------------
   700abcdegqu:710abcdegnu:711acdegjnqu:720a:505r:245c:191abcdegqu
 
-author_addl_viaf_ids
+~~author_addl_viaf_ids~~
 ----------------------
-  type: Array of strings
-  Collected from source records. A remnant of the VIAF processing. Could be 
-  removed.
+~~  type: Array of strings~~
+~~  Collected from source records. A remnant of the VIAF processing. Could be ~~
+~~  removed.~~
+  Deprecated.
 
 author_display
 --------------
   100abcdq:110abcdgnu:111acdegjnqu
 
-author_display_facet
+~~author_display_facet~~
 --------------------
-  100abcdq:110abcdgnu:111acdegjnqu
+~~  100abcdq:110abcdgnu:111acdegjnqu~~
+  Deprecated.
 
-author_facet
+~~author_facet~~
 ------------
-  100abcdq:110abcdgnu:111acdenqu:700abcdq:710abcdgnu:711acdenqu
-  Not needed. 
+~~  100abcdq:110abcdgnu:111acdenqu:700abcdq:710abcdgnu:711acdenqu~~
+~~  Not needed. ~~
+  Deprecated.
 
-author_headings
+~~author_headings~~
 ---------------
-  A redundancy of author_t. One of these could/should be removed. 
-  100abcdgqu:110abcdgnu:111acdegjnqu
+~~  A redundancy of author_t. One of these could/should be removed. ~~
+~~  100abcdgqu:110abcdgnu:111acdegjnqu~~
+  Deprecated.
 
 author_lccns
 -----------
@@ -59,10 +65,11 @@ author_lccns
 	MARC 100 and 110
 	e.g. https://lccn.loc.gov/n79086751
 
-author_normalized
+~~author_normalized~~
 -----------------
-  Collected from source records. A remnant of the VIAF processing. Could be 
-  removed.
+~~  Collected from source records. A remnant of the VIAF processing. Could be ~~
+~~  removed.~~
+  Deprecated.
 
 author_parts
 ------------
@@ -79,9 +86,10 @@ author_t
   See author_headings.  
   100abcdgqu:110abcdgnu:111acdegjnqu 
 
-author_viaf_ids
+~~author_viaf_ids~~
 ---------------
-  Remnant of the VIAF processing. Could be removed. 
+~~  Remnant of the VIAF processing. Could be removed. ~~
+  Deprecated.
 
 creation_notes
 --------------
@@ -200,10 +208,11 @@ publisher_t
   type: Array of Strings
   From the registry traject, MARC 260abef:261abef:262ab:264ab
 
-publisher_viaf_ids
+~~publisher_viaf_ids~~
 ------------------
-  type: Array of Strings
-  A remnant of the VIAF processing. Could be removed. Present in the Solr configs. 
+~~  type: Array of Strings~~
+~~  A remnant of the VIAF processing. Could be removed. Present in the Solr configs. ~~
+  Deprecated.
 
 registry_id
 -----------
@@ -256,7 +265,7 @@ subject_t
 subject_topic_facet
 -------------------
   type: Array of Strings
-  Collected using the registry traject. A duplicate of subjec_t. Could likely be removed or simplified. todo
+  Collected using the registry traject. A duplicate of subjec_t. Could be moved to solr indexing step. todo
   MARC 600:610:611:630:650:651avxyz:653aa:654abcvyz:655abcvxyz:690abcdxyz:691abxyz:692abxyz:693abxyz:656akvxyz:657avxyz:652axyz:658abcd
 
 subtitle_display
