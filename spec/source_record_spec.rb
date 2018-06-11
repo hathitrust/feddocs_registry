@@ -1086,3 +1086,11 @@ RSpec.describe Registry::SourceRecord, '#marc' do
     s.delete
   end
 end
+
+RSpec.describe Registry::SourceRecord, '#marcive_ids' do
+  it 'extracts marcive ids from source' do
+    source = File.open(File.dirname(__FILE__) + '/data/marcive.json').read
+    s = SourceRecord.new(org_code: 'miaahdl', source: source)
+    expect(s.marcive_ids).to eq([92_119_030])
+  end
+end

@@ -180,6 +180,13 @@ module Registry
       id
     end
 
+    # Extract marcive_ids from the 035
+    def marcive_ids(marc_record = nil)
+      @marc = marc_record unless marc_record.nil?
+      ids = Traject::MarcExtractor.cached('035a').extract(marc)
+      ids.select { |i| /MvI/.match? i }.map { |i| i.gsub(/[^0-9]/, '').to_i }
+    end
+
     # Determine HT availability. 'Full View', 'Limited View', 'not available'
     #
     def ht_availability
