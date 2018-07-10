@@ -8,7 +8,7 @@ RegistryRecord = Registry::RegistryRecord
 
 Dotenv.load!
 
-oclcs = open(ARGV.shift).read.split("\n").map(&:to_i)
+oclcs = File.open(ARGV.shift).read.split("\n").map(&:to_i)
 
 Mongoid.load!(ENV['MONGOID_CONF'], :production)
 SourceRecord.where(oclc_resolved: { "$in": oclcs },

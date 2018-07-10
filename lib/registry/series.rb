@@ -98,7 +98,12 @@ module Registry
 
       /^#{@tokens[:v]}[\(\s]\s?#{@tokens[:y]}\)?$/xi,
 
-      /^#{@tokens[:v]}#{@tokens[:div]}#{@tokens[:n]}#/xi
+      /^#{@tokens[:v]}#{@tokens[:div]}#{@tokens[:n]}$/xi,
+
+      /^#{@tokens[:v]}#{@tokens[:div]}#{@tokens[:pt]}#{@tokens[:div]}#{@tokens[:y]}$/xi,
+
+      /^#{@tokens[:y]}#{@tokens[:div]}#{@tokens[:v]}#{@tokens[:div]}#{@tokens[:pt]}$/xi
+
     ]
 
     def parse_ec(ec_string)

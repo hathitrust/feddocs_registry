@@ -18,6 +18,16 @@ describe 'Series.calc_end_year' do
   end
 end
 
+describe 'parse_ec' do
+  it 'parses "V. 3:PT. 2 1972"' do 
+    expect(Series.parse_ec("V. 3:PT. 2 1972")['part']).to eq('2')
+  end
+
+  it 'parses "V. 3:PT. 2 1972"' do
+    expect(Series.parse_ec("V. 3:PT. 2 1972")['part']).to eq('2')
+  end
+end
+
 describe 'Series.lookup_month' do
   it 'returns August for aug' do
     expect(Series.lookup_month('aug.')).to eq('August')
