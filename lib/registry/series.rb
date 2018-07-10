@@ -260,6 +260,10 @@ module Registry
           Series::WarOfTheRebellion.oclcs).any?
         @series << 'WarOfTheRebellion'
       end
+      if (oclc_resolved.map(&:to_i) &
+          Series::CensusOfManufactures.oclcs).any?
+        @series << 'CensusOfManufactures'
+      end
 
       if @series&.any?
         @series.uniq!

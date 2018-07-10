@@ -1065,7 +1065,13 @@ RSpec.describe Registry::SourceRecord, '#series' do
     expect(@src.series).to eq(['PublicHealthReports'])
   end
 
-  after(:each) do
+  it 'detects CMs' do
+    @src.source = File.open(File.dirname(__FILE__) +
+                       '/series/data/census_manufactures.json').read
+    expect(@src.series).to eq(['CensusOfManufactures'])
+  end
+
+   after(:each) do
     @src.delete
   end
 end
