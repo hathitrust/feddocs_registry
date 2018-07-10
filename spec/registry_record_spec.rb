@@ -139,12 +139,12 @@ RSpec.describe RR, 'add_source' do
     @new_rec.add_source @src
     @ic_sr = SourceRecord.new
     @ic_sr.org_code = 'miaahdl'
-    ic_line = open(File.dirname(__FILE__) + '/data/ht_ic_record.json').read
+    ic_line = File.open(File.dirname(__FILE__) + '/data/ht_ic_record.json').read
     @ic_sr.source = ic_line
     @ic_sr.save
     @pd_sr = SourceRecord.new
     @pd_sr.org_code = 'miaahdl'
-    pd_line = open(File.dirname(__FILE__) + '/data/ht_pd_record.json').read
+    pd_line = File.open(File.dirname(__FILE__) + '/data/ht_pd_record.json').read
     @pd_sr.source = pd_line
     @pd_sr.save
     @orig = RR.new([], '', '')
@@ -186,7 +186,8 @@ RSpec.describe RR, 'add_source' do
 
   it 'applies the correct series name' do
     # making sure a bug was fixed. It wasn't expanding the name in the add_source method
-    @src.source = open(File.dirname(__FILE__) + '/series/data/econreport.json').read
+    @src.source = File.open(File.dirname(__FILE__) + 
+                            '/series/data/econreport.json').read
     expect(@src.series).to include('EconomicReportOfThePresident')
     expect(@src.series).to eq(['EconomicReportOfThePresident'])
     @orig.add_source(@src)
@@ -202,7 +203,7 @@ end
 
 RSpec.describe RR do
   before(:all) do
-    mrc = open(File.dirname(__FILE__) + '/series/data/econreport.json').read
+    mrc = File.open(File.dirname(__FILE__) + '/series/data/econreport.json').read
     @src = SourceRecord.new(org_code: 'miaahdl',
                             source: mrc)
     @src.save
@@ -345,7 +346,8 @@ end
 RSpec.describe RR, '#report_numbers' do
   before(:all) do
     @src = SourceRecord.new(org_code: 'miu')
-    @src.source = open(File.dirname(__FILE__) + '/data/osti_record.json').read
+    @src.source = File.open(File.dirname(__FILE__) + 
+                            '/data/osti_record.json').read
     @src.save
     @rec = RR.new([@src.source_id], '', '')
   end

@@ -9,8 +9,8 @@ RegistryRecord = Registry::RegistryRecord
 
 RSpec.describe SourceRecord do
   before(:all) do
-    @fr_rec = open(File.dirname(__FILE__) + '/series/data/federal_register.json').read
-    @ht_pd_rec = open(File.dirname(__FILE__) + '/data/ht_pd_record.json').read
+    @fr_rec = File.open(File.dirname(__FILE__) + '/series/data/federal_register.json').read
+    @ht_pd_rec = File.open(File.dirname(__FILE__) + '/data/ht_pd_record.json').read
   end
 
   it 'detects series' do
@@ -35,7 +35,7 @@ RSpec.describe SourceRecord do
   it "chokes when there is '$' in MARC subfield names" do
     # Mongo doesn't like $ in field names. Occasionally, these show up when
     # MARC subfields get messed up. (GPO). This should throw an error.
-    rec = open(File.dirname(__FILE__) + '/data/dollarsign.json').read
+    rec = File.open(File.dirname(__FILE__) + '/data/dollarsign.json').read
     sr = SourceRecord.new(org_code: 'dgpo',
                           source: rec)
     expect { sr.save }.to raise_error(BSON::String::IllegalKey)
@@ -44,7 +44,7 @@ end
 
 RSpec.describe Registry::SourceRecord do
   before(:each) do
-    @raw_source = open(File.dirname(__FILE__) + '/data/default_source_rec.json').read
+    @raw_source = File.open(File.dirname(__FILE__) + '/data/default_source_rec.json').read
     @sr = SourceRecord.new(org_code: 'miaahdl',
                            source: @raw_source)
   end
@@ -105,7 +105,7 @@ RSpec.describe Registry::SourceRecord do
   end
 
   xit 'performs reasonably well' do
-    line = open(File.dirname(__FILE__) +
+    line = File.open(File.dirname(__FILE__) +
                 '/data/ht_record_different_3_items.json').read
     call_count = 0
     name = :new_from_hash
@@ -126,7 +126,7 @@ RSpec.describe Registry::SourceRecord, '#resolve_oclc' do
   it 'resolves OCLCs for records with multiple OCLCs' do
     sr = SourceRecord.new
     sr.org_code = 'iaas'
-    sr.source = open(File.dirname(__FILE__) + '/data/oclc_resolution.json').read
+    sr.source = File.open(File.dirname(__FILE__) + '/data/oclc_resolution.json').read
     # the second oclc number is bogus but will resolve to 227681. We should hang onto
     # 1198154
     expect(sr.oclc_alleged).to eq([1_198_154, 244_155])
@@ -137,7 +137,7 @@ end
 RSpec.describe Registry::SourceRecord, '#oclcs_from_955o_fields' do
   it 'extracts OCLCS from strange INU records' do
     sr = SourceRecord.new(org_code: 'inu',
-                          source: open(File.dirname(__FILE__) +
+                          source: File.open(File.dirname(__FILE__) +
                           '/data/inu_record.json').read)
     expect(sr.oclcs_from_955o_fields).to eq([857_794_111])
   end
@@ -165,7 +165,7 @@ end
 RSpec.describe Registry::SourceRecord, '#extracted_field' do
   before(:all) do
     @sr = SourceRecord.new
-    @sr.source = open(File.dirname(__FILE__) + '/data/dgpo_has_ecs.json').read
+    @sr.source = File.open(File.dirname(__FILE__) + '/data/dgpo_has_ecs.json').read
     @sr.electronic_versions = nil
     @sr.electronic_resources = nil
     @sr.save
@@ -198,13 +198,13 @@ end
 RSpec.describe Registry::SourceRecord, '#get_lccns' do
   it 'identifies authorities for author headings' do
     sr = SourceRecord.new
-    sr.source = open(File.dirname(__FILE__) + '/data/whitelisted_oclc.json').read
+    sr.source = File.open(File.dirname(__FILE__) + '/data/whitelisted_oclc.json').read
     expect(sr.author_lccns).to include('https://lccn.loc.gov/n79086751')
   end
 
   it 'identifies authorities for added entry names' do
     sr = SourceRecord.new
-    sr.source = open(File.dirname(__FILE__) + '/data/dgpo_has_ecs.json').read
+    sr.source = File.open(File.dirname(__FILE__) + '/data/dgpo_has_ecs.json').read
     expect(sr.added_entry_lccns).to include('https://lccn.loc.gov/n80126064')
   end
 
@@ -217,7 +217,7 @@ end
 RSpec.describe Registry::SourceRecord, '#report_numbers' do
   it 'pulls report_numbers from the 088' do
     sr = SourceRecord.new(org_code: 'miu')
-    sr.source = open(File.dirname(__FILE__) + '/data/osti_record.json').read
+    sr.source = File.open(File.dirname(__FILE__) + '/data/osti_record.json').read
     expect(sr.report_numbers).to eq(['la-ur-02-5859'])
   end
 end
@@ -227,11 +227,11 @@ RSpec.describe Registry::SourceRecord, '#extract_local_id' do
     # zero filled integer
     @rec = SourceRecord.new
     @rec.org_code = 'miaahdl'
-    @rec.source = open(File.dirname(__FILE__) + '/data/ht_ic_record.json').read
+    @rec.source = File.open(File.dirname(__FILE__) + '/data/ht_ic_record.json').read
     # has non-integer in id
     @weird = SourceRecord.new
     @weird.org_code = 'miaahdl'
-    @weird.source = open(File.dirname(__FILE__) + '/data/ht_weird_id.json').read
+    @weird.source = File.open(File.dirname(__FILE__) + '/data/ht_weird_id.json').read
   end
 
   after(:all) do
@@ -276,23 +276,23 @@ RSpec.describe Registry::SourceRecord, '#add_to_registry' do
   before(:all) do
     @old_rec = SourceRecord.new
     @old_rec.org_code = 'miaahdl'
-    @old_rec.source = open(File.dirname(__FILE__) + '/data/ht_record_3_items.json').read
+    @old_rec.source = File.open(File.dirname(__FILE__) + '/data/ht_record_3_items.json').read
     @old_rec.save
     @old_ecs = @old_rec.enum_chrons
 
     @no_ec_rec = SourceRecord.new
     @no_ec_rec.org_code = 'miaahdl'
-    @no_ec_rec.source = open(File.dirname(__FILE__) + '/data/ht_record_0_items.json').read
+    @no_ec_rec.source = File.open(File.dirname(__FILE__) + '/data/ht_record_0_items.json').read
     @no_ec_rec.save
 
     @repl_rec = @old_rec
     @repl_rec.org_code = 'miaahdl'
-    @repl_rec.source = open(File.dirname(__FILE__) + '/data/ht_record_different_3_items.json').read
+    @repl_rec.source = File.open(File.dirname(__FILE__) + '/data/ht_record_different_3_items.json').read
     @repl_rec.save
 
     @new_rec = SourceRecord.new
     @new_rec.org_code = 'miaahdl'
-    @new_rec.source = open(File.dirname(__FILE__) + '/data/ht_record_3_items.json').read
+    @new_rec.source = File.open(File.dirname(__FILE__) + '/data/ht_record_3_items.json').read
     @new_rec.local_id = (@old_rec.local_id.to_i + 1).to_s # just make sure we aren't clobbering
     @new_rec.save
   end
@@ -319,13 +319,13 @@ RSpec.describe Registry::SourceRecord, '#add_to_registry' do
 
   it 'deprecates old enum_chrons' do
     old_rec = SourceRecord.new(org_code: 'miaahdl',
-                               source: open(File.dirname(__FILE__) + '/data/ht_record_3_items.json').read)
+                               source: File.open(File.dirname(__FILE__) + '/data/ht_record_3_items.json').read)
     old_rec.save
     old_ecs = old_rec.enum_chrons
 
     repl_rec = old_rec
     repl_rec.org_code = 'miaahdl'
-    repl_rec.source = open(File.dirname(__FILE__) + '/data/ht_record_different_3_items.json').read
+    repl_rec.source = File.open(File.dirname(__FILE__) + '/data/ht_record_different_3_items.json').read
     repl_rec.save
 
     deleted_ecs = old_ecs - repl_rec.enum_chrons
@@ -378,12 +378,12 @@ RSpec.describe Registry::SourceRecord, '#remove_from_registry' do
   before(:all) do
     @src_rec = SourceRecord.new
     @src_rec.org_code = 'miaahdl'
-    @src_rec.source = open(File.dirname(__FILE__) + '/data/ht_record_3_items.json').read
+    @src_rec.source = File.open(File.dirname(__FILE__) + '/data/ht_record_3_items.json').read
     @src_rec.save
     @src_rec.add_to_registry 'testing removal'
     @second_src_rec = SourceRecord.new
     @second_src_rec.org_code = 'miaahdl'
-    @second_src_rec.source = open(File.dirname(__FILE__) + '/data/ht_record_3_items.json').read
+    @second_src_rec.source = File.open(File.dirname(__FILE__) + '/data/ht_record_3_items.json').read
     @second_src_rec.local_id = (@second_src_rec.local_id.to_i + 1).to_s
     @second_src_rec.save
     @second_src_rec.add_to_registry 'testing removal'
@@ -417,10 +417,10 @@ RSpec.describe Registry::SourceRecord, '#ht_availability' do
     @non_ht_rec = SourceRecord.where(:org_code.ne => 'miaahdl').first
     @ht_pd = SourceRecord.new
     @ht_pd.org_code = 'miaahdl'
-    @ht_pd.source = open(File.dirname(__FILE__) + '/data/ht_pd_record.json').read
+    @ht_pd.source = File.open(File.dirname(__FILE__) + '/data/ht_pd_record.json').read
     @ht_ic = SourceRecord.new
     @ht_ic.org_code = 'miaahdl'
-    @ht_ic.source = open(File.dirname(__FILE__) + '/data/ht_ic_record.json').read
+    @ht_ic.source = File.open(File.dirname(__FILE__) + '/data/ht_ic_record.json').read
   end
 
   it 'detects correct HT availability' do
@@ -432,10 +432,10 @@ end
 
 RSpec.describe Registry::SourceRecord, 'extract_oclcs' do
   before(:all) do
-    rec = open(File.dirname(__FILE__) + '/data/bogus_oclc.json').read
+    rec = File.open(File.dirname(__FILE__) + '/data/bogus_oclc.json').read
     @marc = MARC::Record.new_from_hash(JSON.parse(rec))
     @s = SourceRecord.new
-    rec = open(File.dirname(__FILE__) + '/data/weird_oclcs.json').read
+    rec = File.open(File.dirname(__FILE__) + '/data/weird_oclcs.json').read
     @cou_marc = MARC::Record.new_from_hash(JSON.parse(rec))
   end
 
@@ -451,15 +451,15 @@ end
 
 RSpec.describe Registry::SourceRecord, 'extract_sudocs' do
   before(:all) do
-    bogus = open(File.dirname(__FILE__) + '/data/bogus_sudoc.json').read
+    bogus = File.open(File.dirname(__FILE__) + '/data/bogus_sudoc.json').read
     @marc_bogus = MARC::Record.new_from_hash(JSON.parse(bogus))
-    legit = open(File.dirname(__FILE__) + '/data/legit_sudoc.json').read
+    legit = File.open(File.dirname(__FILE__) + '/data/legit_sudoc.json').read
     @marc_legit = MARC::Record.new_from_hash(JSON.parse(legit))
-    non = open(File.dirname(__FILE__) + '/data/non_sudoc.json').read
+    non = File.open(File.dirname(__FILE__) + '/data/non_sudoc.json').read
     @marc_non = MARC::Record.new_from_hash(JSON.parse(non))
-    fed_state = open(File.dirname(__FILE__) + '/data/fed_state_sudoc.json').read
+    fed_state = File.open(File.dirname(__FILE__) + '/data/fed_state_sudoc.json').read
     @marc_fs = MARC::Record.new_from_hash(JSON.parse(fed_state))
-    mangled = open(File.dirname(__FILE__) + '/data/ht_pd_record.json').read
+    mangled = File.open(File.dirname(__FILE__) + '/data/ht_pd_record.json').read
     @marc_mang = MARC::Record.new_from_hash(JSON.parse(mangled))
   end
 
@@ -477,7 +477,7 @@ RSpec.describe Registry::SourceRecord, 'extract_sudocs' do
 
   it 'ignores Illinois docs' do
     s = SourceRecord.new
-    ildoc = open(File.dirname(__FILE__) + '/data/il_doc.json').read
+    ildoc = File.open(File.dirname(__FILE__) + '/data/il_doc.json').read
     ilmarc = MARC::Record.new_from_hash(JSON.parse(ildoc))
     expect(s.extract_sudocs(ilmarc)).not_to include('IL/DNR 52.9:')
     s.source = ildoc
@@ -509,9 +509,9 @@ end
 
 RSpec.describe Registry::SourceRecord, 'u_and_f?' do
   before(:all) do
-    has_u_and_f = open(File.dirname(__FILE__) + '/data/has_u_and_f.json').read
-    has_u_not_f = open(File.dirname(__FILE__) + '/data/has_u_not_f.json').read
-    has_no_008 = open(File.dirname(__FILE__) + '/data/missing_008.json').read
+    has_u_and_f = File.open(File.dirname(__FILE__) + '/data/has_u_and_f.json').read
+    has_u_not_f = File.open(File.dirname(__FILE__) + '/data/has_u_not_f.json').read
+    has_no_008 = File.open(File.dirname(__FILE__) + '/data/missing_008.json').read
 
     @u_and_f = SourceRecord.new(org_code: 'miu', source: has_u_and_f)
     @u_not_f = SourceRecord.new(org_code: 'miu', source: has_u_not_f)
@@ -531,12 +531,12 @@ end
 RSpec.describe Registry::SourceRecord, 'fed_doc?' do
   before(:all) do
     # this file has both a Fed SuDoc and a state okdoc
-    @fed_state = open(File.dirname(__FILE__) +
+    @fed_state = File.open(File.dirname(__FILE__) +
                       '/data/fed_state_sudoc.json').read
     @marc = MARC::Record.new_from_hash(JSON.parse(@fed_state))
-    @innd = open(File.dirname(__FILE__) + '/data/innd_record.json').read
+    @innd = File.open(File.dirname(__FILE__) + '/data/innd_record.json').read
     @innd_marc = MARC::Record.new_from_hash(JSON.parse(@innd))
-    has_u_and_f = open(File.dirname(__FILE__) + '/data/has_u_and_f.json').read
+    has_u_and_f = File.open(File.dirname(__FILE__) + '/data/has_u_and_f.json').read
     @u_and_f = SourceRecord.new(org_code: 'miu', source: has_u_and_f)
   end
 
@@ -571,7 +571,7 @@ RSpec.describe Registry::SourceRecord, 'fed_doc?' do
   end
 
   it 'uses the 074' do
-    source = open(File.dirname(__FILE__) + '/data/074_govdoc.json').read
+    source = File.open(File.dirname(__FILE__) + '/data/074_govdoc.json').read
     s = SourceRecord.new
     s.source = source
     expect(s.gpo_item_numbers).to eq(['123'])
@@ -584,7 +584,7 @@ RSpec.describe Registry::SourceRecord, 'fed_doc?' do
   end
 
   it "doesn't choke if there is no 074" do
-    source = open(File.dirname(__FILE__) + '/data/no_074_nongovdoc.json').read
+    source = File.open(File.dirname(__FILE__) + '/data/no_074_nongovdoc.json').read
     s = SourceRecord.new
     s.source = source
     expect(s.gpo_item_numbers).to eq([])
@@ -592,7 +592,7 @@ RSpec.describe Registry::SourceRecord, 'fed_doc?' do
   end
 
   it 'uses the authority list' do
-    ao = open(File.dirname(__FILE__) + '/data/auth_only.json').read
+    ao = File.open(File.dirname(__FILE__) + '/data/auth_only.json').read
     auth_only = SourceRecord.new
     auth_only.org_code = 'miaahdl'
     auth_only.source = ao
@@ -602,7 +602,7 @@ RSpec.describe Registry::SourceRecord, 'fed_doc?' do
   it 'uses approved added entry' do
     s = SourceRecord.new(
       org_code: 'miaahdl',
-      source: open(File.dirname(__FILE__) + '/data/added_entry_gd.json').read
+      source: File.open(File.dirname(__FILE__) + '/data/added_entry_gd.json').read
     )
     expect(s.fed_doc?).to be_truthy
   end
@@ -610,7 +610,7 @@ RSpec.describe Registry::SourceRecord, 'fed_doc?' do
   it 'returns true/false not 0 or nil' do
     gd = SourceRecord.new
     gd.org_code = 'miaahdl'
-    gd.source = open(File.dirname(__FILE__) + '/data/ht_pd_record.json').read
+    gd.source = File.open(File.dirname(__FILE__) + '/data/ht_pd_record.json').read
     expect(gd.fed_doc?).to be(true)
     expect(gd.fed_doc?).to_not be(0)
   end
@@ -648,7 +648,7 @@ end
 
 RSpec.describe Registry::SourceRecord, '#extract_enum_chrons' do
   it 'extracts enum chrons from GPO records' do
-    line = open(File.dirname(__FILE__) + '/data/default_gpo_record.json').read
+    line = File.open(File.dirname(__FILE__) + '/data/default_gpo_record.json').read
     src = SourceRecord.new
     src.org_code = 'dgpo'
     src.source = line
@@ -673,7 +673,7 @@ RSpec.describe Registry::SourceRecord, '#extract_enum_chrons' do
   it 'properly extracts enumchrons for series' do
     sr = SourceRecord.new
     sr.org_code = 'miaahdl'
-    sr.source = open(File.dirname(__FILE__) +
+    sr.source = File.open(File.dirname(__FILE__) +
                      '/series/data/econreport.json').read
     expect(sr.series).to include('EconomicReportOfThePresident')
     expect(sr.enum_chrons).to include('Year:1966, Part:3')
@@ -682,7 +682,7 @@ RSpec.describe Registry::SourceRecord, '#extract_enum_chrons' do
   it 'doesnt clobber enumchron features' do
     sr = SourceRecord.new
     sr.org_code = 'miaahdl'
-    sr.source = open(File.dirname(__FILE__) +
+    sr.source = File.open(File.dirname(__FILE__) +
                      '/series/data/statabstract_multiple_ecs.json').read
     expect(sr.enum_chrons).to include('Edition:1, Year:1878')
   end
@@ -690,7 +690,7 @@ RSpec.describe Registry::SourceRecord, '#extract_enum_chrons' do
   it 'returns [""] for records without enum_chrons, with series' do
     sr = SourceRecord.new
     sr.org_code = 'miaahdl'
-    sr.source = open(File.dirname(__FILE__) +
+    sr.source = File.open(File.dirname(__FILE__) +
                      '/series/data/econreport_no_enums.json').read
     expect(sr.enum_chrons.count).to eq(1)
     expect(sr.enum_chrons[0]).to eq('')
@@ -699,7 +699,7 @@ RSpec.describe Registry::SourceRecord, '#extract_enum_chrons' do
   it 'returns [""] for records without enum_chrons, without series' do
     sr = SourceRecord.new
     sr.org_code = 'miaahdl'
-    sr.source = open(File.dirname(__FILE__) +
+    sr.source = File.open(File.dirname(__FILE__) +
                      '/data/no_enums_no_series_src.json').read
     expect(sr.enum_chrons.count).to eq(1)
     expect(sr.enum_chrons[0]).to eq('')
@@ -732,7 +732,7 @@ RSpec.describe Registry::SourceRecord, '#extract_enum_chron_strings' do
   it 'properly extracts enumchron strings for series' do
     sr = SourceRecord.new
     sr.org_code = 'miaahdl'
-    sr.source = open(File.dirname(__FILE__) +
+    sr.source = File.open(File.dirname(__FILE__) +
                      '/series/data/econreport.json').read
     expect(sr.extract_enum_chron_strings).to include('PT. 1-4')
   end
@@ -740,14 +740,14 @@ RSpec.describe Registry::SourceRecord, '#extract_enum_chron_strings' do
   it 'handles DGPO records appropriately' do
     sr = SourceRecord.new
     sr.org_code = 'dgpo'
-    sr.source = open(File.dirname(__FILE__) + '/data/dgpo_has_ecs.json').read
+    sr.source = File.open(File.dirname(__FILE__) + '/data/dgpo_has_ecs.json').read
     expect(sr.extract_enum_chron_strings).to include('V. 31:NO. 3(2004:JULY)')
   end
 
   it 'filters out some bogus enum chrons' do
     sr = SourceRecord.new
     sr.org_code = 'vifgm'
-    sr.source = open(File.dirname(__FILE__) +
+    sr.source = File.open(File.dirname(__FILE__) +
                      '/data/vifgm_1959_december.json').read
     expect(sr.extract_enum_chron_strings).to eq([])
   end
@@ -755,7 +755,7 @@ RSpec.describe Registry::SourceRecord, '#extract_enum_chron_strings' do
   it 'filters out enum chrons that are actually sudocs' do
     sr = SourceRecord.new
     sr.org_code = 'flasus'
-    sr.source = open(File.dirname(__FILE__) + '/data/sudoc_enumchron.json').read
+    sr.source = File.open(File.dirname(__FILE__) + '/data/sudoc_enumchron.json').read
     expect(sr.extract_enum_chron_strings).to eq([])
   end
 end
@@ -779,13 +779,13 @@ end
 RSpec.describe Registry::SourceRecord, '#monograph' do
   it 'identifies a monograph' do
     src = SourceRecord.new
-    src.source = open(File.dirname(__FILE__) + '/data/no_enums_no_series_src.json').read
+    src.source = File.open(File.dirname(__FILE__) + '/data/no_enums_no_series_src.json').read
     expect(src.monograph?).to be_truthy
   end
 
   it 'identifies a non-monograph' do
     src = SourceRecord.new
-    src.source = open(File.dirname(__FILE__) + '/series/data/statabstract_multiple_ecs.json').read
+    src.source = File.open(File.dirname(__FILE__) + '/series/data/statabstract_multiple_ecs.json').read
     expect(src.monograph?).to be_falsey
   end
 end
@@ -793,7 +793,7 @@ end
 describe Registry::SourceRecord, 'source' do
   before(:each) do
     @src = SourceRecord.new
-    @src.source = open(File.dirname(__FILE__) + '/series/data/usreport.json').read
+    @src.source = File.open(File.dirname(__FILE__) + '/series/data/usreport.json').read
   end
 
   it 'properly extracts US Reports' do
@@ -822,7 +822,7 @@ RSpec.describe Registry::SourceRecord, '#parse_ec' do
     matches = 0
     misses = 0
     input = File.dirname(__FILE__) + '/data/ec_strings_2017-12-19.txt'
-    open(input, 'r').each do |line|
+    File.open(input, 'r').each do |line|
       ec_string = line.chomp
 
       ec = @src.parse_ec(ec_string)
@@ -963,7 +963,7 @@ end
 
 RSpec.describe Registry::SourceRecord, '#fix_flasus' do
   it 'fixes the 955 for flasus' do
-    source = open(File.dirname(__FILE__) + '/data/flasus_rec.json').read
+    source = File.open(File.dirname(__FILE__) + '/data/flasus_rec.json').read
     expect(source).to match(/"955"\s?:.*"v\.1"\s?:\s?""/)
     src = SourceRecord.new
     fixed = src.fix_flasus('flasus', JSON.parse(source))
@@ -976,7 +976,7 @@ RSpec.describe Registry::SourceRecord, '#fix_flasus' do
   end
 
   it 'fixes all fields for flasus' do
-    source = open(File.dirname(__FILE__) + '/data/flasus_garbage.json').read
+    source = File.open(File.dirname(__FILE__) + '/data/flasus_garbage.json').read
     src = SourceRecord.new
     fixed = src.fix_flasus('flasus', JSON.parse(source))
     expect(fixed.to_json).to match(/"dollar":/)
@@ -986,7 +986,7 @@ end
 RSpec.describe Registry::SourceRecord, '#extract_lccns' do
   it 'handles bad prefixes in lccns' do
     sr = SourceRecord.new(org_code: 'miaahdl',
-                          source: open(File.dirname(__FILE__) + '/data/bad_identifiers.json').read)
+                          source: File.open(File.dirname(__FILE__) + '/data/bad_identifiers.json').read)
     expect(sr.extract_lccns).to eq(['2004394700'])
     marc = MARC::Record.new_from_hash(sr.source)
     expect(SourceRecord.new.extract_lccns(marc)).to eq(['2004394700'])
@@ -997,7 +997,7 @@ end
 RSpec.describe Registry::SourceRecord, '#extract_issns' do
   it 'returns [] if garbage issns' do
     sr = SourceRecord.new(org_code: 'miaahdl',
-                          source: open(File.dirname(__FILE__) + '/data/bad_identifiers.json').read)
+                          source: File.open(File.dirname(__FILE__) + '/data/bad_identifiers.json').read)
     expect(sr.extract_issns).to eq([])
     marc = MARC::Record.new_from_hash(sr.source)
     expect(SourceRecord.new.extract_issns(marc)).to eq([])
@@ -1009,7 +1009,7 @@ RSpec.describe Registry::SourceRecord, '#approved_author?' do
   before(:all) do
     @src = SourceRecord.new
     @src.org_code = 'miaahdl'
-    @src.source = open(File.dirname(__FILE__) + '/data/author_gd.json').read
+    @src.source = File.open(File.dirname(__FILE__) + '/data/author_gd.json').read
   end
 
   it 'tells us it has an approved author' do
@@ -1021,7 +1021,7 @@ RSpec.describe Registry::SourceRecord, '#approved_added_entry?' do
   before(:all) do
     @src = SourceRecord.new
     @src.org_code = 'miaahdl'
-    @src.source = open(File.dirname(__FILE__) + '/data/added_entry_gd.json').read
+    @src.source = File.open(File.dirname(__FILE__) + '/data/added_entry_gd.json').read
   end
 
   it 'tells us it has an approved added entry author' do
@@ -1037,30 +1037,30 @@ RSpec.describe Registry::SourceRecord, '#series' do
 
   it 'detects Cancer Treatment Reports' do
     @src.org_code = 'miaahdl'
-    @src.source = open(File.dirname(__FILE__) + '/series/data/ctr.json').read
+    @src.source = File.open(File.dirname(__FILE__) + '/series/data/ctr.json').read
     expect(@src.series).to eq(['CancerTreatmentReport'])
   end
 
   it 'detects Vital Statistics' do
-    @src.source = open(File.dirname(__FILE__) +
+    @src.source = File.open(File.dirname(__FILE__) +
                        '/series/data/vital_statistics.json').read
     expect(@src.series).to eq(['VitalStatistics'])
   end
 
   it 'detects PublicPapers' do
-    @src.source = open(File.dirname(__FILE__) +
+    @src.source = File.open(File.dirname(__FILE__) +
                        '/series/data/public_papers.json').read
     expect(@src.series).to eq(['PublicPapersOfThePresidents'])
   end
 
   it 'detects DAGLs' do
-    @src.source = open(File.dirname(__FILE__) +
+    @src.source = File.open(File.dirname(__FILE__) +
                        '/series/data/dept_agr_leaflet.json').read
     expect(@src.series).to eq(['DepartmentOfAgricultureLeaflet'])
   end
 
   it 'detects PHRs' do
-    @src.source = open(File.dirname(__FILE__) +
+    @src.source = File.open(File.dirname(__FILE__) +
                        '/series/data/public_health_report.json').read
     expect(@src.series).to eq(['PublicHealthReports'])
   end
@@ -1072,13 +1072,13 @@ end
 
 RSpec.describe Registry::SourceRecord, '#marc' do
   it 'creates a MARC attribute from source' do
-    source = open(File.dirname(__FILE__) + '/series/data/ctr.json').read
+    source = File.open(File.dirname(__FILE__) + '/series/data/ctr.json').read
     s = SourceRecord.new(org_code: 'miaahdl', source: source)
     expect(s.marc['008']).to_not be_nil
   end
 
   it 'creates a MARC attribute from a saved source' do
-    source = open(File.dirname(__FILE__) + '/series/data/ctr.json').read
+    source = File.open(File.dirname(__FILE__) + '/series/data/ctr.json').read
     s = SourceRecord.new(org_code: 'miaahdl', source: source)
     s.save
     existing_src = SourceRecord.where(source_id: s.source_id).first
