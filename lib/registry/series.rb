@@ -315,6 +315,11 @@ module Registry
           Series::CensusOfManufactures.oclcs).any?
         @series << 'CensusOfManufactures'
       end
+      if (oclc_resolved.map(&:to_i) &
+          Series::USExports.oclcs).any?
+        @series << 'USExports'
+      end
+
 
       if @series&.any?
         @series.uniq!
