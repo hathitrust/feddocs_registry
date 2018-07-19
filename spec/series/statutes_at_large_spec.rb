@@ -22,6 +22,8 @@ describe 'StatutesAtLarge' do
           matches += 1
         end
       end
+      puts "Statutes At Large matches: #{matches}"
+      puts "Statutes At Large misses: #{misses}"
       expect(matches).to eq(2912)
       # expect(matches).to eq(matches+misses)
     end

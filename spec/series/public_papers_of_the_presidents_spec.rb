@@ -21,8 +21,8 @@ describe 'PublicPapersOfThePresidents' do
           matches += 1
         end
       end
-      # puts "Public Papers match: #{matches}"
-      # puts "Public Papers no match: #{misses}"
+      puts "Public Papers match: #{matches}"
+      puts "Public Papers no match: #{misses}"
       expect(matches).to eq(1528)
       # expect(matches).to eq(matches+misses)
     end

@@ -43,6 +43,7 @@ module Registry
       m_abbrev.chomp!('.')
       MONTHS.each do |month|
         return month if /^#{m_abbrev}/i.match?(month) ||
+                        m_abbrev.to_i == (MONTHS.index(month) + 1) ||
                         ((m_abbrev.length == 2) &&
                         /^#{m_abbrev[0]}.*#{m_abbrev[1]}/i =~ month)
       end
@@ -70,7 +71,11 @@ module Registry
       b: 'B(OO)?K:?\.?\s?(?<book>\d+)',
 
       # sheet
-      sh: 'SHEET:?\.?\s?(?<sheet>\d+)'
+      sh: 'SHEET:?\.?\s?(?<sheet>\d+)',
+
+      # month
+      m: '(MONTH:)?(?<month>(JAN(UARY)?|FEB(RUARY)?|MAR(CH)?|APR(IL)?|MAY|JUNE?|JULY?|AUG(UST)?|SEPT?(EMBER)?|OCT(OBER)?|NOV(EMBER)?|DEC(EMBER)?)\.?)'
+
     }
 
     @patterns = [
@@ -89,6 +94,8 @@ module Registry
 
       /^#{@tokens[:sh]}$/xi,
 
+      /^#{@tokens[:m]}$/xi,
+
       # compound patterns
       /^#{@tokens[:v]}#{@tokens[:div]}#{@tokens[:pt]}$/xi,
 
@@ -100,27 +107,60 @@ module Registry
 
       /^#{@tokens[:v]}#{@tokens[:div]}#{@tokens[:n]}$/xi,
 
-      /^#{@tokens[:v]}#{@tokens[:div]}#{@tokens[:pt]}#{@tokens[:div]}#{@tokens[:y]}$/xi,
+      %r{
+        ^#{@tokens[:v]}#{@tokens[:div]}
+        #{@tokens[:pt]}#{@tokens[:div]}
+        #{@tokens[:y]}$
+      }xi,
 
-      /^#{@tokens[:y]}#{@tokens[:div]}#{@tokens[:v]}#{@tokens[:div]}#{@tokens[:pt]}$/xi
+      %r{
+        ^#{@tokens[:y]}#{@tokens[:div]}
+        #{@tokens[:v]}#{@tokens[:div]}
+        #{@tokens[:pt]}$
+      }xi,
 
+      /^#{@tokens[:y]}#{@tokens[:div]}#{@tokens[:m]}$/xi,
+
+      /^#{@tokens[:m]}#{@tokens[:div]}#{@tokens[:y]}$/xi,
+
+      %r{
+        ^#{@tokens[:n]}#{@tokens[:div]}
+        #{@tokens[:m]}#{@tokens[:div]}
+        #{@tokens[:y]}$
+      }xi,
+
+      %r{
+        ^#{@tokens[:y]}#{@tokens[:div]}
+        #{@tokens[:m]}#{@tokens[:div]}
+        #{@tokens[:n]}$
+      }xi,
+
+      %r{
+        ^#{@tokens[:y]}#{@tokens[:div]}
+        (START\sMONTH:)?(?<start_month>#{@tokens[:m]})#{@tokens[:div]}
+        (END\sMONTH:)?(?<end_month>#{@tokens[:m]})$
+      }xi
     ]
 
     def parse_ec(ec_string)
-      m = nil
+      matchdata = nil
 
       # fix 3 digit years, this is more restrictive than most series specific
       # work.
       ec_string = '1' + ec_string if ec_string.match?(/^9\d\d$/)
 
       Series.patterns.each do |p|
-        break unless m.nil?
-        m ||= p.match(ec_string)
+        break unless matchdata.nil?
+        matchdata ||= p.match(ec_string)
       end
 
       # some cleanup
-      unless m.nil?
-        ec = Hash[m.names.zip(m.captures)]
+      unless matchdata.nil?
+        ec = matchdata.named_captures
+        # Fix months
+        ec = Series.fix_months(ec)
+
+        # Remove nils
         ec.delete_if { |_k, value| value.nil? }
 
         # year unlikely. Probably don't know what we think we know.
@@ -129,6 +169,17 @@ module Registry
       end
       ec
     end
+
+    def fix_months(match_hash)
+      match_hash.delete('month') if match_hash['start_month']
+      %w[month start_month end_month].each do |capture|
+        if match_hash[capture]
+          match_hash[capture] = Series.lookup_month(match_hash[capture])
+        end
+      end
+      match_hash
+    end
+    module_function :fix_months
 
     def explode(ec, _src = nil)
       # we would need to know something about the title to do this
@@ -148,9 +199,9 @@ module Registry
 
     def canonicalize(ec)
       # default order is:
-      t_order = %w[year volume part number book sheet]
+      t_order = %w[year month start_month end_month volume part number book sheet]
       canon = t_order.reject { |t| ec[t].nil? }
-                     .collect { |t| t.to_s.capitalize + ':' + ec[t] }
+                     .collect { |t| t.to_s.tr('_', ' ').capitalize + ':' + ec[t] }
                      .join(', ')
       canon = nil if canon == ''
       canon

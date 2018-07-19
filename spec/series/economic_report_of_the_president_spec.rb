@@ -23,6 +23,8 @@ describe 'EconomicReportOfThePresident' do
           matches += 1
         end
       end
+      puts "Economic Report of the President matches: #{matches}"
+      puts "Economic Report of the President misses: #{misses}"
       expect(matches).to eq(186)
       # expect(matches).to eq(matches+misses)
     end

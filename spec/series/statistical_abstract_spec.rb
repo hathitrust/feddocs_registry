@@ -19,6 +19,8 @@ describe 'StatisticalAbstract' do
           matches += 1
         end
       end
+      puts "Statistical Abstract matches: #{matches}"
+      puts "Statistical Abstract misses: #{misses}"
       expect(matches).to eq(1762)
       # expect(matches).to eq(matches+misses)
     end

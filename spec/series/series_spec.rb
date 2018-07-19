@@ -18,13 +18,95 @@ describe 'Series.calc_end_year' do
   end
 end
 
+describe 'tokens' do
+  let(:src) { Class.new { extend Series } }
+  it 'matches "OCT."' do
+    expect(/#{Series.tokens[:m]}/xi.match('OCT.')['month']).to eq('OCT.')
+  end
+end
+
+describe 'matchdata_to_hash' do
+  # Converting the MatchData into a Hash becomes problematic when
+  # there are repeated named groups.
+  # These tests are to confirm our understanding ofMatchData weirdness.
+
+  multi_months = %r{
+    (?<year>\d{4})\s
+    (?<start_month>(?<month>(JAN|FEB)))-
+    (?<end_month>(?<month>(JAN|FEB)))\s
+    (?<day>\d{2})
+  }xi
+  md = multi_months.match('1998 JAN-FEB 24')
+  # <MatchData "1998 JAN-FEB 24" year:"1998" start_month:"JAN" month:"JAN"
+  #             end_month:"FEB" month:"FEB" day:"24">
+
+  it 'zip clobbers the day with the last month' do
+    expect(md.names.zip(md.captures).to_h['day']).to eq('FEB')
+  end
+
+  it 'mapping gives us the correct named captures' do
+    expect(md.names.map { |n| [n, md[n]] }.to_h['day']).to eq('24')
+  end
+
+  it 'named_captures in Ruby 2.4 gives us the correct named captures' do
+    expect(md.named_captures['day']).to eq('24')
+  end
+end
+
+describe 'fix_months' do
+  it 'removes bogus month and looksup' do
+    multi_months = %r{
+      (?<year>\d{4})\s
+      (?<start_month>(?<month>(JAN|FEB)))-
+      (?<end_month>(?<month>(JAN|FEB)))\s
+      (?<day>\d{2})
+    }xi
+    ec = multi_months.match('1998 JAN-FEB 24').named_captures
+    fixed = Series.fix_months(ec)
+    expect(fixed['month']).to be_nil
+    expect(fixed['end_month']).to eq('February')
+  end
+
+  it 'converts numbered months to text months' do
+    ec = /(?<month>\d{1,2})/.match('08').named_captures
+    expect(Series.fix_months(ec)['month']).to eq('August')
+  end
+end
+
 describe 'parse_ec' do
-  it 'parses "V. 3:PT. 2 1972"' do 
-    expect(Series.parse_ec("V. 3:PT. 2 1972")['part']).to eq('2')
+  it 'parses "V. 3:PT. 2 1972"' do
+    expect(Series.parse_ec('V. 3:PT. 2 1972')['part']).to eq('2')
   end
 
   it 'parses "V. 3:PT. 2 1972"' do
-    expect(Series.parse_ec("V. 3:PT. 2 1972")['part']).to eq('2')
+    expect(Series.parse_ec('V. 3:PT. 2 1972')['part']).to eq('2')
+  end
+
+  it 'looksup months' do
+    expect(Series.parse_ec('OCT.')['month']).to eq('October')
+  end
+
+  it 'parses "NOV 1977"' do
+    expect(Series.parse_ec('NOV 1977')['month']).to eq('November')
+  end
+
+  it 'parses "Year:1977, Month:November"' do
+    expect(Series.parse_ec('Year:1977, Month:November')['month']).to eq('November')
+  end
+
+  it 'parses "1976 SEP-OCT"' do
+    expect(Series.parse_ec('1976 SEP-OCT')['start_month']).to eq('September')
+  end
+
+  it 'removes erroneous months' do
+    expect(Series.parse_ec('1976 SEP-OCT')['month']).to be_nil
+  end
+
+  it 'parses "NO. 9 SEPT. 1975"' do
+    expect(Series.parse_ec('NO. 9 SEPT. 1975')['number']).to eq('9')
+    expect(
+      Series.parse_ec('Year:1975, Month:September, Number:9')['month']
+    ).to eq('September')
   end
 end
 
@@ -39,6 +121,12 @@ describe 'Series.lookup_month' do
 
   it 'returns nil for SUP' do
     expect(Series.lookup_month('SUP')).to be_nil
+  end
+
+  it 'returns "April" for "4" and "04"' do
+    expect(Series.lookup_month('4')).to eq('April')
+    expect(Series.lookup_month('04')).to eq('April')
+    expect(Series.lookup_month('13')).to be_nil
   end
 end
 

@@ -919,6 +919,11 @@ RSpec.describe Registry::SourceRecord, '#parse_ec' do
     expect(@src.parse_ec('Sheet:4')['sheet']).to eq('4')
   end
 
+  # Month
+  it 'can parse months' do
+    expect(@src.parse_ec('OCT.')['month']).to eq('October')
+  end
+
   # Year:, Part:
   it 'can parse Year:<y>, Part:<p>' do
     expect(@src.parse_ec('Year:2001, Part:2')['part']).to eq('2')
@@ -1071,7 +1076,7 @@ RSpec.describe Registry::SourceRecord, '#series' do
     expect(@src.series).to eq(['CensusOfManufactures'])
   end
 
-   after(:each) do
+  after(:each) do
     @src.delete
   end
 end

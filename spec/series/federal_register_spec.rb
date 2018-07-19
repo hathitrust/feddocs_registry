@@ -21,6 +21,8 @@ describe 'FederalRegister' do
           matches += 1
         end
       end
+      puts "FR match: #{matches}"
+      puts "FR no match: #{misses}"
       expect(matches).to eq(25_757)
       # expect(matches).to eq(matches+misses)
     end

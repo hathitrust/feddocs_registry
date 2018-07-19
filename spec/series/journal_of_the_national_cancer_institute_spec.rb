@@ -24,8 +24,8 @@ describe 'JournalOfTheNationalCancerInstitute' do
           matches += 1
         end
       end
-      # puts "Cancer Institute match: #{matches}"
-      # puts "Cancer Institute no match: #{misses}"
+      puts "Cancer Institute match: #{matches}"
+      puts "Cancer Institute no match: #{misses}"
       expect(matches).to eq(3806)
       # expect(matches).to eq(matches+misses)
     end

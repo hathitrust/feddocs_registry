@@ -186,7 +186,7 @@ RSpec.describe RR, 'add_source' do
 
   it 'applies the correct series name' do
     # making sure a bug was fixed. It wasn't expanding the name in the add_source method
-    @src.source = File.open(File.dirname(__FILE__) + 
+    @src.source = File.open(File.dirname(__FILE__) +
                             '/series/data/econreport.json').read
     expect(@src.series).to include('EconomicReportOfThePresident')
     expect(@src.series).to eq(['EconomicReportOfThePresident'])
@@ -346,7 +346,7 @@ end
 RSpec.describe RR, '#report_numbers' do
   before(:all) do
     @src = SourceRecord.new(org_code: 'miu')
-    @src.source = File.open(File.dirname(__FILE__) + 
+    @src.source = File.open(File.dirname(__FILE__) +
                             '/data/osti_record.json').read
     @src.save
     @rec = RR.new([@src.source_id], '', '')
