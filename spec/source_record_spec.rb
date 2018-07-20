@@ -821,20 +821,17 @@ RSpec.describe Registry::SourceRecord, '#parse_ec' do
   xit 'can parse them all' do
     matches = 0
     misses = 0
-    input = File.dirname(__FILE__) + '/data/ec_strings_2017-12-19.txt'
+    input = File.dirname(__FILE__) + '/series/data/ec_strings_2018-07-19.txt'
     File.open(input, 'r').each do |line|
       ec_string = line.chomp
 
       ec = @src.parse_ec(ec_string)
       if ec.nil? || ec.empty?
-        misses += ec_count.to_i
+        misses += 1 
+        puts line.chomp
         # puts 'no match: '+line
       else
-        res = @src.explode(ec)
-        res.each do |canon, features|
-          # puts canon
-        end
-        matches += ec_count.to_i
+        matches += 1 
       end
     end
     puts "Default Mono Parsing Record match: #{matches}"
