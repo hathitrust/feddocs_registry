@@ -4,8 +4,8 @@ require 'pp'
 
 module Registry
   module Series
-    # Processing for U.S. Exports series
-    module USExports
+    # Processing for Current Population Report series
+    module CurrentPopulationReport
       class << self
         attr_accessor :patterns
         attr_accessor :tokens
@@ -14,6 +14,7 @@ module Registry
 
       @tokens = Series.tokens
       @patterns = Series.patterns.clone
+      @patterns.delete(/^(YEAR:)?\[?(?<year>(1[8-9]|20)\d{2})\.?\]?$/ix)
       @patterns << /^#{@tokens[:y]}#{@tokens[:div]}(?<month>\d{1,2})$/xi
       @patterns << /^#{@tokens[:y]}\(?#{@tokens[:m]}\s\)?$/xi
       @patterns << %r{^#{@tokens[:y]}#{@tokens[:div]}
@@ -29,20 +30,23 @@ module Registry
         (?<end_month>#{@tokens[:m]})#{@tokens[:div]}
         #{@tokens[:y]}
         (\s#{@tokens[:pt]})?$}xi
+      @patterns << /^(?<number>[1-9]\d{3})$/
+      @patterns << /^(NO\.\s)?(?<start_number>\d{1,4})-(?<end_number>\d{3,4})$/
 
       def self.sudoc_stem; end
 
       def self.oclcs
-        [1_799_484, 698_024_555]
+        [6_432_855, 623_448_621]
       end
 
       def self.title
-        'U.S. Exports'
+        'Current Population Report'
       end
 
       def preprocess(ec_string)
         ec_string.sub!(/^C. 1 /, '')
         ec_string.sub!(/ C. 1$/, '')
+        ec_string.sub!(/^.*P-28[\/\s]/, '')
         ec_string.sub!(/#{Series.tokens[:div]}C. [12]$/, '')
         ec_string = '1' + ec_string if ec_string =~ /^9\d\d/
         # V. 1977:MAY-JUNE
@@ -56,7 +60,7 @@ module Registry
 
         ec_string = preprocess(ec_string).chomp
 
-        USExports.patterns.each do |p|
+        CurrentPopulationReport.patterns.each do |p|
           break unless matchdata.nil?
           matchdata ||= p.match(ec_string)
         end
@@ -82,8 +86,6 @@ module Registry
           ecs << ec
         end
 
-        ecs = [ec]
-
         ecs.each do |ec|
           if (canon = canonicalize(ec))
             ec['canon'] = canon
@@ -94,21 +96,13 @@ module Registry
       end
 
       def canonicalize(ec)
-        canon = []
-        canon << "Volume:#{ec['volume']}" if ec['volume']
-        canon << "Part:#{ec['part']}" if ec['part']
-        canon << "Number:#{ec['number']}" if ec['number']
-        if ec['start_number'] && !ec['number']
-          start_num = ec['start_number'].to_i.to_s
-          end_num = ec['end_number'].to_i.to_s
-          canon << "Numbers:#{start_num}-#{end_num}"
-        end
-        canon << "Year:#{ec['year']}" if ec['year']
-        canon << "Month:#{ec['month']}" if ec['month']
-        if ec['start_month'] && !ec['month']
-          canon << "Months:#{ec['start_month']}-#{ec['end_month']}"
-        end
-        canon.join(', ') unless canon.empty?
+        # default order is:
+        t_order = %w[year month start_month end_month volume part number book sheet]
+        canon = t_order.reject { |t| ec[t].nil? }
+                       .collect { |t| t.to_s.tr('_', ' ').capitalize + ':' + ec[t] }
+                       .join(', ')
+        canon = nil if canon == ''
+        canon
       end
     end
   end

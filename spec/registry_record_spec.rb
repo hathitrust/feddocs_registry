@@ -370,8 +370,8 @@ RSpec.describe RR, '#print_holdings' do
   end
 
   it 'retrieves member ids from the print holdings database' do
-    expect(@rec.print_holdings([10_210_704]).count).to eq(14)
-    expect(@rec.print_holdings([10_210_704])).to include('umich')
+    expect(@rec.print_holdings([10_210_704]).count).to eq(13)
+    expect(@rec.print_holdings([10_210_704])).to include('northwestern')
   end
 
   #   it "processes a hundred print holdings a second" do

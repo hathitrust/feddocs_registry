@@ -130,6 +130,11 @@ module Registry
       }xi,
 
       %r{
+        ^#{@tokens[:n]}#{@tokens[:div]}
+        [\(\s]\s?#{@tokens[:y]}\)$
+      }xi,
+
+      %r{
         ^#{@tokens[:y]}#{@tokens[:div]}
         #{@tokens[:m]}#{@tokens[:div]}
         #{@tokens[:n]}$
@@ -319,7 +324,10 @@ module Registry
           Series::USExports.oclcs).any?
         @series << 'USExports'
       end
-
+      if (oclc_resolved.map(&:to_i) &
+          Series::CurrentPopulationReport.oclcs).any?
+        @series << 'CurrentPopulationReport'
+      end
 
       if @series&.any?
         @series.uniq!

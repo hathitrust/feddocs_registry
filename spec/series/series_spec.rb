@@ -108,6 +108,10 @@ describe 'parse_ec' do
       Series.parse_ec('Year:1975, Month:September, Number:9')['month']
     ).to eq('September')
   end
+
+  it 'parses "NO. 1531 (1976)"' do
+    expect(Series.parse_ec('NO. 1531 (1976)')['number']).to eq('1531')
+  end
 end
 
 describe 'Series.lookup_month' do

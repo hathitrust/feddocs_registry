@@ -827,11 +827,11 @@ RSpec.describe Registry::SourceRecord, '#parse_ec' do
 
       ec = @src.parse_ec(ec_string)
       if ec.nil? || ec.empty?
-        misses += 1 
+        misses += 1
         puts line.chomp
         # puts 'no match: '+line
       else
-        matches += 1 
+        matches += 1
       end
     end
     puts "Default Mono Parsing Record match: #{matches}"
