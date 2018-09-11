@@ -7,6 +7,7 @@ require 'registry/collator'
 require 'registry/series'
 require 'yaml'
 require 'digest'
+require 'filter'
 require 'filter/blacklist'
 require 'filter/whitelist'
 require 'filter/authority_list'
@@ -24,6 +25,7 @@ module Registry
     include Mongoid::Attributes::Dynamic
     include Registry::Series
     include OclcAuthoritative
+    include Filter
     store_in collection: 'source_records'
 
     field :author_parts
@@ -196,26 +198,6 @@ module Registry
         availability = 'Full View' if field['r'] == 'pd'
       end
       availability
-    end
-
-    # Determine if this is a feddoc based on 008 and 086 and 074
-    # and OCLC blacklist
-    # marc - ruby-marc repesentation of source
-    def fed_doc?(m = nil)
-      @marc = m unless m.nil?
-
-      # check the blacklist
-      self.oclc_resolved.each do |o|
-        return true if Whitelist.oclcs.include? o
-        return false if Blacklist.oclcs.include? o
-      end
-
-      u_and_f? ||
-        self.sudocs.any? ||
-        extract_sudocs(marc).any? ||
-        gpo_item_numbers.any? ||
-        approved_author? ||
-        approved_added_entry?
     end
 
     # The 008 field contains a place of publication code at the 17th position,
