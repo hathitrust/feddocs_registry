@@ -14,7 +14,7 @@ gem 'mysql2'
 gem 'nauth', git: 'https://github.com/HTGovdocs/nauth.git'
 gem 'normalize', git: 'https://github.com/HTGovdocs/normalize.git'
 gem 'oclc_authoritative', git: 'https://github.com/HTGovdocs/oclc_authoritative.git'
-gem 'traject', '2.3.4', git: 'https://github.com/traject/traject.git'
+gem 'traject', git: 'https://github.com/traject/traject.git'
 
 gem 'flog'
 gem 'rake'
