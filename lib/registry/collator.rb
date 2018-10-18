@@ -12,7 +12,7 @@ module Registry
 
     # Get our Traject::Indexer and Viaf
     def initialize(traject_config)
-      @extractor = Traject::Indexer.new
+      @extractor = Traject::Indexer::MarcIndexer.new
       @extractor.load_config_file(traject_config)
     end
 

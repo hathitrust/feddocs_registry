@@ -69,7 +69,7 @@ module Registry
 
     # this stuff is extra ugly
     Dotenv.load
-    @@extractor = Traject::Indexer.new
+    @@extractor = Traject::Indexer::MarcIndexer.new
     source_traject = __dir__ + '/../../config/traject_source_record_config.rb'
     @@extractor.load_config_file(source_traject)
 

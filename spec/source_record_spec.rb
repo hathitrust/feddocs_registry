@@ -125,7 +125,7 @@ end
 RSpec.describe Registry::SourceRecord, '#resolve_oclc' do
   it 'resolves OCLCs for records with multiple OCLCs' do
     sr = SourceRecord.new
-    sr.org_code = 'iaas'
+    sr.org_code = 'azu'
     sr.source = File.open(File.dirname(__FILE__) + '/data/oclc_resolution.json').read
     # the second oclc number is bogus but will resolve to 227681. We should hang onto
     # 1198154
