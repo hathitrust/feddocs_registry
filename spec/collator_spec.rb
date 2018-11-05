@@ -8,6 +8,8 @@ Dotenv.load
 Mongoid.load!(ENV['MONGOID_CONF'])
 
 RC = Registry::Collator
+RR = Registry::RegistryRecord
+SR = Registry::SourceRecord
 
 RSpec.describe RC, '#initialize' do
   before(:all) do
@@ -22,17 +24,19 @@ end
 RSpec.describe RC, '#extract_fields' do
   before(:all) do
     # just grab one
-    @regrec = Registry::RegistryRecord.where(:source_record_ids.with_size => 6).first
+    @regrec = RR.where(:source_record_ids.with_size => 6).first
     @collator = RC.new('config/traject_registry_record_config.rb')
     @collected_fields = @collator.extract_fields @regrec.sources
-    @alsrc = Registry::SourceRecord.new
-    @alsrc.source = open(File.dirname(__FILE__) + '/data/whitelisted_oclc.json').read
+    @alsrc = SR.new
+    @alsrc.source = File.open(File.dirname(__FILE__) + \
+                              '/data/whitelisted_oclc.json').read
     @alsrc.save
-    @alreg = Registry::RegistryRecord.new([@alsrc.source_id], '', 'testing')
-    @dgpo_src = Registry::SourceRecord.new
-    @dgpo_src.source = open(File.dirname(__FILE__) + '/data/dgpo_has_ecs.json').read
+    @alreg = RR.new([@alsrc.source_id], '', 'testing')
+    @dgpo_src = SR.new
+    @dgpo_src.source = File.open(File.dirname(__FILE__) + \
+                                 '/data/dgpo_has_ecs.json').read
     @dgpo_src.save
-    @dgpo_reg = Registry::RegistryRecord.new([@dgpo_src.source_id], '', 'testing')
+    @dgpo_reg = RR.new([@dgpo_src.source_id], '', 'testing')
   end
 
   it 'collects all the fields from all source records' do

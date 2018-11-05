@@ -11,7 +11,7 @@ describe 'FederalRegister' do
       can_canon = 0
       cant_canon = 0
       input = File.dirname(__FILE__) + '/data/fr_enumchrons.txt'
-      open(input, 'r').each do |line|
+      File.open(input, 'r').each do |line|
         line.chomp!
         ec = src.parse_ec(line)
         if ec.nil? || ec.empty?
@@ -40,7 +40,9 @@ describe 'FederalRegister' do
     end
 
     it "parses 'V. 1 (1936:MAY 28/JUNE 11)'" do
-      expect(src.parse_ec('V. 1 (1936:MAY 28/JUNE 11)')['month_end']).to eq('JUNE')
+      expect(
+        src.parse_ec('V. 1 (1936:MAY 28/JUNE 11)')['month_end']
+      ).to eq('JUNE')
     end
 
     it "parses '74,121'" do

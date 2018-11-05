@@ -264,7 +264,7 @@ module Registry
 
       def self.load_context
         ncs = File.dirname(__FILE__) + '/data/fr_number_counts.tsv'
-        open(ncs).each do |line|
+        File.open(ncs).each do |line|
           year, volume, numbers = line.chomp.split(/\t/)
           year_to_vol[year] = volume
           nums_per_vol[volume] = numbers

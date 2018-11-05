@@ -346,7 +346,7 @@ module Registry
         # any missing elements.
         canonical_items = File.dirname(__FILE__) +
                           '/data/statistical_abstract_editions.tsv'
-        open(canonical_items).each do |line|
+        File.open(canonical_items).each do |line|
           edition, year = line.chomp.split(/\t/)
           canonical_string = "Edition:#{edition}, Year:#{year}"
 

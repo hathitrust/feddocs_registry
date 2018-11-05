@@ -11,8 +11,8 @@ describe 'DepartmentOfAgricultureLeaflet' do
       misses = 0
       input = File.dirname(__FILE__) +
               '/data/department_of_agriculture_leaflet_ecs.txt'
-      output = open('canonicals.tmp', 'w')
-      open(input, 'r').each do |line|
+      output = File.open('canonicals.tmp', 'w')
+      File.open(input, 'r').each do |line|
         line.chomp!
         ec = src.parse_ec(line)
         if ec.nil? || ec.empty?

@@ -198,7 +198,7 @@ module Registry
 
       def self.load_context
         pres = File.dirname(__FILE__) + '/data/presidents.txt'
-        open(pres).each do |line|
+        File.open(pres).each do |line|
           @@presidents << line.chomp
         end
       end

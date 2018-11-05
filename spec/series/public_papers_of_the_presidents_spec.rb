@@ -10,7 +10,7 @@ describe 'PublicPapersOfThePresidents' do
       matches = 0
       misses = 0
       input = File.dirname(__FILE__) + '/data/public_papers_ecs.txt'
-      open(input, 'r').each do |line|
+      File.open(input, 'r').each do |line|
         line.chomp!
         ec = src.parse_ec(line)
         if ec.nil? || ec.empty?

@@ -214,7 +214,8 @@ module Registry
       end
 
       def load_context
-        ps = open(File.dirname(__FILE__) + '/data/econreport_parts.json', 'r')
+        ps = File.open(File.dirname(__FILE__) + '/data/econreport_parts.json',
+                       'r')
         # copy individually so we don't clobber the @parts definition
         # i.e. no @parts = JSON.parse(ps.read)
         JSON.parse(ps.read).each do |key, parts|

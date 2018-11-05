@@ -139,7 +139,7 @@ module Registry
 
       def self.load_context
         pairs = File.dirname(__FILE__) + '/data/usr_volumes.tsv'
-        open(pairs).each do |line|
+        File.open(pairs).each do |line|
           volume, canon = line.chomp.split(/\t/)
           @@volumes[volume] = canon
         end

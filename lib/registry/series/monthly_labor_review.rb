@@ -260,7 +260,7 @@ module Registry
 
       def self.load_context
         vs = File.dirname(__FILE__) + '/data/mlr_volumes.tsv'
-        open(vs).each do |line|
+        File.open(vs).each do |line|
           volume, canon = line.chomp.split(/\t/)
           @@volumes[volume] = canon
         end

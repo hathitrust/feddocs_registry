@@ -13,7 +13,7 @@ describe 'EconomicReportOfThePresident' do
       can_canon = 0
       cant_canon = 0
       input = File.dirname(__FILE__) + '/data/econreport_enumchrons.txt'
-      open(input, 'r').each do |line|
+      File.open(input, 'r').each do |line|
         line.chomp!
         ec = src.parse_ec(line)
         if ec.nil? || ec.empty?
@@ -76,14 +76,16 @@ describe 'EconomicReportOfThePresident' do
       # this records enum_Chron is 'PT. 2' but has a pub_Date of 1975
       sr = SourceRecord.new
       sr.org_code = 'miaahdl'
-      sr.source = open(File.dirname(__FILE__) + '/data/econreport_src_pub_date.json').read
+      sr.source = File.open(File.dirname(__FILE__) +
+                            '/data/econreport_src_pub_date.json').read
       expect(sr.enum_chrons).to include('Year:1975, Part:2')
     end
 
     it 'uses pub_Date/sudocs to create a better enumchron take 2' do
       sr_new = SourceRecord.new
       sr_new.org_code = 'miaahdl'
-      sr_new.source = open(File.dirname(__FILE__) + '/data/econreport_sudoc_ec.json').read
+      sr_new.source = File.open(File.dirname(__FILE__) +
+                                '/data/econreport_sudoc_ec.json').read
       expect(sr_new.sudocs).to include('Y 4.EC 7:EC 7/2/962')
       expect(sr_new.enum_chrons).to include('Year:1962')
     end

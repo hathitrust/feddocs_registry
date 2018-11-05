@@ -10,7 +10,7 @@ describe 'ForeignRelations' do
       matches = 0
       misses = 0
       input = File.dirname(__FILE__) + '/data/foreign_relations_enumchrons.txt'
-      open(input, 'r').each do |line|
+      File.open(input, 'r').each do |line|
         line.chomp!
         l = line.clone
         ec = src.parse_ec(line)

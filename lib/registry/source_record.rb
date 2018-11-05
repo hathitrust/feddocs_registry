@@ -77,7 +77,8 @@ module Registry
     @@extractor.load_config_file(source_traject)
 
     @@contrib001 = {}
-    open(__dir__ + '/../../config/contributors_w_001_oclcs.txt').each do |l|
+    File.open(__dir__ + \
+              '/../../config/contributors_w_001_oclcs.txt').each do |l|
       @@contrib001[l.chomp] = 1
     end
 

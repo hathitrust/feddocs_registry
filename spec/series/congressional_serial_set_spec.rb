@@ -11,9 +11,9 @@ describe 'CongressionalSerialSet' do
       misses = 0
       can_canon = 0
       cant_canon = 0
-      input = File.dirname(__FILE__) + \
+      input = File.dirname(__FILE__) +
               '/data/congressional_serial_set_enumchrons.txt'
-      open(input, 'r').each do |line|
+      File.open(input, 'r').each do |line|
         line.chomp!
         ec = src.parse_ec(line)
         if ec.nil? || ec.empty?
