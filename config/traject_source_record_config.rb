@@ -45,3 +45,8 @@ to_field 'related_electronic_resources', extract_marc('856|42|u')
 
 # report numbers, esp. for OSTI
 to_field 'report_numbers', extract_marc('088a')
+
+# LC call numbers
+to_field 'lc_call_numbers', extract_marc('050ab', separator: '')
+to_field 'lc_classifications', extract_marc('050a')
+to_field 'lc_item_numbers', extract_marc('050b')

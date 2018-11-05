@@ -104,6 +104,18 @@ RSpec.describe Registry::SourceRecord do
     expect(@sr.formats).to eq(%w[Book Print])
   end
 
+  it 'extracts lc_call_number' do
+    expect(@sr.lc_call_numbers).to eq(['KF26.R885 1965'])
+  end
+
+  it 'extracts lc_classification' do
+    expect(@sr.lc_classifications).to eq(['KF26'])
+  end
+
+  it 'extracts lc_item_number' do
+    expect(@sr.lc_item_numbers).to eq(['.R885 1965'])
+  end
+
   xit 'performs reasonably well' do
     line = File.open(File.dirname(__FILE__) +
                 '/data/ht_record_different_3_items.json').read

@@ -51,6 +51,9 @@ module Registry
     field :issn_normalized
     field :lccn_normalized
     field :last_modified, type: DateTime
+    field :lc_call_numbers, type: Array
+    field :lc_classifications, type: Array
+    field :lc_item_numbers, type: Array
     field :line_number, type: Integer
     field :local_id, type: String
     field :oclc_alleged
@@ -112,6 +115,9 @@ module Registry
       self.author_headings = @extracted['author_t'] || []
       self.author_parts = @extracted['author_parts'] || []
       self.report_numbers = @extracted['report_numbers'] || []
+      self.lc_call_numbers = @extracted['lc_call_numbers'] || []
+      self.lc_classifications = @extracted['lc_classifications'] || []
+      self.lc_item_numbers = @extracted['lc_item_numbers'] || []
       extract_identifiers
       electronic_resources
       related_electronic_resources
