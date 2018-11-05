@@ -205,6 +205,7 @@ module Registry
       # make sure our source records are uniq and that we have 1
       self.source_record_ids = source_record_ids.uniq
       raise 'No source recs for this Reg Rec' if source_record_ids.count.zero?
+
       self.last_modified = Time.now.utc
       super
     end

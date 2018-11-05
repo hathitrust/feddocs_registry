@@ -199,6 +199,7 @@ module Registry
     #
     def ht_availability
       return unless self.org_code == 'miaahdl'
+
       availability = 'Limited View'
       marc.each_by_tag('974') do |field|
         availability = 'Full View' if field['r'] == 'pd'
@@ -336,6 +337,7 @@ module Registry
     def oclcs_from_955o_fields(m = nil, oc = nil)
       @org_code = oc unless oc.nil?
       return [] unless org_code == 'inu'
+
       @marc = m unless m.nil?
       oclcs = []
       marc.each_by_tag('955') do |field|
@@ -361,6 +363,7 @@ module Registry
           # substring must be greater than 9999 as smaller OCLCs may match by
           # coincidence
           next if o2 < 10_000
+
           bad_oclcs << o2 if o1.to_s.match?(/.+#{o2.to_s}$/)
         end
       end
@@ -418,6 +421,7 @@ module Registry
 
       marc.each_by_tag('020') do |field|
         next unless field['a'] && (field['a'] != '')
+
         self.isbns << field['a']
         isbn = StdNum::ISBN.normalize(field['a'])
         self.isbns_normalized << isbn if isbn && (isbn != '')
@@ -431,6 +435,8 @@ module Registry
           self.isbns_normalized << StdNum::ISBN.normalize(sub.value)
         end
       end
+      self.isbns.delete(nil)
+      self.isbns.uniq!
       self.isbns_normalized.delete(nil)
       self.isbns_normalized.uniq!
       self.isbns_normalized
@@ -668,6 +674,7 @@ module Registry
       if regrec.source_record_ids.count.zero?
         raise "No source record ids! source_id: #{self.source_id}"
       end
+
       regrec.save
     end
 
@@ -707,6 +714,7 @@ module Registry
     # Sets to [] if not found in extracted.
     def extracted_field(field = __callee__)
       return self[field.to_sym] unless self[field.to_sym].nil?
+
       @extracted ||= extracted
       self[field.to_sym] = if @extracted[field.to_s].nil?
                              []
@@ -720,18 +728,21 @@ module Registry
 
     def author_lccns
       return @author_lccns unless @author_lccns.nil?
+
       @extracted ||= extracted
       self.author_lccns = get_lccns @extracted['author_lccn_lookup']
     end
 
     def added_entry_lccns
       return @added_entry_lccns unless @added_entry_lccns.nil?
+
       @extracted ||= extracted
       self.added_entry_lccns = get_lccns @extracted['added_entry_lccn_lookup']
     end
 
     def report_numbers
       return @report_numbers unless @report_numbers.nil?
+
       @extracted ||= extracted
       self.report_numbers = @extracted['report_numbers'] || []
     end

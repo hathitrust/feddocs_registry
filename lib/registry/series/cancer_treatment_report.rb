@@ -253,6 +253,7 @@ module Registry
 
         CancerTreatmentReport.patterns.each do |p|
           break unless m.nil?
+
           m ||= p.match(ec_string)
         end
 

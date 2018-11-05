@@ -62,6 +62,7 @@ module Registry
 
         CurrentPopulationReport.patterns.each do |p|
           break unless matchdata.nil?
+
           matchdata ||= p.match(ec_string)
         end
 

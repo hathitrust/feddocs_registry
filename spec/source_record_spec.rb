@@ -638,6 +638,7 @@ RSpec.describe Registry::SourceRecord, '#extract_identifiers' do
     SourceRecord.all.each do |rec|
       count += 1
       break if count > 20 # arbitrary
+
       old_oclc_alleged = rec.oclc_alleged
       old_lccn = rec.lccn_normalized
       old_issn = rec.issn_normalized
@@ -648,6 +649,26 @@ RSpec.describe Registry::SourceRecord, '#extract_identifiers' do
       expect(old_issn - rec.issn_normalized).to eq([])
       expect(old_isbn - rec.isbns_normalized).to eq([])
     end
+  end
+end
+
+RSpec.describe Registry::SourceRecord, '#isbns' do
+  before(:all) do
+    @src = SourceRecord.new(
+      org_code: 'miaahdl',
+      source: File.open(File.dirname(__FILE__) + '/data/src_with_isbn.json').read
+    )
+  end
+
+  it 'extracts the isbns' do
+    expect(@src.isbns).to eq(['0801811449'])
+  end
+
+  it 'uniqs isbns when reextracting' do
+    @src.source = File.open(
+      File.dirname(__FILE__) + '/data/src_with_isbn.json'
+    ).read
+    expect(@src.isbns).to eq(['0801811449'])
   end
 end
 

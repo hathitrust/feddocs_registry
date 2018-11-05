@@ -127,6 +127,7 @@ module Registry
 
         WarOfTheRebellion.patterns.each do |p|
           break unless m.nil?
+
           m ||= p.match(ec_string)
         end
 

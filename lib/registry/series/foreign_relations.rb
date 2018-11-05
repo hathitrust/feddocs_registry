@@ -231,6 +231,7 @@ module Registry
 
         patterns.each do |pat|
           break unless m.nil?
+
           m ||= pat.match(ec_string)
         end
 

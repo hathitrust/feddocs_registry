@@ -17,6 +17,7 @@ fin.each do |line|
 
   src = mc[:source_records].find('source_id' => source_id).first
   next if src.nil?
+
   src.delete('_id')
   sout.puts src.to_json
 
