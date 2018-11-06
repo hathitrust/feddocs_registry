@@ -661,14 +661,14 @@ RSpec.describe Registry::SourceRecord, '#isbns' do
   end
 
   it 'extracts the isbns' do
-    expect(@src.isbns).to eq(['0801811449'])
+    expect(@src.isbns_normalized).to eq(['9780801811449'])
   end
 
   it 'uniqs isbns when reextracting' do
     @src.source = File.open(
       File.dirname(__FILE__) + '/data/src_with_isbn.json'
     ).read
-    expect(@src.isbns).to eq(['0801811449'])
+    expect(@src.isbns_normalized).to eq(['9780801811449'])
   end
 end
 
@@ -1029,13 +1029,10 @@ RSpec.describe Registry::SourceRecord, '#extract_lccns' do
   end
 end
 
-RSpec.describe Registry::SourceRecord, '#extract_issns' do
+RSpec.describe Registry::SourceRecord, '#issn_normalized' do
   it 'returns [] if garbage issns' do
     sr = SourceRecord.new(org_code: 'miaahdl',
                           source: File.open(File.dirname(__FILE__) + '/data/bad_identifiers.json').read)
-    expect(sr.extract_issns).to eq([])
-    marc = MARC::Record.new_from_hash(sr.source)
-    expect(SourceRecord.new.extract_issns(marc)).to eq([])
     expect(sr.issn_normalized).to eq([])
   end
 end

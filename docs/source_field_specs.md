@@ -96,18 +96,12 @@ in_registry
 	Can this record be found in an active Registry Record. Questionable if this
 	state is tracked appropriately. 
 
-isbns
------
-	type: array of strings
-	List of raw ISBNs found in MARC 020a. Use case for this field is unclear.
-	isbns_normalized should be sufficient for our purposes. todo
-
 isbns_normalized
 ----------------
 	type: array of strings
 	List of ISBNs run through StdNum::ISBN.normalize
 
-issn_normalized
+issns_normalized
 ---------------
 	type: array of strings
 	List of ISSNs (MARC 022a) run through StdNum::ISSN.normalize.

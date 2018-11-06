@@ -27,13 +27,13 @@ end
 
 # author
 
-to_field 'author_t', extract_marc('100abcdgqu:110abcdgnu:111acdegjnqu')
+to_field 'author_headings', extract_marc('100abcdgqu:110abcdgnu:111acdegjnqu')
 to_field 'author_parts', extract_marc('100abcdgqu:110abcdgnu:111acdegjnqu', separator: nil)
 to_field 'author_lccn_lookup', extract_marc('100abcd:110abntd')
 to_field 'added_entry_lccn_lookup', extract_marc('700abcd:710abntd')
 
 # publisher
-to_field 'publisher_heading', extract_marc('260b')
+to_field 'publisher_headings', extract_marc('260b')
 
 # pubdate
 to_field 'pub_date', marc_publication_date
@@ -50,3 +50,17 @@ to_field 'report_numbers', extract_marc('088a')
 to_field 'lc_call_numbers', extract_marc('050ab', separator: '')
 to_field 'lc_classifications', extract_marc('050a')
 to_field 'lc_item_numbers', extract_marc('050b')
+
+# issns
+to_field 'issn_normalized', extract_marc('022a:776x') do |_rec, acc|
+  acc.map! { |issn| StdNum::ISSN.normalize(issn) }
+  acc.flatten!
+  acc.uniq!
+end
+
+# isbns
+to_field 'isbns_normalized', extract_marc('020a:776z') do |_rec, acc|
+  acc.map! { |isbn| StdNum::ISBN.normalize(isbn) }
+  acc.flatten!
+  acc.uniq!
+end

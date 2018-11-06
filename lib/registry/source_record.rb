@@ -46,7 +46,6 @@ module Registry
     field :holdings
     field :ht_item_ids
     field :in_registry, type: Boolean, default: false
-    field :isbns
     field :isbns_normalized
     field :issn_normalized
     field :lccn_normalized
@@ -69,6 +68,7 @@ module Registry
     field :invalid_sudocs # bad MARC, not necessarily bad SuDoc
     field :non_sudocs
     attr_writer :marc
+    @extractions = {}
 
     # this stuff is extra ugly
     Dotenv.load
@@ -102,25 +102,34 @@ module Registry
       @marc ||= MARC::Record.new_from_hash(source)
     end
 
+    def extractions
+      if source
+        @extractions ||= @@extractor.map_record marc
+      else
+        @extractions
+      end
+    end
+
     # On assignment of source json string, record is parsed,
     # and identifiers extracted.
     def source=(value)
       @source = JSON.parse(value)
       super(fix_flasus(org_code, @source))
-      self.local_id = extract_local_id
       @marc = MARC::Record.new_from_hash(source)
-      @extracted = @@extractor.map_record marc
-      self.pub_date = @extracted['pub_date']
+      self.local_id = extract_local_id
+      self.pub_date = extractions['pub_date']
+      publisher_headings
+      author_headings
+      author_parts
+      report_numbers
+      lc_call_numbers
+      lc_classifications
+      lc_item_numbers
       gpo_item_numbers
-      self.publisher_headings = @extracted['publisher_heading'] || []
-      self.author_headings = @extracted['author_t'] || []
-      self.author_parts = @extracted['author_parts'] || []
-      self.report_numbers = @extracted['report_numbers'] || []
-      self.lc_call_numbers = @extracted['lc_call_numbers'] || []
-      self.lc_classifications = @extracted['lc_classifications'] || []
-      self.lc_item_numbers = @extracted['lc_item_numbers'] || []
       extract_identifiers
       electronic_resources
+      issn_normalized
+      isbns_normalized
       related_electronic_resources
       electronic_versions
       author_lccns
@@ -154,19 +163,14 @@ module Registry
       self.oclc_alleged ||= []
       self.oclc_resolved ||= []
       self.lccn_normalized ||= []
-      self.issn_normalized ||= []
       self.sudocs ||= []
       self.invalid_sudocs ||= []
       self.non_sudocs ||= []
-      self.isbns ||= []
-      self.isbns_normalized ||= []
       self.formats ||= []
 
       extract_oclcs
       extract_sudocs
       extract_lccns
-      extract_issns
-      extract_isbns
       self.formats = Traject::Macros::MarcFormatClassifier.new(marc).formats
 
       self.oclc_resolved = oclc_alleged.map { |o| resolve_oclc(o) }.flatten.uniq
@@ -386,61 +390,6 @@ module Registry
       self.lccn_normalized.delete(nil)
       self.lccn_normalized.uniq!
       self.lccn_normalized
-    end
-
-    ########
-    # ISSN
-    def extract_issns(m = nil)
-      @marc = m unless m.nil?
-      self.issn_normalized = []
-
-      marc.each_by_tag('022') do |field|
-        if field['a'] && (field['a'] != '')
-          self.issn_normalized << StdNum::ISSN.normalize(field['a'])
-        end
-      end
-
-      # We don't care about different physical forms so
-      # 776s are valid too.
-      marc.each_by_tag('776') do |field|
-        subfield_xs = field.find_all { |subfield| subfield.code == 'x' }
-        subfield_xs.each do |sub|
-          self.issn_normalized << StdNum::ISSN.normalize(sub.value)
-        end
-      end
-      self.issn_normalized.delete(nil)
-      self.issn_normalized.uniq!
-      self.issn_normalized
-    end
-
-    #######
-    # ISBN
-    # todo: this needs a test
-    def extract_isbns(m = nil)
-      @marc = m unless m.nil?
-      self.isbns_normalized = []
-
-      marc.each_by_tag('020') do |field|
-        next unless field['a'] && (field['a'] != '')
-
-        self.isbns << field['a']
-        isbn = StdNum::ISBN.normalize(field['a'])
-        self.isbns_normalized << isbn if isbn && (isbn != '')
-      end
-
-      # We don't care about different physical forms so
-      # 776s are valid too.
-      marc.each_by_tag('776') do |field|
-        subfield_zs = field.find_all { |subfield| subfield.code == 'z' }
-        subfield_zs.each do |sub|
-          self.isbns_normalized << StdNum::ISBN.normalize(sub.value)
-        end
-      end
-      self.isbns.delete(nil)
-      self.isbns.uniq!
-      self.isbns_normalized.delete(nil)
-      self.isbns_normalized.uniq!
-      self.isbns_normalized
     end
 
     # extract_enum_chron_strings
@@ -714,15 +663,23 @@ module Registry
     # Default accessor for some but not all attributes
     # Sets to [] if not found in extracted.
     def extracted_field(field = __callee__)
-      return self[field.to_sym] unless self[field.to_sym].nil?
+      return self[field.to_sym] unless self[field.to_sym].nil? && source
 
-      @extracted ||= extracted
-      self[field.to_sym] = if @extracted[field.to_s].nil?
+      self[field.to_sym] = if extractions[field.to_s].nil?
                              []
                            else
-                             @extracted[field.to_s]
+                             extractions[field.to_s]
                            end
     end
+    alias issn_normalized extracted_field
+    alias isbns_normalized extracted_field
+    alias publisher_headings extracted_field
+    alias author_headings extracted_field
+    alias author_parts extracted_field
+    alias report_numbers extracted_field
+    alias lc_call_numbers extracted_field
+    alias lc_classifications extracted_field
+    alias lc_item_numbers extracted_field
     alias electronic_versions extracted_field
     alias related_electronic_resources extracted_field
     alias electronic_resources extracted_field
@@ -730,28 +687,19 @@ module Registry
     def author_lccns
       return @author_lccns unless @author_lccns.nil?
 
-      @extracted ||= extracted
-      self.author_lccns = get_lccns @extracted['author_lccn_lookup']
+      self.author_lccns = get_lccns extractions['author_lccn_lookup']
     end
 
     def added_entry_lccns
       return @added_entry_lccns unless @added_entry_lccns.nil?
 
-      @extracted ||= extracted
-      self.added_entry_lccns = get_lccns @extracted['added_entry_lccn_lookup']
+      self.added_entry_lccns = get_lccns extractions['added_entry_lccn_lookup']
     end
 
     def report_numbers
       return @report_numbers unless @report_numbers.nil?
 
-      @extracted ||= extracted
-      self.report_numbers = @extracted['report_numbers'] || []
-    end
-
-    def extracted(m = nil)
-      @marc = m unless m.nil?
-      @extracted = @@extractor.map_record(marc)
-      @extracted
+      self.report_numbers = extractions['report_numbers'] || []
     end
 
     def get_lccns(names)
