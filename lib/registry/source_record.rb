@@ -106,7 +106,7 @@ module Registry
       if source
         @extractions ||= @@extractor.map_record marc
       else
-        @extractions
+        @extractions || {}
       end
     end
 
@@ -117,23 +117,8 @@ module Registry
       super(fix_flasus(org_code, @source))
       @marc = MARC::Record.new_from_hash(source)
       self.local_id = extract_local_id
-      self.pub_date = extractions['pub_date']
-      publisher_headings
-      author_headings
-      author_parts
-      report_numbers
-      lc_call_numbers
-      lc_classifications
-      lc_item_numbers
-      gpo_item_numbers
+      extractions.keys.map {|field| extracted_field(field)}
       extract_identifiers
-      electronic_resources
-      issn_normalized
-      isbns_normalized
-      related_electronic_resources
-      electronic_versions
-      author_lccns
-      added_entry_lccns
       self.series = series # important to do this before extracting enumchrons
       self.ec = extract_enum_chrons
       self.enum_chrons = ec.collect do |_k, fields|
@@ -162,16 +147,12 @@ module Registry
       self.org_code ||= '' # should be set on ingest.
       self.oclc_alleged ||= []
       self.oclc_resolved ||= []
-      self.lccn_normalized ||= []
       self.sudocs ||= []
       self.invalid_sudocs ||= []
       self.non_sudocs ||= []
-      self.formats ||= []
 
       extract_oclcs
       extract_sudocs
-      extract_lccns
-      self.formats = Traject::Macros::MarcFormatClassifier.new(marc).formats
 
       self.oclc_resolved = oclc_alleged.map { |o| resolve_oclc(o) }.flatten.uniq
     end
@@ -228,13 +209,6 @@ module Registry
     # Check added_entry_lccns against the list of approved authors
     def approved_added_entry?
       added_entry_lccns.any? { |a| AuthorityList.lccns.include? a }
-    end
-
-    # Extracts gpo item numbers from 074
-    def gpo_item_numbers(m = nil)
-      @marc = m unless m.nil?
-      @gpo_item_numbers ||= Traject::MarcExtractor.cached('074a').extract(marc)
-      self.gpo_item_numbers = @gpo_item_numbers
     end
 
     # Extracts SuDocs
@@ -373,23 +347,6 @@ module Registry
         end
       end
       oclcs - bad_oclcs
-    end
-
-    #######
-    # LCCN
-    def extract_lccns(m = nil)
-      @marc = m unless m.nil?
-      self.lccn_normalized = []
-
-      marc.each_by_tag('010') do |field|
-        if field['a'] && (field['a'] != '')
-          field_a = field['a'].sub(/^@@/, '')
-          self.lccn_normalized << StdNum::LCCN.normalize(field_a.downcase)
-        end
-      end
-      self.lccn_normalized.delete(nil)
-      self.lccn_normalized.uniq!
-      self.lccn_normalized
     end
 
     # extract_enum_chron_strings
@@ -663,54 +620,30 @@ module Registry
     # Default accessor for some but not all attributes
     # Sets to [] if not found in extracted.
     def extracted_field(field = __callee__)
-      return self[field.to_sym] unless self[field.to_sym].nil? && source
-
       self[field.to_sym] = if extractions[field.to_s].nil?
                              []
                            else
                              extractions[field.to_s]
                            end
     end
-    alias issn_normalized extracted_field
-    alias isbns_normalized extracted_field
-    alias publisher_headings extracted_field
     alias author_headings extracted_field
     alias author_parts extracted_field
+    alias author_lccns extracted_field
+    alias added_entry_lccns extracted_field
+    alias gpo_item_numbers extracted_field
+    alias formats extracted_field
+    alias publisher_headings extracted_field
+    alias pub_date extracted_field
+    alias electronic_resources extracted_field
+    alias electronic_versions extracted_field
+    alias related_electronic_resources extracted_field
     alias report_numbers extracted_field
+    alias lccn_normalized extracted_field
     alias lc_call_numbers extracted_field
     alias lc_classifications extracted_field
     alias lc_item_numbers extracted_field
-    alias electronic_versions extracted_field
-    alias related_electronic_resources extracted_field
-    alias electronic_resources extracted_field
-
-    def author_lccns
-      return @author_lccns unless @author_lccns.nil?
-
-      self.author_lccns = get_lccns extractions['author_lccn_lookup']
-    end
-
-    def added_entry_lccns
-      return @added_entry_lccns unless @added_entry_lccns.nil?
-
-      self.added_entry_lccns = get_lccns extractions['added_entry_lccn_lookup']
-    end
-
-    def report_numbers
-      return @report_numbers unless @report_numbers.nil?
-
-      self.report_numbers = extractions['report_numbers'] || []
-    end
-
-    def get_lccns(names)
-      lccns = []
-      names ||= []
-      names.each do |n|
-        lccns << Authority.search(n)&.sameAs
-      end
-      lccns.delete(nil)
-      lccns.uniq
-    end
+    alias issn_normalized extracted_field
+    alias isbns_normalized extracted_field
 
     def self.marc_profiles
       @@marc_profiles unless @@marc_profiles.empty?

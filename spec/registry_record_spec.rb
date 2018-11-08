@@ -51,13 +51,6 @@ RSpec.describe RR, '#initialize' do
     expect(@new_rec.issn_t).to eq []
   end
 
-  it 'does not collect author_lccn_lookup fields' do
-    expect(@pd_sr.extractions['author_lccn_lookup'].count).to eq(1)
-    new_reg = Registry::RegistryRecord.new([@pd_sr.source_id], '', 'testing')
-    expect(new_reg['author_lccn_lookup']).to be_nil
-    expect(@pd_sr.publisher_headings).to eq(new_reg.publisher_headings)
-  end
-
   it 'adds org codes' do
     expect(@new_rec.source_org_codes).to include('txwb')
   end

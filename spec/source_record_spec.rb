@@ -101,6 +101,7 @@ RSpec.describe Registry::SourceRecord do
   end
 
   it 'extracts formats' do
+    expect(@sr['formats']).to eq(%w[Book Print])
     expect(@sr.formats).to eq(%w[Book Print])
   end
 
@@ -207,10 +208,11 @@ RSpec.describe Registry::SourceRecord, '#extracted_field' do
   end
 end
 
-RSpec.describe Registry::SourceRecord, '#get_lccns' do
+RSpec.describe Registry::SourceRecord, '#author_lccns' do
   it 'identifies authorities for author headings' do
     sr = SourceRecord.new
     sr.source = File.open(File.dirname(__FILE__) + '/data/whitelisted_oclc.json').read
+    expect(sr['author_lccns']).to include('https://lccn.loc.gov/n79086751')
     expect(sr.author_lccns).to include('https://lccn.loc.gov/n79086751')
   end
 
@@ -218,11 +220,6 @@ RSpec.describe Registry::SourceRecord, '#get_lccns' do
     sr = SourceRecord.new
     sr.source = File.open(File.dirname(__FILE__) + '/data/dgpo_has_ecs.json').read
     expect(sr.added_entry_lccns).to include('https://lccn.loc.gov/n80126064')
-  end
-
-  it 'gives us an empty array for nil names' do
-    sr = SourceRecord.new
-    expect(sr.get_lccns(nil)).to eq([])
   end
 end
 
@@ -1018,13 +1015,10 @@ RSpec.describe Registry::SourceRecord, '#fix_flasus' do
   end
 end
 
-RSpec.describe Registry::SourceRecord, '#extract_lccns' do
+RSpec.describe Registry::SourceRecord, '#lccn_normalized' do
   it 'handles bad prefixes in lccns' do
     sr = SourceRecord.new(org_code: 'miaahdl',
                           source: File.open(File.dirname(__FILE__) + '/data/bad_identifiers.json').read)
-    expect(sr.extract_lccns).to eq(['2004394700'])
-    marc = MARC::Record.new_from_hash(sr.source)
-    expect(SourceRecord.new.extract_lccns(marc)).to eq(['2004394700'])
     expect(sr.lccn_normalized).to eq(['2004394700'])
   end
 end
