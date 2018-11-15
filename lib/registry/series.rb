@@ -141,6 +141,11 @@ module Registry
       }xi,
 
       %r{
+        ^#{@tokens[:n]}#{@tokens[:div]}
+        #{@tokens[:pt]}$
+      }xi,
+
+      %r{
         ^#{@tokens[:y]}#{@tokens[:div]}
         (START\sMONTH:)?(?<start_month>#{@tokens[:m]})#{@tokens[:div]}
         (END\sMONTH:)?(?<end_month>#{@tokens[:m]})$
@@ -328,6 +333,10 @@ module Registry
       if (oclc_resolved.map(&:to_i) &
           Series::CurrentPopulationReport.oclcs).any?
         @series << 'CurrentPopulationReport'
+      end
+      if (oclc_resolved.map(&:to_i) &
+          Series::PublicHealthReportSupplements.oclcs).any?
+        @series << 'PublicHealthReportSupplements'
       end
 
       if @series&.any?

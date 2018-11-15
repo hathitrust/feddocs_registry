@@ -109,6 +109,12 @@ describe 'parse_ec' do
     ).to eq('September')
   end
 
+  it 'parses "NO. 165 PT. 2"' do
+    expect(Series.parse_ec('NO. 165 PT. 2')['number']).to eq('165')
+    expect(Series.parse_ec('NO. 165 PT. 2')).to eq('number' => '165',
+                                                   'part' => '2')
+  end
+
   it 'parses "NO. 1531 (1976)"' do
     expect(Series.parse_ec('NO. 1531 (1976)')['number']).to eq('1531')
   end
