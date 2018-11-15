@@ -117,7 +117,7 @@ module Registry
       super(fix_flasus(org_code, @source))
       @marc = MARC::Record.new_from_hash(source)
       self.local_id = extract_local_id
-      extractions.keys.map {|field| extracted_field(field)}
+      extractions.keys.map { |field| extracted_field(field) }
       extract_identifiers
       self.series = series # important to do this before extracting enumchrons
       self.ec = extract_enum_chrons

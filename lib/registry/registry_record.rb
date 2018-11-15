@@ -242,9 +242,9 @@ module Registry
       # sudoc
       full_sudocs = s.sudocs&.select { |sud| sud =~ /:.+/ }
       if full_sudocs&.any? && !rec
-         rec = RegistryRecord.where(sudoc_display: full_sudocs,
-                                    enumchron_display: enum_chron,
-                                    deprecated_timestamp: { "$exists": 0 }).first
+        rec = RegistryRecord.where(sudoc_display: full_sudocs,
+                                   enumchron_display: enum_chron,
+                                   deprecated_timestamp: { "$exists": 0 }).first
       end
       rec
     end

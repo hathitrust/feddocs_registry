@@ -62,10 +62,7 @@ module Registry
           matchdata ||= p.match(ec_string)
         end
 
-        unless matchdata.nil?
-          ec = matchdata.named_captures
-          ec = Series.fix_months(ec)
-        end
+        ec = Series.fix_months(matchdata.named_captures) unless matchdata.nil?
       end
 
       def explode(ec, _src = nil)

@@ -34,14 +34,14 @@ to_field 'author_headings', extract_marc('100abcdgqu:110abcdgnu:111acdegjnqu')
 to_field 'author_parts', extract_marc('100abcdgqu:110abcdgnu:111acdegjnqu', separator: nil)
 
 to_field 'author_lccns', extract_marc('100abcd:110abntd') do |_rec, acc|
-  acc.map! {|auth| Authority.search(auth)&.sameAs}
+  acc.map! { |auth| Authority.search(auth)&.sameAs }
   acc.flatten!
   acc.delete(nil)
   acc.uniq!
 end
 
 to_field 'added_entry_lccns', extract_marc('700abcd:710abntd') do |_rec, acc|
-  acc.map! {|auth| Authority.search(auth)&.sameAs}
+  acc.map! { |auth| Authority.search(auth)&.sameAs }
   acc.flatten!
   acc.delete(nil)
   acc.uniq!
@@ -69,12 +69,12 @@ to_field 'report_numbers', extract_marc('088a')
 
 # Library of Congress Control Numbers
 to_field 'lccn_normalized', extract_marc('010a') do |_rec, acc|
-  acc.map! {|lccn| StdNum::LCCN.normalize(lccn.sub(/^@@/, ''))}
+  acc.map! { |lccn| StdNum::LCCN.normalize(lccn.sub(/^@@/, '')) }
   acc.flatten!
   acc.delete(nil)
   acc.uniq!
 end
-           
+
 # LC call numbers
 to_field 'lc_call_numbers', extract_marc('050ab', separator: '')
 to_field 'lc_classifications', extract_marc('050a')
