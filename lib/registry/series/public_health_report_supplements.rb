@@ -12,27 +12,8 @@ module Registry
       end
       # @volumes = {}
 
-      puts Series.tokens
       @tokens = Series.tokens
-      #       @patterns = Series.patterns.clone
-      #       @patterns.delete(/^(YEAR:)?\[?(?<year>(1[8-9]|20)\d{2})\.?\]?$/ix)
-      #       @patterns << /^#{@tokens[:y]}#{@tokens[:div]}(?<month>\d{1,2})$/xi
-      #       @patterns << /^#{@tokens[:y]}\(?#{@tokens[:m]}\s\)?$/xi
-      #       @patterns << %r{^#{@tokens[:y]}#{@tokens[:div]}
-      #         (?<start_month>\d{1,2})#{@tokens[:div]}
-      #         (?<end_month>\d{1,2})$}xi
-      #       @patterns << %r{^#{@tokens[:y]}#{@tokens[:div]}\d{1,2}#{@tokens[:div]}
-      #         \(?#{@tokens[:m]}\s?\)?$}xi
-      #       @patterns << %r{^#{@tokens[:y]}
-      #         \(?\s?(?<start_month>#{@tokens[:m]})#{@tokens[:div]}{1,2}
-      #         (?<end_month>#{@tokens[:m]})\s?\)?
-      #         (\s?#{@tokens[:y]})?$}xi
-      #       @patterns << %r{^(?<start_month>#{@tokens[:m]})#{@tokens[:div]}{1,2}
-      #         (?<end_month>#{@tokens[:m]})#{@tokens[:div]}
-      #         #{@tokens[:y]}
-      #         (\s#{@tokens[:pt]})?$}xi
-      #       @patterns << /^(?<number>[1-9]\d{3})$/
-      #       @patterns << /^(NO\.\s)?(?<start_number>\d{1,4})-(?<end_number>\d{3,4})$/
+
       def self.sudoc_stem; end
 
       def self.oclcs
