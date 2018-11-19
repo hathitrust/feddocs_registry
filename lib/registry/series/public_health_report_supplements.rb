@@ -36,7 +36,32 @@ module Registry
       #       end
 
       def parse_ec(ec_string)
-        Series.parse_ec(ec_string)
+        matchdata = nil
+
+        # fix 3 digit years, this is more restrictive than most series specific
+        # work.
+        ec_string = '1' + ec_string if ec_string.match?(/^9\d\d$/)
+
+          Series.patterns.each do |p|
+            break unless matchdata.nil?
+
+            matchdata ||= p.match(ec_string)
+        end
+
+        # some cleanup
+        unless matchdata.nil?
+                     ec = matchdata.named_captures
+          # Fix months
+            ec = Series.fix_months(ec)
+
+          # Remove nils
+          ec.delete_if { |_k, value| value.nil? }
+
+            # year unlikely. Probably don't know what we think we know.
+          # From the regex, year can't be < 1800
+          ec = nil if ec['year'].to_i > (Time.now.year + 5)
+        end
+        ec
       end
 
       def explode(ec, _src = nil)
