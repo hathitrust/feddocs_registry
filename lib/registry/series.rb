@@ -137,6 +137,19 @@ module Registry
         #{@tokens[:m]}\s#{@tokens[:day]}\)$
       }xi,
 
+      # 1896 PT. 1 
+      %r{
+        ^#{@tokens[:y]}#{@tokens[:div]}
+         #{@tokens[:pt]}$
+      }xi,
+
+      # 1896 V. 2 PT. 1
+      %r{
+        ^#{@tokens[:y]}#{@tokens[:div]}
+         #{@tokens[:v]}#{@tokens[:div]}
+         #{@tokens[:pt]}$
+      }xi,
+
       %r{
         ^#{@tokens[:v]}#{@tokens[:div]}
         #{@tokens[:pt]}#{@tokens[:div]}

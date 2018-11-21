@@ -95,6 +95,14 @@ describe 'parse_ec' do
     expect(Series.parse_ec('V. 12, NO. 29, (OCT. 1997)')['month']).to eq('October')
   end
 
+  it 'parses "1896 PT. 1"' do
+    expect(Series.parse_ec('1896 PT. 1')['part']).to eq('1')
+  end
+
+  it 'parses "1896 V. 2 PT. 1"' do
+    expect(Series.parse_ec('1896 V. 2 PT. 1')['part']).to eq('1')
+  end
+
   it 'parses "V. 2, NO. 25-26 (DEC. 1987)"' do
     expect(Series.parse_ec('V. 2, NO. 25-26 (DEC. 1987)')['month']).to eq('December')
   end
