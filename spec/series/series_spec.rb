@@ -142,6 +142,14 @@ describe 'parse_ec' do
     ).to eq('September')
   end
 
+  it 'parses "NO. 42 (2005:APR. 13)"' do
+    expect(Series.parse_ec('NO. 42 (2005:APR. 13)')['number']).to eq('42')
+  end
+
+  it 'parses "1988:MAY 17"' do
+    expect(Series.parse_ec('1988:MAY 17')['day']).to eq('17')
+  end
+
   it 'parses "NO. 165 PT. 2"' do
     expect(Series.parse_ec('NO. 165 PT. 2')['number']).to eq('165')
     expect(Series.parse_ec('NO. 165 PT. 2')).to eq('number' => '165',

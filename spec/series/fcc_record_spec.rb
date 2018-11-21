@@ -39,7 +39,7 @@ describe 'FCCRecord' do
       # p_t_n.puts pages_to_numbers.to_json()
       puts "FCC Record match: #{matches}"
       puts "FCC Record no match: #{misses}"
-      expect(matches).to eq(9401) # actual 10106
+      expect(matches).to eq(9402) # actual 10106
     end
   end
 

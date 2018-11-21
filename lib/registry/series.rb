@@ -117,11 +117,25 @@ module Registry
 
       /^#{@tokens[:y]}#{@tokens[:div]}#{@tokens[:v]}$/xi,
 
+      # 1988:MAY 17
+      %r{
+        ^#{@tokens[:y]}#{@tokens[:div]}
+        #{@tokens[:m]}#{@tokens[:div]}
+        #{@tokens[:day]}$
+      }xi,
+
       /^#{@tokens[:v]}#{@tokens[:div]}#{@tokens[:ns]}$/xi,
 
       /^#{@tokens[:v]}[\(\s]\s?#{@tokens[:y]}\)?$/xi,
 
       /^#{@tokens[:v]}#{@tokens[:div]}#{@tokens[:n]}$/xi,
+
+      # NO. 42 (2005:APR. 13)
+      %r{
+        ^#{@tokens[:n]}#{@tokens[:div]}
+        \(\s?#{@tokens[:y]}#{@tokens[:div]}
+        #{@tokens[:m]}\s#{@tokens[:day]}\)$
+      }xi,
 
       %r{
         ^#{@tokens[:v]}#{@tokens[:div]}
@@ -455,7 +469,10 @@ module Registry
           Series::FCCRecord.oclcs).any?
         @series << 'FCCRecord'
       end
-
+      if (oclc_resolved.map(&:to_i) &
+          Series::CalendarOfBusiness.oclcs).any?
+        @series << 'CalendarOfBusiness'
+      end
 
       if @series&.any?
         @series.uniq!
