@@ -451,6 +451,11 @@ module Registry
           Series::PublicHealthReportSupplements.oclcs).any?
         @series << 'PublicHealthReportSupplements'
       end
+      if (oclc_resolved.map(&:to_i) &
+          Series::FCCRecord.oclcs).any?
+        @series << 'FCCRecord'
+      end
+
 
       if @series&.any?
         @series.uniq!
