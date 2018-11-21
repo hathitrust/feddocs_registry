@@ -60,12 +60,15 @@ module Registry
       # number
       n: 'N(O|UMBER:)\.?\s?(0+)?(?<number>\d+)',
 
+      # numbers
+      ns: '(START\s)?N(OS?|UMBERS?:)\.?\s?(0+)?(?<start_number>\d+)(-|,\sEND\sNUMBER:)(?<end_number>\d+)',
+
       # part
       # have to be careful with this due to frequent use of pages in enumchrons
       pt: '\[?P(AR)?T:?\.?\s?(0+)?(?<part>\d+)\]?',
 
       # year
-      y: '(YEAR:)?\[?(?<year>(1[8-9]|20)\d{2})\.?\]?',
+      y: '(YEAR:|YR\.\s)?\[?(?<year>(1[8-9]|20)\d{2})\.?\]?',
 
       # book
       b: 'B(OO)?K:?\.?\s?(?<book>\d+)',
@@ -74,7 +77,16 @@ module Registry
       sh: 'SHEET:?\.?\s?(?<sheet>\d+)',
 
       # month
-      m: '(MONTH:)?(?<month>(JAN(UARY)?|FEB(RUARY)?|MAR(CH)?|APR(IL)?|MAY|JUNE?|JULY?|AUG(UST)?|SEPT?(EMBER)?|OCT(OBER)?|NOV(EMBER)?|DEC(EMBER)?)\.?)'
+      m: '(MONTH:)?(?<month>(JAN(UARY)?|FEB(RUARY)?|MAR(CH)?|APR(IL)?|MAY|JUNE?|JULY?|AUG(UST)?|SEPT?(EMBER)?|OCT(OBER)?|NOV(EMBER)?|DEC(EMBER)?)\.?)',
+
+      # day
+      day: '(DAY:)?(?<day>[0-3]?[0-9])',
+
+      # supplement
+      sup: '(?<supplement>(SUP|PLEMENT)\.?)',
+
+      # pages
+      pgs: 'P[PG]\.(\s|:)(?<start_page>\d{1,5})-(?<end_page>\d{1,5})'
 
     }
 
@@ -96,12 +108,16 @@ module Registry
 
       /^#{@tokens[:m]}$/xi,
 
+      /^#{@tokens[:sup]}$/xi,
+
       # compound patterns
       /^#{@tokens[:v]}#{@tokens[:div]}#{@tokens[:pt]}$/xi,
 
       /^#{@tokens[:y]}#{@tokens[:div]}#{@tokens[:pt]}$/xi,
 
       /^#{@tokens[:y]}#{@tokens[:div]}#{@tokens[:v]}$/xi,
+
+      /^#{@tokens[:v]}#{@tokens[:div]}#{@tokens[:ns]}$/xi,
 
       /^#{@tokens[:v]}[\(\s]\s?#{@tokens[:y]}\)?$/xi,
 
@@ -111,6 +127,76 @@ module Registry
         ^#{@tokens[:v]}#{@tokens[:div]}
         #{@tokens[:pt]}#{@tokens[:div]}
         #{@tokens[:y]}$
+      }xi,
+
+      # V. 24:NO. 1(2009)
+      # V. 16,NO. 23 2001 SEP.
+      # V. 12 NO. 37 1997 SUP.
+      %r{
+        ^#{@tokens[:v]}#{@tokens[:div]}
+        #{@tokens[:n]}\s?
+        (#{@tokens[:div]}|\()
+        #{@tokens[:y]}
+        (#{@tokens[:div]}#{@tokens[:m]})?\)?
+        (#{@tokens[:div]}#{@tokens[:sup]})?$
+      }xi,
+
+      # V. 27, NO. 13 (SEPTEMBER 21 - SEPTEMBER 28, 2012)
+      %r{
+        ^#{@tokens[:v]}#{@tokens[:div]}
+        #{@tokens[:n]}#{@tokens[:div]}
+        \((?<start_month>#{@tokens[:m]})\s?(?<start_day>\d{1,2})
+        #{@tokens[:div]}
+        (?<end_month>#{@tokens[:m]})\s?(?<end_day>\d{1,2})
+        #{@tokens[:div]}
+        #{@tokens[:y]}\)$
+      }xi,
+
+      # V. 30NO. 6 2015 [sic]
+      %r{
+        ^#{@tokens[:v]}
+        #{@tokens[:n]}(#{@tokens[:div]}
+        #{@tokens[:y]})?$
+      }xi,
+
+      # V. 8:NO. 19-22 1993
+      %r{
+        ^#{@tokens[:v]}#{@tokens[:div]}
+        #{@tokens[:ns]}\s?
+        (#{@tokens[:div]}|\()
+        #{@tokens[:y]}\)?$
+      }xi,
+
+      %r{
+        ^#{@tokens[:v]}#{@tokens[:div]}
+        #{@tokens[:n]}\s?
+        \(#{@tokens[:y]}#{@tokens[:div]}
+          #{@tokens[:m]}\s#{@tokens[:day]}\)$
+      }xi,
+
+      # V. 16, NO. 12 (APR. 2001)
+      # V. 12, NO. 29, (OCT. 1997)
+      %r{
+        ^#{@tokens[:v]}#{@tokens[:div]}
+        #{@tokens[:n]}(#{@tokens[:div]})?
+        \(#{@tokens[:m]}\s#{@tokens[:y]}\)$
+      }xi,
+
+      # V. 2, NO. 25-26 (DEC. 1987)
+      %r{
+        ^#{@tokens[:v]}#{@tokens[:div]}
+        #{@tokens[:ns]}\s?
+        \(#{@tokens[:m]}\s#{@tokens[:y]}\)?$
+      }xi,
+
+      # V. 2, NO. 25-26 (JUL. -AUG. 1995)
+      %r{
+        ^#{@tokens[:v]}#{@tokens[:div]}
+        #{@tokens[:ns]}\s?
+        \((?<start_month>#{@tokens[:m]})#{@tokens[:div]}
+        (?<end_month>#{@tokens[:m]})
+        #{@tokens[:div]}
+        #{@tokens[:y]}\)?$
       }xi,
 
       %r{
@@ -149,6 +235,30 @@ module Registry
         ^#{@tokens[:y]}#{@tokens[:div]}
         (START\sMONTH:)?(?<start_month>#{@tokens[:m]})#{@tokens[:div]}
         (END\sMONTH:)?(?<end_month>#{@tokens[:m]})$
+      }xi,
+
+      # V. 9 PG. 1535-2248 1994
+      %r{
+        ^#{@tokens[:v]}#{@tokens[:div]}
+        #{@tokens[:pgs]}
+        (\(?#{@tokens[:div]}#{@tokens[:y]}\)?)?$
+      }xi,
+
+      # V. 5 1990 PP. 4783-5463
+      %r{
+        ^#{@tokens[:v]}#{@tokens[:div]}
+        #{@tokens[:y]}#{@tokens[:div]}
+        #{@tokens[:pgs]}$
+      }xi,
+
+      # 2013 FEB. 1-26
+      # 2012 FEB. 21-MAR. 16
+      %r{
+        ^#{@tokens[:y]}#{@tokens[:div]}
+        (?<start_month>#{@tokens[:m]})#{@tokens[:div]}
+        (?<start_day>\d{1,2})#{@tokens[:div]}
+        ((?<end_month>#{@tokens[:m]})#{@tokens[:div]})?
+        (?<end_day>\d{1,2})
       }xi
     ]
 
@@ -173,6 +283,9 @@ module Registry
 
         # Remove nils
         ec.delete_if { |_k, value| value.nil? }
+
+        # supplement
+        ec['supplement'] = 'Supplement' if ec['supplement'] =~ /^sup/i
 
         # year unlikely. Probably don't know what we think we know.
         # From the regex, year can't be < 1800
@@ -210,7 +323,7 @@ module Registry
 
     def canonicalize(ec)
       # default order is:
-      t_order = %w[year month start_month end_month volume part number book sheet]
+      t_order = %w[year month start_month end_month volume part number start_number end_number book sheet start_page end_page supplement]
       canon = t_order.reject { |t| ec[t].nil? }
                      .collect { |t| t.to_s.tr('_', ' ').capitalize + ':' + ec[t] }
                      .join(', ')

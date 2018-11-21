@@ -23,6 +23,18 @@ describe 'tokens' do
   it 'matches "OCT."' do
     expect(/#{Series.tokens[:m]}/xi.match('OCT.')['month']).to eq('OCT.')
   end
+
+  it 'matches "NO. 12-13"' do
+    expect(/#{Series.tokens[:ns]}/xi.match('NO. 12-13')['start_number']).to eq('12')
+  end
+
+  it 'matches "SUP."' do
+    expect(/#{Series.tokens[:sup]}/xi.match('SUP.')['supplement']).to eq('SUP.')
+  end
+
+  it 'y matches "YR. 1993"' do
+    expect(/#{Series.tokens[:y]}/xi.match('YR. 1993')['year']).to eq('1993')
+  end
 end
 
 describe 'matchdata_to_hash' do
@@ -74,6 +86,27 @@ describe 'fix_months' do
 end
 
 describe 'parse_ec' do
+  it 'parses "V. 8:NO. 6 (1993:MAR. 19)"' do
+    expect(Series.parse_ec('V. 8:NO. 6 (1993:MAR. 19)')['month']).to eq('March')
+  end
+
+  it 'parses "V. 16, NO. 12 (APR. 2001)"' do
+    expect(Series.parse_ec('V. 16, NO. 12 (APR. 2001)')['month']).to eq('April')
+    expect(Series.parse_ec('V. 12, NO. 29, (OCT. 1997)')['month']).to eq('October')
+  end
+
+  it 'parses "V. 2, NO. 25-26 (DEC. 1987)"' do
+    expect(Series.parse_ec('V. 2, NO. 25-26 (DEC. 1987)')['month']).to eq('December')
+  end
+
+  it 'parses "V. 2, NO. 25-26 (JUL. -AUG. 1995)"' do
+    expect(Series.parse_ec('V. 2, NO. 25-26 (JUL. -AUG. 1995)')['end_month']).to eq('August')
+  end
+
+  it 'parses "V. 30NO. 6 2015"' do
+    expect(Series.parse_ec('V. 30NO. 6 2015')['number']).to eq('6')
+  end
+
   it 'parses "V. 3:PT. 2 1972"' do
     expect(Series.parse_ec('V. 3:PT. 2 1972')['part']).to eq('2')
   end
@@ -118,6 +151,41 @@ describe 'parse_ec' do
   it 'parses "NO. 1531 (1976)"' do
     expect(Series.parse_ec('NO. 1531 (1976)')['number']).to eq('1531')
   end
+
+  it 'parses "V. 24:NO. 1(2009)"' do
+    expect(Series.parse_ec('V. 24:NO. 1(2009)')['year']).to eq('2009')
+    expect(Series.parse_ec('V. 22:NO. 8 (2007)')['year']).to eq('2007')
+    expect(Series.parse_ec('V. 16,NO. 23 2001 SEP.')['year']).to eq('2001')
+    expect(Series.parse_ec('V. 12 NO. 37 1997 SUP.')['supplement']).to eq('Supplement')
+  end
+
+  it 'parses "V. 27, NO. 13 (SEPTEMBER 21 - SEPTEMBER 28, 2012)"' do
+    expect(Series.parse_ec('V. 27, NO. 13 (SEPTEMBER 21 - SEPTEMBER 28, 2012)')['end_month']).to eq('September')
+  end
+
+  it 'parses "V. 5 NO. 12-13"' do
+    expect(Series.parse_ec('V. 5 NO. 12-13')['start_number']).to eq('12')
+  end
+
+  it 'parses "V. 8:NO. 19-22 1993"' do
+    expect(Series.parse_ec('V. 8:NO. 19-22 1993')['end_number']).to eq('22')
+  end
+
+  it 'parses "V. 9 PG. 1535-2248 1994"' do
+    expect(Series.parse_ec('V. 9 PG. 1535-2248 1994')['start_page']).to eq('1535')
+  end
+
+  it 'parses "V. 5 1990 PP. 4783-5463"' do
+    expect(Series.parse_ec('V. 5 1990 PP. 4783-5463')['start_page']).to eq('4783')
+  end
+
+  it 'parses "2012 FEB. 21-MAR. 16"' do
+    expect(Series.parse_ec('2012 FEB. 21-MAR. 16')['end_month']).to eq('March')
+  end
+
+  it 'parses "2013 FEB. 1-26"' do
+    expect(Series.parse_ec('2013 FEB. 1-26')['end_day']).to eq('26')
+  end
 end
 
 describe 'Series.lookup_month' do
@@ -137,6 +205,14 @@ describe 'Series.lookup_month' do
     expect(Series.lookup_month('4')).to eq('April')
     expect(Series.lookup_month('04')).to eq('April')
     expect(Series.lookup_month('13')).to be_nil
+  end
+
+  it 'returns "January" for "JA"' do
+    expect(Series.lookup_month('JA')).to eq('January')
+  end
+
+  it 'returns "March" for "MR"' do
+    expect(Series.lookup_month('MR')).to eq('March')
   end
 end
 

@@ -427,7 +427,7 @@ module Registry
             # possible to have multiple ec_strings be reduced
             # to a single ec_string
             if canonical.nil?
-              #puts "canonical:#{canonical}, ec_string: #{ec_string}"
+              # puts "canonical:#{canonical}, ec_string: #{ec_string}"
             end
             ecs[Digest::SHA256.hexdigest(canonical)] ||= features
             ecs[Digest::SHA256.hexdigest(canonical)].merge(features)

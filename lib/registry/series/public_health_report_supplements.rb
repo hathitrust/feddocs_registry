@@ -42,22 +42,22 @@ module Registry
         # work.
         ec_string = '1' + ec_string if ec_string.match?(/^9\d\d$/)
 
-          Series.patterns.each do |p|
-            break unless matchdata.nil?
+        Series.patterns.each do |p|
+          break unless matchdata.nil?
 
-            matchdata ||= p.match(ec_string)
+          matchdata ||= p.match(ec_string)
         end
 
         # some cleanup
         unless matchdata.nil?
-                     ec = matchdata.named_captures
+          ec = matchdata.named_captures
           # Fix months
-            ec = Series.fix_months(ec)
+          ec = Series.fix_months(ec)
 
           # Remove nils
           ec.delete_if { |_k, value| value.nil? }
 
-            # year unlikely. Probably don't know what we think we know.
+          # year unlikely. Probably don't know what we think we know.
           # From the regex, year can't be < 1800
           ec = nil if ec['year'].to_i > (Time.now.year + 5)
         end
