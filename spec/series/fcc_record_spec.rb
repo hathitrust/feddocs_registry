@@ -210,6 +210,11 @@ describe 'FCCRecord' do
       parsed = src.parse_ec('V. 7:P. 3755/4833(1992)')
       expect(src.numbers_from_pages(parsed)['end_number']).to eq('15')
     end
+
+    it 'returns nil if it cant do anything' do
+      parsed = src.parse_ec('V. 7:P. 3756/4834(1992)')
+      expect(src.numbers_from_pages(parsed)['start_number']).to be_nil
+    end
   end
 
   describe 'explode' do
