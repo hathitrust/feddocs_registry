@@ -71,6 +71,7 @@ module Registry
     @extractions = {}
 
     # this stuff is extra ugly
+    MAX_OCN = (ENV['MAX_OCN']&.to_i || 2_000_000_000)
     Dotenv.load
     @@extractor = Traject::Indexer::MarcIndexer.new
     source_traject = __dir__ + '/../../config/traject_source_record_config.rb'
@@ -154,7 +155,8 @@ module Registry
       extract_oclcs
       extract_sudocs
 
-      self.oclc_resolved = oclc_alleged.map { |o| resolve_oclc(o) }.flatten.uniq
+      self.oclc_resolved = oclc_alleged.map { |o| resolve_oclc(o) }
+                                       .flatten.uniq.select { |o| o < MAX_OCN }
     end
 
     # Extract the contributing institutions id for this record.
