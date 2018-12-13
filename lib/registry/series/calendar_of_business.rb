@@ -12,7 +12,7 @@ module Registry
         @title = 'Calendar of Business'
       end
 
-      def self.sudoc_stem; end
+      
 
       def self.oclcs
         [30_003_375,

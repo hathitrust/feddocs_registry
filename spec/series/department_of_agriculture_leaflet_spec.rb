@@ -130,7 +130,7 @@ describe 'DepartmentOfAgricultureLeaflet' do
 
   describe 'title' do
     it 'has a title' do
-      expect(DAGL.title).to eq('Department of Agriculture Leaflet')
+      expect(DAGL.new.title).to eq('Department of Agriculture Leaflet')
     end
   end
 

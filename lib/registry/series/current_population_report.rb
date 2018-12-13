@@ -27,7 +27,7 @@ module Registry
         @patterns << /^(NO\.\s)?(?<start_number>\d{1,4})-(?<end_number>\d{3,4})$/
       end
 
-      def self.sudoc_stem; end
+      
 
       def self.oclcs
         [6_432_855, 623_448_621]

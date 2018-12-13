@@ -7,18 +7,15 @@ module Registry
     # Processing for Census of Manufactures series
     class CensusOfManufactures < DefaultSeriesHandler
 
-      def self.sudoc_stem; end
+      
 
       def self.oclcs
         [2_842_584, 623_028_861]
       end
 
-      def self.title
-        'Census of Manufactures'
-      end
-
       def initialize 
         super
+        @title = 'Census of Manufactures'
       end
 
       def preprocess(ec_string)

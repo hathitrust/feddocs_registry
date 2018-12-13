@@ -9,6 +9,7 @@ module Registry
 
       def initialize
         super
+        @title = 'Monthly Labor Review'
         v = 'V\.\s?(?<volume>\d{1,3})'
         n = 'NO\.\s?(?<number>\d{1,2})'
         ns = '(NOS?\.\s?)?(?<start_number>\d{1,2})[-\/](?<end_number>\d{1,2})'
@@ -167,8 +168,6 @@ module Registry
           }x
         ] # patterns
       end
-
-      def self.sudoc_stem; end
 
       def self.oclcs
         [5_345_258]

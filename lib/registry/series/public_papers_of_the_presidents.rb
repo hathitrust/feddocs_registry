@@ -8,7 +8,7 @@ module Registry
 
       def initialize
         super
-        @title = 'Public Papers Of The Presidents'
+        @title = 'Public Papers of the Presidents'
         # tokens
         y = '(Y(ear|R\.)?[:\s])?(?<year>\d{4})'
         ys = '(Years:\s?)?(?<start_year>\d{4})[-\/](?<end_year>\d{2,4})'
@@ -123,7 +123,7 @@ module Registry
         ] # patterns
       end
 
-      def self.sudoc_stem; end
+      
 
       def self.oclcs
         [1_198_154, 47_858_835]

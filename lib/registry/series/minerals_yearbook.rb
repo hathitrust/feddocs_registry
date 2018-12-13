@@ -177,7 +177,7 @@ module Registry
         ] # patterns
       end
 
-      def self.sudoc_stem; end
+      
 
       def self.oclcs
         [1_847_412, 228_509_857, 48_997_937]

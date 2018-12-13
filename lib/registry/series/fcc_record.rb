@@ -343,6 +343,7 @@ module Registry
         ec['end_number'] ||= ec['start_number']
         ec
       end
+
     end
   end
 end

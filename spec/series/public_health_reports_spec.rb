@@ -213,7 +213,7 @@ describe 'PublicHealthReports' do
 
   describe 'title' do
     it 'has a title' do
-      expect(PHR.title).to eq('Public Health Reports')
+      expect(PHR.new.title).to eq('Public Health Reports')
     end
   end
 

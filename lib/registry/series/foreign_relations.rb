@@ -7,6 +7,7 @@ module Registry
     class ForeignRelations < DefaultSeriesHandler
       def initialize
         super
+        @title = 'Foreign Relations'
         v = 'V\.?\s?(?<volume>\d{1,2})'
         p = 'PT\.?\s?(?<part>\d{1,2})'
         div = '[\s:,;\/-]\s?'
@@ -198,6 +199,7 @@ module Registry
       end
 
       def self.oclcs
+        []
         # [10648533, 1768670]
       end
 

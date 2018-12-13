@@ -34,7 +34,7 @@ describe 'CensusOfManufactures' do
 
   describe 'title' do
     it 'has a title' do
-      expect(CM.title).to eq('Census of Manufactures')
+      expect(CM.new.title).to eq('Census of Manufactures')
     end
   end
 

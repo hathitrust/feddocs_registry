@@ -1,18 +1,37 @@
 require 'forwardable'
+Dir[File.dirname(__FILE__) + "/series/*.rb"].each {|file| require file }
+require 'registry/series'
+require 'registry/series/default_series_handler'
 module Registry
   # Methods common to Series handling
   module Series
     extend Forwardable
+    class << self
+      attr_accessor :available_ec_handlers
+      attr_accessor :default_ec_handler
+    end
     def_delegators :ec_handler, :parse_ec, :explode
 
-    def ec_handler
-      @series ||= series
-      if @series&.first
-        series_class = Module.const_get('Registry::Series::'+ @series.first).new
-      else
-        series_class = DefaultSeriesHandler.new
+    @available_ec_handlers = {} 
+    def self.get_available_ec_handlers 
+      self.constants.each do |c|
+        next unless eval(c.to_s).class == Class and 
+          eval(c.to_s).superclass == Registry::Series::DefaultSeriesHandler 
+        new_handler = eval(c.to_s).new
+        Series.available_ec_handlers[new_handler.title] = new_handler 
       end
-      @ec_handler ||= series_class 
+      Series.default_ec_handler = Registry::Series::DefaultSeriesHandler.new
+    end
+    get_available_ec_handlers
+    
+    def ec_handler
+      return @ec_handler if @ec_handler
+      @series ||= series
+      if @series&.any?
+        @ec_handler = Series.available_ec_handlers[@series.first] 
+      else
+        @ec_handler = Series.default_ec_handler
+      end
     end
 
     # given a starting year with 4 digits and an ending year with 2 or 3 digits,
@@ -117,141 +136,21 @@ module Registry
       end
     end
 
-    # Uses ocns to identify a series title (and appropriate module)
+    # Uses ocns and sudocs to identify a series title 
+    # (and appropriate ultimately handler)
     def series
       @series ||= []
-      # try to set it
-      if (record_ocns.map(&:to_i) &
-          Series::FederalRegister.oclcs).any?
-        @series << 'FederalRegister'
+      Series.available_ec_handlers.each do |_k, handler|
+        if (record_ocns.map(&:to_i) & 
+            handler.class.oclcs).any? ||
+           (defined?(handler.class.sudoc_stem) &&
+             record_sudocs.grep(%r{^#{::Regexp
+                        .escape(handler.class.sudoc_stem)}}).any?
+           )
+          @series << handler.title
+        end
       end
-      if (record_ocns.map(&:to_i) &
-          Series::StatutesAtLarge.oclcs).any?
-        @series << 'StatutesAtLarge'
-      end
-      if (record_ocns.map(&:to_i) &
-          Series::AgriculturalStatistics.oclcs).any?
-        @series << 'AgriculturalStatistics'
-      end
-      if (record_ocns.map(&:to_i) &
-          Series::MonthlyLaborReview.oclcs).any?
-        @series << 'MonthlyLaborReview'
-      end
-      if (record_ocns.map(&:to_i) &
-          Series::MineralsYearbook.oclcs).any?
-        @series << 'MineralsYearbook'
-      end
-      if (record_ocns.map(&:to_i) &
-          Series::StatisticalAbstract.oclcs).any?
-        @series << 'StatisticalAbstract'
-      end
-      if (record_ocns.map(&:to_i) &
-         Series::UnitedStatesReports.oclcs).any? ||
-         record_sudocs
-         .grep(%r{^#{::Regexp
-                        .escape(Series::UnitedStatesReports.sudoc_stem)}}).any?
-        @series << 'UnitedStatesReports'
-      end
-      if record_sudocs
-         .grep(%r{^#{::Regexp
-                        .escape(Series::CivilRightsCommission.sudoc_stem)}})
-         .any?
-        @series << 'CivilRightsCommission'
-      end
-      if (record_ocns.map(&:to_i) &
-          Series::CongressionalRecord.oclcs).any?
-        @series << 'CongressionalRecord'
-      end
-      if record_sudocs
-         .grep(/^#{::Regexp.escape(Series::ForeignRelations.sudoc_stem)}/)
-         .any?
-        @series << 'ForeignRelations'
-      end
-      if (record_ocns.map(&:to_i) &
-          Series::CongressionalSerialSet.oclcs).any? ||
-         record_sudocs
-         .grep(%r{^#{::Regexp
-                        .escape(Series::CongressionalSerialSet.sudoc_stem)}})
-         .any?
-        @series << 'CongressionalSerialSet'
-      end
-      if (record_ocns.map(&:to_i) &
-          Series::EconomicReportOfThePresident.oclcs).any? ||
-         record_sudocs
-         .grep(%r{^#{::Regexp
-                        .escape(Series::EconomicReportOfThePresident
-                                .sudoc_stem)}}).any?
-        @series << 'EconomicReportOfThePresident'
-      end
-      if (record_ocns.map(&:to_i) &
-          Series::ReportsOfInvestigations.oclcs).any?
-        @series << 'ReportsOfInvestigations'
-      end
-      if (record_ocns.map(&:to_i) &
-          Series::DecisionsOfTheCourtOfVeteransAppeals.oclcs).any?
-        @series << 'DecisionsOfTheCourtOfVeteransAppeals'
-      end
-      if (record_ocns.map(&:to_i) &
-          Series::JournalOfTheNationalCancerInstitute.oclcs).any?
-        @series << 'JournalOfTheNationalCancerInstitute'
-      end
-      if (record_ocns.map(&:to_i) &
-          Series::CancerTreatmentReport.oclcs).any?
-        @series << 'CancerTreatmentReport'
-      end
-      if (record_ocns.map(&:to_i) &
-          Series::VitalStatistics.oclcs).any?
-        @series << 'VitalStatistics'
-      end
-      if (record_ocns.map(&:to_i) &
-          Series::PublicPapersOfThePresidents.oclcs).any?
-        @series << 'PublicPapersOfThePresidents'
-      end
-      if (record_ocns.map(&:to_i) &
-          Series::DepartmentOfAgricultureLeaflet.oclcs).any?
-        @series << 'DepartmentOfAgricultureLeaflet'
-      end
-      if (record_ocns.map(&:to_i) &
-          Series::PublicHealthReports.oclcs).any?
-        @series << 'PublicHealthReports'
-      end
-      if (record_ocns.map(&:to_i) &
-          Series::WarOfTheRebellion.oclcs).any?
-        @series << 'WarOfTheRebellion'
-      end
-      if (record_ocns.map(&:to_i) &
-          Series::CensusOfManufactures.oclcs).any?
-        @series << 'CensusOfManufactures'
-      end
-      if (record_ocns.map(&:to_i) &
-          Series::USExports.oclcs).any?
-        @series << 'USExports'
-      end
-      if (record_ocns.map(&:to_i) &
-          Series::CurrentPopulationReport.oclcs).any?
-        @series << 'CurrentPopulationReport'
-      end
-      if (record_ocns.map(&:to_i) &
-          Series::PublicHealthReportSupplements.oclcs).any?
-        @series << 'PublicHealthReportSupplements'
-      end
-      if (record_ocns.map(&:to_i) &
-          Series::FCCRecord.oclcs).any?
-        @series << 'FCCRecord'
-      end
-      if (record_ocns.map(&:to_i) &
-          Series::CalendarOfBusiness.oclcs).any?
-        @series << 'CalendarOfBusiness'
-      end
-
-      if @series&.any?
-        @series.uniq!
-        @ec_handler = Module.const_get('Registry::Series::' + @series.first).new
-        load_context
-      else
-        @ec_handler = DefaultSeriesHandler.new
-      end
-      # get whatever we got
+      @series.uniq!
       @series
     end
   end

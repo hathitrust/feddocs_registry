@@ -6,23 +6,15 @@ module Registry
   module Series
     # Processing for Department of Agriculture Leaflet series
     class DepartmentOfAgricultureLeaflet < DefaultSeriesHandler
-      class << self
-        attr_accessor :patterns
-        attr_accessor :tokens
-      end
-
-      def self.sudoc_stem; end
+      
 
       def self.oclcs
         [1_432_804, 34_452_947, 567_905_741, 608_882_398]
       end
 
-      def self.title
-        'Department of Agriculture Leaflet'
-      end
-
       def initialize
         super
+        @title = 'Department of Agriculture Leaflet'
         @tokens = {
           v: 'V(\.|olume)[:\s](?<volume>\d{1,3})',
           n: 'N(O\.|umber)[:|\s](?<number>\d{1,3})',

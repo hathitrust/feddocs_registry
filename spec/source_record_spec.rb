@@ -16,7 +16,7 @@ RSpec.describe SourceRecord do
   it 'detects series' do
     sr = SourceRecord.new(org_code: 'miu',
                           source: @fr_rec)
-    expect(sr.series).to include('FederalRegister')
+    expect(sr.series).to include('Federal Register')
   end
 
   it 'parses the enumchron if it has a series' do
@@ -694,9 +694,9 @@ RSpec.describe Registry::SourceRecord, '#extract_enum_chrons' do
                             enum_chrons: /V. \d/).first
     line = sr.source.to_json
     sr_new = SourceRecord.new(org_code: 'miu')
-    sr_new.series = ['FederalRegister']
+    sr_new.series = ['Federal Register']
     sr_new.source = line
-    expect(sr_new.series).to include('FederalRegister')
+    expect(sr_new.series).to include('Federal Register')
     expect(sr_new.enum_chrons).to include('Volume:77, Number:67')
     expect(sr_new.org_code).to eq('miu')
   end
@@ -706,7 +706,7 @@ RSpec.describe Registry::SourceRecord, '#extract_enum_chrons' do
     sr.org_code = 'miaahdl'
     sr.source = File.open(File.dirname(__FILE__) +
                      '/series/data/econreport.json').read
-    expect(sr.series).to include('EconomicReportOfThePresident')
+    expect(sr.series).to eq(['Economic Report of the President'])
     expect(sr.enum_chrons).to include('Year:1966, Part:3')
   end
 
@@ -832,11 +832,11 @@ describe Registry::SourceRecord, 'source' do
   end
 
   it 'saves the series information' do
-    expect(@src.series).to include('UnitedStatesReports')
+    expect(@src.series).to include('United States Reports')
     @src.save
     diffsrc = SourceRecord.where(source_id: @src.source_id).first
-    expect(diffsrc.attributes[:series]).to include('UnitedStatesReports')
-    expect(diffsrc['series']).to include('UnitedStatesReports')
+    expect(diffsrc.attributes[:series]).to include('United States Reports')
+    expect(diffsrc['series']).to include('United States Reports')
   end
 
   after(:each) do
@@ -1065,43 +1065,44 @@ RSpec.describe Registry::SourceRecord, '#series' do
   it 'detects Cancer Treatment Reports' do
     @src.org_code = 'miaahdl'
     @src.source = File.open(File.dirname(__FILE__) + '/series/data/ctr.json').read
-    expect(@src.series).to eq(['CancerTreatmentReport'])
+    expect(@src.series).to eq(['Cancer Treatment Report'])
   end
 
   it 'detects Vital Statistics' do
     @src.source = File.open(File.dirname(__FILE__) +
                        '/series/data/vital_statistics.json').read
-    expect(@src.series).to eq(['VitalStatistics'])
+    expect(@src.series).to eq(['Vital Statistics'])
   end
 
   it 'detects PublicPapers' do
     @src.source = File.open(File.dirname(__FILE__) +
                        '/series/data/public_papers.json').read
-    expect(@src.series).to eq(['PublicPapersOfThePresidents'])
+    expect(@src.series).to eq(['Public Papers of the Presidents'])
   end
 
   it 'detects DAGLs' do
     @src.source = File.open(File.dirname(__FILE__) +
                        '/series/data/dept_agr_leaflet.json').read
-    expect(@src.series).to eq(['DepartmentOfAgricultureLeaflet'])
+    expect(@src.series).to eq(['Department of Agriculture Leaflet'])
   end
 
   it 'detects PHRs' do
     @src.source = File.open(File.dirname(__FILE__) +
                        '/series/data/public_health_report.json').read
-    expect(@src.series).to eq(['PublicHealthReports'])
+    expect(@src.series).to eq(['Public Health Reports'])
   end
 
   it 'detects CMs' do
+    expect(Registry::Series.available_ec_handlers.count).to eq(26)
     @src.source = File.open(File.dirname(__FILE__) +
                        '/series/data/census_manufactures.json').read
-    expect(@src.series).to eq(['CensusOfManufactures'])
+    expect(@src.series).to eq(['Census of Manufactures'])
   end
 
   it 'detects US Exports' do
     @src.source = File.open(File.dirname(__FILE__) +
                        '/series/data/us_exports.json').read
-    expect(@src.series).to eq(['USExports'])
+    expect(@src.series).to eq(['US Exports'])
   end
 
   after(:each) do

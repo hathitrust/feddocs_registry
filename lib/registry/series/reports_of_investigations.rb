@@ -6,6 +6,7 @@ module Registry
     class ReportsOfInvestigations < DefaultSeriesHandler
       def initialize 
         super
+        @title = 'Reports Of Investigations'
         # tokens
         div = '[\s:,;\/-]+\s?\(?'
         n = 'N(umber|O)\.?' + div + '(?<number>\d{4})'
@@ -106,7 +107,7 @@ module Registry
         ] # patterns
       end
 
-      def self.sudoc_stem; end
+      
 
       def self.oclcs
         [1_728_640]

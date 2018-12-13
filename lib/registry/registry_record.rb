@@ -109,9 +109,8 @@ module Registry
         source_record_ids.uniq!
         self.source_org_codes.uniq!
         if source_record.series&.any?
-          self.series = source_record.series.map do |s|
-            s.gsub(/([A-Z])/, ' \1').strip
-          end
+          self.series << source_record.series
+          series.flatten!
           series.uniq!
         end
       end

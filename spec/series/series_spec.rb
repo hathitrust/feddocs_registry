@@ -264,6 +264,12 @@ describe 'Series.correct_year' do
   end
 end
 
+describe 'Series.available_ec_handlers' do
+  it 'contains all of the ec_handlers' do
+    expect(Series.available_ec_handlers.count).to eq(26)
+  end
+end
+
 describe 'all Series' do
   Registry::Series.constants.select { |c| eval(c.to_s).class == Module }.each do |c|
     s = Class.new { extend eval(c.to_s) }

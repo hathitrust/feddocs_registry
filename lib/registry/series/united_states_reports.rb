@@ -17,6 +17,7 @@ module Registry
 
       def initialize
         super
+        @title = 'United States Reports'
         reporters = %w[DALLAS CRANCH WHEATON PETERS HOWARD BLACK WALLACE]
         v = 'V\.\s?(?<volume>\d+)'
         ot = '(?<october>OCT\.?\s(TERM)?)'

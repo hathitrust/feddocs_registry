@@ -15,7 +15,9 @@ module Registry
         'CR'
       end
 
-      def self.oclcs; end
+      def self.oclcs
+        []
+      end
 
       def parse_ec(_ec_string)
         # our match

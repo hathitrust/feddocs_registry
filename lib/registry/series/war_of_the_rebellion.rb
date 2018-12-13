@@ -92,7 +92,7 @@ module Registry
         ]
       end
 
-      def self.sudoc_stem; end
+      
 
       def self.oclcs
         [427_057, 471_419_901]

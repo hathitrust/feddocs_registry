@@ -12,7 +12,7 @@ module Registry
 
       def initialize
         super
-        @title = 'Economic Report Of The President'
+        @title = 'Economic Report of the President'
         @patterns = [
 
           # own canonical format

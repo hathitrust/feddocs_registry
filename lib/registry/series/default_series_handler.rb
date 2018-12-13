@@ -310,6 +310,13 @@ module Registry
         end
         enum_chrons
       end
+
+=begin
+      def self.register_series
+        Series.available_ec_handlers << self.new
+      end
+      register_series
+=end
     end
   end
 end

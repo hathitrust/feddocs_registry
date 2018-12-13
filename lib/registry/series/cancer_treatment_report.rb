@@ -9,7 +9,7 @@ module Registry
 
       def initialize
         super
-
+        @title = 'Cancer Treatment Report'
         @tokens = {
           v: 'V(\.|olume)[:\s](?<volume>\d{1,3})',
           n: 'Number:(?<number>\d{1,2})',
@@ -241,7 +241,7 @@ module Registry
         ] # patterns
       end
 
-      def self.sudoc_stem; end
+      
 
       def self.oclcs
         [2_101_497, 681_450_829]

@@ -10,7 +10,7 @@ module Registry
         @title = 'Public Health Report Supplements'
       end
 
-      def self.sudoc_stem; end
+      
 
       def self.oclcs
         [29_651_249, 491_280_576]

@@ -13,6 +13,7 @@ module Registry
 
       def initialize
         super
+        @title = 'Statistical Abstract'
         @patterns = [
           # canonical form
           %r{

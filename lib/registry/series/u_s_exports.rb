@@ -8,6 +8,7 @@ module Registry
     class USExports < DefaultSeriesHandler
       def initialize 
         super
+        @title = 'US Exports'
         @patterns << /^#{@tokens[:y]}#{@tokens[:div]}(?<month>\d{1,2})$/xi
         @patterns << /^#{@tokens[:y]}\(?#{@tokens[:m]}\s\)?$/xi
         @patterns << %r{^#{@tokens[:y]}#{@tokens[:div]}
@@ -25,7 +26,7 @@ module Registry
           (\s#{@tokens[:pt]})?$}xi
       end
 
-      def self.sudoc_stem; end
+      
 
       def self.oclcs
         [1_799_484, 698_024_555]

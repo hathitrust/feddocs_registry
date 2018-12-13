@@ -6,7 +6,7 @@ module Registry
     # Vital Statistics series
     class VitalStatistics < DefaultSeriesHandler
 
-      def self.sudoc_stem; end
+      
 
       def self.oclcs
         [1_168_068, 48_062_652]
@@ -14,6 +14,7 @@ module Registry
 
       def initialize
         super
+        @title = 'Vital Statistics'
         # tokens
         y = '(Y(ear|R\.)?[:\s])?(?<year>\d{4})'
         v = 'V(olume|\.)?[:\s]?(?<volume>\d{1,2})'

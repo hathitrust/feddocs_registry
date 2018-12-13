@@ -78,7 +78,7 @@ describe 'EconomicReportOfThePresident' do
       sr.org_code = 'miaahdl'
       sr.source = File.open(File.dirname(__FILE__) +
                             '/data/econreport_src_pub_date.json').read
-      expect(sr.ec_handler.title).to eq('Economic Report Of The President')
+      expect(sr.ec_handler.title).to eq('Economic Report of the President')
       expect(sr.enum_chrons).to include('Year:1975, Part:2')
     end
 

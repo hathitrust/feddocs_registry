@@ -7,18 +7,15 @@ module Registry
     # Processing for Public Health Reports series
     class PublicHealthReports < DefaultSeriesHandler
 
-      def self.sudoc_stem; end
+      
 
       def self.oclcs
         [48_450_485, 1_007_653, 181_336_288, 1_799_423]
       end
 
-      def self.title
-        'Public Health Reports'
-      end
-
       def initialize
         super
+        @title = 'Public Health Reports'
         @tokens = {
           v: 'V(\.|olume)[:\s]?(?<volume>\d{1,3})',
           n: 'N(O\.|umber)[:|\s](?<number>\d{1,3})',
