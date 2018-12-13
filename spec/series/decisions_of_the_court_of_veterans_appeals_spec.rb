@@ -3,7 +3,7 @@ require 'json'
 DCVA = Registry::Series::DecisionsOfTheCourtOfVeteransAppeals
 
 describe 'DecisionsOfTheCourtOfVeteransAppeals' do
-  let(:src) { Class.new { extend DCVA } }
+  let(:src) { DCVA.new }
 
   describe 'parse_ec' do
     it 'can parse them all' do

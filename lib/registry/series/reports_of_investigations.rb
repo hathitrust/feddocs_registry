@@ -1,26 +1,11 @@
-require 'pp'
+# frozen_string_literal: true
+require 'registry/series/default_series_handler'
 
 module Registry
   module Series
-    module ReportsOfInvestigations
-      # class << self; attr_accessor :volumes end
-      # @volumes = {}
-
-      def self.sudoc_stem; end
-
-      def self.oclcs
-        [1_728_640]
-      end
-
-      def parse_ec(ec_string)
-        # our match
-        m = nil
-
-        ec_string.chomp!
-
-        # useless junk
-        ec_string.sub!(/^TN23 \. U43 /, '')
-
+    class ReportsOfInvestigations < DefaultSeriesHandler
+      def initialize 
+        super
         # tokens
         div = '[\s:,;\/-]+\s?\(?'
         n = 'N(umber|O)\.?' + div + '(?<number>\d{4})'
@@ -30,7 +15,7 @@ module Registry
         v = 'V(olume:)?\.?\s?(?<number>\d+)'
         vs = 'V?\.?\s?(?<start_number>[2-9]\d{3})-(?<end_number>\d{4})'
 
-        patterns = [
+        @patterns = [
           # canonical
           # Number:8551
           %r{
@@ -119,15 +104,30 @@ module Registry
           }x
 
         ] # patterns
+      end
 
-        patterns.each do |p|
-          break unless m.nil?
+      def self.sudoc_stem; end
 
-          m ||= p.match(ec_string)
+      def self.oclcs
+        [1_728_640]
+      end
+
+      def parse_ec(ec_string)
+        # our match
+        matchdata = nil
+
+        ec_string.chomp!
+
+        # useless junk
+        ec_string.sub!(/^TN23 \. U43 /, '')
+
+        @patterns.each do |p|
+          break unless matchdata.nil?
+          matchdata ||= p.match(ec_string)
         end
 
-        unless m.nil?
-          ec = Hash[m.names.zip(m.captures)]
+        unless matchdata.nil?
+          ec = matchdata.named_captures
           ec.delete_if { |_k, v| v.nil? }
           if ec.key? 'end_year'
             ec['end_year'] = Series.calc_end_year(ec['start_year'], ec['end_year'])

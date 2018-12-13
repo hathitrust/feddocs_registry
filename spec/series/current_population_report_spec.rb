@@ -3,7 +3,7 @@ require 'json'
 CPR = Registry::Series::CurrentPopulationReport
 
 describe 'CurrentPopulationReport' do
-  let(:src) { Class.new { extend CPR } }
+  let(:src) { CPR.new }
 
   describe 'parse_ec' do
     it 'can parse them all' do
@@ -17,7 +17,7 @@ describe 'CurrentPopulationReport' do
         ec = src.parse_ec(line)
         if ec.nil? || ec.empty?
           misses += 1
-          puts 'no match: ' + line
+          # puts 'no match: ' + line
         else
           res = src.explode(ec)
           res.each_key do |canon|
@@ -45,7 +45,7 @@ describe 'CurrentPopulationReport' do
 
   describe 'title' do
     it 'has a title' do
-      expect(CPR.title).to eq('Current Population Report')
+      expect(CPR.new.title).to eq('Current Population Report')
     end
   end
 

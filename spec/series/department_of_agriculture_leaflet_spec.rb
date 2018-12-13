@@ -3,7 +3,7 @@ require 'json'
 DAGL = Registry::Series::DepartmentOfAgricultureLeaflet
 
 describe 'DepartmentOfAgricultureLeaflet' do
-  let(:src) { Class.new { extend DAGL } }
+  let(:src) { DAGL.new }
 
   describe 'parse_ec' do
     it 'can parse them all' do
@@ -76,26 +76,26 @@ describe 'DepartmentOfAgricultureLeaflet' do
 
   describe 'tokens.y' do
     it 'matches Year:1984' do
-      expect(/#{DAGL.tokens[:y]}/xi.match('Year:1984')['year']).to eq('1984')
+      expect(/#{src.tokens[:y]}/xi.match('Year:1984')['year']).to eq('1984')
     end
 
     it 'matches "(1984)"' do
-      expect(/#{DAGL.tokens[:y]}/xi.match('(1984)')['year']).to eq('1984')
+      expect(/#{src.tokens[:y]}/xi.match('(1984)')['year']).to eq('1984')
     end
   end
 
   describe 'tokens.r' do
     it 'matches "Revision"' do
-      expect(/#{DAGL.tokens[:r]}/xi.match('Revision')['rev']).to \
+      expect(/#{src.tokens[:r]}/xi.match('Revision')['rev']).to \
         eq('Revision')
     end
 
     it 'matches "REV."' do
-      expect(/#{DAGL.tokens[:r]}/xi.match('REV.')['rev']).to eq('REV.')
+      expect(/#{src.tokens[:r]}/xi.match('REV.')['rev']).to eq('REV.')
     end
 
     it 'matches "Revision:5" with number' do
-      expect(/#{DAGL.tokens[:r]}/xi.match('Revision:5')['rev_num']).to eq('5')
+      expect(/#{src.tokens[:r]}/xi.match('Revision:5')['rev_num']).to eq('5')
     end
   end
 

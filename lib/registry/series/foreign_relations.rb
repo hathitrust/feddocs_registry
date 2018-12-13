@@ -1,54 +1,17 @@
+# frozen_string_literal: true
+require 'registry/series/default_series_handler'
+
 module Registry
   module Series
     # Foreign Relations series
-    module ForeignRelations
-      include Registry::Series
-      class << self; attr_accessor :years, :editions end
-      @years = {}
-      @editions = {}
-
-      def self.sudoc_stem
-        'S 1.1:'
-      end
-
-      def self.oclcs
-        # [10648533, 1768670]
-      end
-
-      def parse_ec(ec_string)
+    class ForeignRelations < DefaultSeriesHandler
+      def initialize
+        super
         v = 'V\.?\s?(?<volume>\d{1,2})'
         p = 'PT\.?\s?(?<part>\d{1,2})'
         div = '[\s:,;\/-]\s?'
 
-        m = nil
-
-        # some junk in the back
-        ec_string.gsub!(/ COPY$/, '')
-        ec_string.gsub!(/ ?=.*/, '')
-        ec_string.gsub!(/#{div}FICHE \d+(-\d+)?$/, '')
-        ec_string.gsub!(/#{div}MF\.? SUP\.?$/, '')
-        ec_string.chomp!
-
-        # some junk in the front
-        ec_string.gsub!(/^KZ233 . U55 /, '')
-        ec_string.gsub!(/^V\. \/V/, 'V')
-
-        # expand some stuff
-        ec_string.gsub!(/SUP\.?([^P])?/, 'SUPPLEMENT\1')
-        ec_string.gsub!(/CONF\.?([^E])?/, 'CONFERENCE\1')
-        # just telling us supplement doesn't do us any good anyway
-        ec_string.gsub!(/#{div}SUPPLEMENT$/, '')
-
-        # fix the three digit years
-        ec_string = '1' + ec_string if ec_string.match?(/^[89]\d\d[^0-9]*/)
-        # seriously
-        ec_string = '2' + ec_string if ec_string.match?(/^0\d\d[^0-9]*/)
-
-        # fix some manglings
-        ec_string.gsub!(/(\d{2,4})V/, '\1 V')
-        ec_string.gsub!(/(\d)PT/, '\1 PT')
-
-        patterns = [
+        @patterns = [
           # canonical
           %r{
             ^Year:(?<year>\d{4})(,\sVolume:(?<volume>\d+))?
@@ -228,15 +191,56 @@ module Registry
             ^(?<year>\d{4}):(?<part>\d)$
           }x
         ]
+      end
 
-        patterns.each do |pat|
-          break unless m.nil?
+      def self.sudoc_stem
+        'S 1.1:'
+      end
 
-          m ||= pat.match(ec_string)
+      def self.oclcs
+        # [10648533, 1768670]
+      end
+
+      def parse_ec(ec_string)
+        matchdata = nil
+        div = '[\s:,;\/-]\s?'
+
+        # some junk in the back
+        ec_string.gsub!(/ COPY$/, '')
+        ec_string.gsub!(/ ?=.*/, '')
+        ec_string.gsub!(/#{div}FICHE \d+(-\d+)?$/, '')
+        ec_string.gsub!(/#{div}MF\.? SUP\.?$/, '')
+        ec_string.chomp!
+
+        # some junk in the front
+        ec_string.gsub!(/^KZ233 . U55 /, '')
+        ec_string.gsub!(/^V\. \/V/, 'V')
+
+        # expand some stuff
+        ec_string.gsub!(/SUP\.?([^P])?/, 'SUPPLEMENT\1')
+        ec_string.gsub!(/CONF\.?([^E])?/, 'CONFERENCE\1')
+        # just telling us supplement doesn't do us any good anyway
+        ec_string.gsub!(/#{div}SUPPLEMENT$/, '')
+
+        # fix the three digit years
+        ec_string = '1' + ec_string if ec_string.match?(/^[89]\d\d[^0-9]*/)
+        # seriously
+        ec_string = '2' + ec_string if ec_string.match?(/^0\d\d[^0-9]*/)
+
+        # fix some manglings
+        ec_string.gsub!(/(\d{2,4})V/, '\1 V')
+        ec_string.gsub!(/(\d)PT/, '\1 PT')
+
+        
+
+        @patterns.each do |pat|
+          break unless matchdata.nil?
+
+          matchdata ||= pat.match(ec_string)
         end
 
-        unless m.nil?
-          ec = Hash[m.names.zip(m.captures)]
+        unless matchdata.nil?
+          ec = matchdata.named_captures
           # remove nils
           ec.delete_if { |_k, val| val.nil? }
           if ec.key?('year') && (ec['year'].length == 2)

@@ -1,34 +1,14 @@
-require 'pp'
+# frozen_string_literal: true
+require 'registry/series/default_series_handler'
 
 module Registry
   module Series
     # Statutes At Large series
-    module StatutesAtLarge
-      # include EC
-      # attr_accessor :number_counts, :volume_year
-
-      def self.oclcs
-        [1_768_474,
-         4_686_465,
-         3_176_465,
-         3_176_512,
-         426_275_236,
-         15_347_313,
-         15_280_229,
-         17_554_670,
-         12_739_515,
-         17_273_536]
-      end
-
-      def parse_ec(ec_string)
-        m = nil
-
-        # sometimes has junk in the front
-        ec_string.gsub!(/^KF50 \. U5 /, '')
-        ec_string.gsub!(/^[A-Z] V\./, 'V.')
-        ec_string.sub!(/ ?C\. \d+ ?/, '')
-
-        patterns = [
+    class StatutesAtLarge < DefaultSeriesHandler
+      def initialize
+        super
+        @title = 'Statutes At Large'
+        @patterns = [
           # 'V. 96:PT. 1 (1984)' /* 517 */
           # V. 114:PART 1 (2000)
           %r{
@@ -239,15 +219,37 @@ module Registry
             ^(?<start_year>\d{4})-(?<end_year>\d{4})\.?$
           }x
         ]
+      end
+
+      def self.oclcs
+        [1_768_474,
+         4_686_465,
+         3_176_465,
+         3_176_512,
+         426_275_236,
+         15_347_313,
+         15_280_229,
+         17_554_670,
+         12_739_515,
+         17_273_536]
+      end
+
+      def parse_ec(ec_string)
+        matchdata = nil
+
+        # sometimes has junk in the front
+        ec_string.gsub!(/^KF50 \. U5 /, '')
+        ec_string.gsub!(/^[A-Z] V\./, 'V.')
+        ec_string.sub!(/ ?C\. \d+ ?/, '')
+
 
         patterns.each do |p|
-          break unless m.nil?
-
-          m ||= p.match(ec_string)
+          break unless matchdata.nil?
+          matchdata ||= p.match(ec_string)
         end
 
-        unless m.nil?
-          ec = Hash[m.names.zip(m.captures)]
+        unless matchdata.nil?
+          ec = matchdata.named_captures
           if ec.key?('end_year') && /^\d\d$/.match(ec['end_year'])
             ec['end_year'] = ec['start_year'][0, 2] + ec['end_year']
           end

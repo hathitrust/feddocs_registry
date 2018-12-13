@@ -1,25 +1,13 @@
-require 'pp'
+# frozen_string_literal: true
+require 'registry/series/default_series_handler'
 
 module Registry
   module Series
-    module CongressionalRecord
-      include Registry::Series
-      class << self; attr_accessor :years, :editions end
-      @years = {}
-      @editions = {}
-
-      def self.sudoc_stem
-        'X 1.1:'
-      end
-
-      def self.oclcs
-        [5_058_415, 5_302_677, 22_840_665, 300_300_400]
-      end
-
-      def parse_ec(ec_string)
-        # our match
-        m = nil
-
+    # Processing for Congressional Record series
+    class CongressionalRecord < DefaultSeriesHandler
+      def initialize
+        super
+        @title = 'Congressional Record'
         # tokens
         v = 'V\.\s?\.?(?<volume>\d+)'
         p = '(PT\.?\s?)?\.?(?<part>\d+)'
@@ -29,10 +17,7 @@ module Registry
         congress = '(?<congress>\d{1,3})'
         index = '([\/\s]IND(EX)?\.?[:\/,\.\s]\s?(?<index>[A-Z]-[A-Z]))'
 
-        # double V for no apparent reason
-        ec_string.sub!(/V\. V\./, 'V.')
-
-        patterns = [
+        @patterns = [
           # canonical
           %r{
             ^Volume:(?<volume>\d+)
@@ -252,14 +237,30 @@ module Registry
           }x
         ] # patterns
 
-        patterns.each do |p|
-          break unless m.nil?
+      end
 
-          m ||= p.match(ec_string)
+      def self.sudoc_stem
+        'X 1.1:'
+      end
+
+      def self.oclcs
+        [5_058_415, 5_302_677, 22_840_665, 300_300_400]
+      end
+
+      def parse_ec(ec_string)
+        # our match
+        matchdata = nil
+
+        # double V for no apparent reason
+        ec_string.sub!(/V\. V\./, 'V.')
+
+        @patterns.each do |p|
+          break unless matchdata.nil?
+          matchdata ||= p.match(ec_string)
         end
 
-        unless m.nil?
-          ec = Hash[m.names.zip(m.captures)]
+        unless matchdata.nil?
+          ec = matchdata.named_captures 
           # remove nils
           ec.delete_if { |_k, v| v.nil? }
           if ec.key?('year') && (ec['year'].length == 3)

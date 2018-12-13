@@ -1,21 +1,14 @@
-require 'pp'
+# frozen_string_literal: true
+require 'registry/series/default_series_handler'
 
 module Registry
   module Series
-    module MonthlyLaborReview
+    class MonthlyLaborReview < DefaultSeriesHandler
       class << self; attr_accessor :volumes end
-      @@volumes = {}
+      @volumes = {}
 
-      def self.sudoc_stem; end
-
-      def self.oclcs
-        [5_345_258]
-      end
-
-      def parse_ec(ec_string)
-        # our match
-        m = nil
-
+      def initialize
+        super
         v = 'V\.\s?(?<volume>\d{1,3})'
         n = 'NO\.\s?(?<number>\d{1,2})'
         ns = '(NOS?\.\s?)?(?<start_number>\d{1,2})[-\/](?<end_number>\d{1,2})'
@@ -24,7 +17,7 @@ module Registry
         y = '[\(\s](' + months + '\s)?(?<year>\d{4})(:+' + month + '\s?)?\)?'
         div = '[\s:,;\/-]+\s?'
 
-        patterns = [
+        @patterns = [
           # canonical
           # Volume: 1, Number:5
           %r{
@@ -173,15 +166,25 @@ module Registry
             (:#{months})?$
           }x
         ] # patterns
+      end
 
-        patterns.each do |p|
-          break unless m.nil?
+      def self.sudoc_stem; end
 
-          m ||= p.match(ec_string)
+      def self.oclcs
+        [5_345_258]
+      end
+
+      def parse_ec(ec_string)
+        # our match
+        matchdata = nil
+
+        @patterns.each do |p|
+          break unless matchdata.nil?
+          matchdata ||= p.match(ec_string)
         end
 
-        unless m.nil?
-          ec = Hash[m.names.zip(m.captures)]
+        unless matchdata.nil?
+          ec = matchdata.named_captures
           ec.delete_if { |_k, v| v.nil? }
           if ec.key? 'end_year'
             ec['end_year'] = Series.calc_end_year(ec['start_year'], ec['end_year'])
@@ -238,8 +241,8 @@ module Registry
         #  canon = self.volumes[ec['volume']]
         if ec['volume']
           canon = "Volume:#{ec['volume']}"
-          if !ec['index'] && !ec['year'] && @@volumes[ec['volume']]
-            ec['year'] ||= @@volumes[ec['volume']]
+          if !ec['index'] && !ec['year'] && self.class.volumes[ec['volume']]
+            ec['year'] ||= self.class.volumes[ec['volume']]
           end
           if ec['number']
             canon += ", Number:#{ec['number']}"
@@ -262,7 +265,7 @@ module Registry
         vs = File.dirname(__FILE__) + '/data/mlr_volumes.tsv'
         File.open(vs).each do |line|
           volume, canon = line.chomp.split(/\t/)
-          @@volumes[volume] = canon
+          @volumes[volume] = canon
         end
       end
       load_context

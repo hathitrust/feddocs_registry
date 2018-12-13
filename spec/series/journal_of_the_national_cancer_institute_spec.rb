@@ -3,7 +3,7 @@ require 'json'
 JNCI = Registry::Series::JournalOfTheNationalCancerInstitute
 
 describe 'JournalOfTheNationalCancerInstitute' do
-  let(:src) { Class.new { extend JNCI } }
+  let(:src) { JNCI.new }
 
   describe 'parse_ec' do
     it 'can parse them all' do
@@ -146,17 +146,6 @@ describe 'JournalOfTheNationalCancerInstitute' do
   describe 'oclcs' do
     it 'has an oclcs field' do
       expect(JNCI.oclcs).to eq([1_064_763, 36_542_869, 173_847_259, 21_986_096])
-    end
-  end
-
-  describe 'remove_dupe_years' do
-    it 'cuts off duplicate years' do
-      ec_string = 'V. 91, NO. 13-18 1999 1999'
-      expect(src.remove_dupe_years(ec_string)).to eq('V. 91, NO. 13-18 1999')
-      ec_string = 'V. 91, NO. 13-18 1999 2000'
-      expect(
-        src.remove_dupe_years(ec_string)
-      ).to eq('V. 91, NO. 13-18 1999 2000')
     end
   end
 end

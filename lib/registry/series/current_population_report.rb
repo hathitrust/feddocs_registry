@@ -1,37 +1,31 @@
 # frozen_string_literal: true
-
-require 'pp'
+require 'registry/series/default_series_handler'
 
 module Registry
   module Series
     # Processing for Current Population Report series
-    module CurrentPopulationReport
-      class << self
-        attr_accessor :patterns
-        attr_accessor :tokens
+    class CurrentPopulationReport < DefaultSeriesHandler
+      def initialize
+        super
+        @title = 'Current Population Report'
+        @patterns << /^#{@tokens[:y]}#{@tokens[:div]}(?<month>\d{1,2})$/xi
+        @patterns << /^#{@tokens[:y]}\(?#{@tokens[:m]}\s\)?$/xi
+        @patterns << %r{^#{@tokens[:y]}#{@tokens[:div]}
+          (?<start_month>\d{1,2})#{@tokens[:div]}
+          (?<end_month>\d{1,2})$}xi
+        @patterns << %r{^#{@tokens[:y]}#{@tokens[:div]}\d{1,2}#{@tokens[:div]}
+          \(?#{@tokens[:m]}\s?\)?$}xi
+        @patterns << %r{^#{@tokens[:y]}
+          \(?\s?(?<start_month>#{@tokens[:m]})#{@tokens[:div]}{1,2}
+          (?<end_month>#{@tokens[:m]})\s?\)?
+          (\s?#{@tokens[:y]})?$}xi
+        @patterns << %r{^(?<start_month>#{@tokens[:m]})#{@tokens[:div]}{1,2}
+          (?<end_month>#{@tokens[:m]})#{@tokens[:div]}
+          #{@tokens[:y]}
+          (\s#{@tokens[:pt]})?$}xi
+        @patterns << /^(?<number>[1-9]\d{3})$/
+        @patterns << /^(NO\.\s)?(?<start_number>\d{1,4})-(?<end_number>\d{3,4})$/
       end
-      # @volumes = {}
-
-      @tokens = Series.tokens
-      @patterns = Series.patterns.clone
-      @patterns.delete(/^(YEAR:)?\[?(?<year>(1[8-9]|20)\d{2})\.?\]?$/ix)
-      @patterns << /^#{@tokens[:y]}#{@tokens[:div]}(?<month>\d{1,2})$/xi
-      @patterns << /^#{@tokens[:y]}\(?#{@tokens[:m]}\s\)?$/xi
-      @patterns << %r{^#{@tokens[:y]}#{@tokens[:div]}
-        (?<start_month>\d{1,2})#{@tokens[:div]}
-        (?<end_month>\d{1,2})$}xi
-      @patterns << %r{^#{@tokens[:y]}#{@tokens[:div]}\d{1,2}#{@tokens[:div]}
-        \(?#{@tokens[:m]}\s?\)?$}xi
-      @patterns << %r{^#{@tokens[:y]}
-        \(?\s?(?<start_month>#{@tokens[:m]})#{@tokens[:div]}{1,2}
-        (?<end_month>#{@tokens[:m]})\s?\)?
-        (\s?#{@tokens[:y]})?$}xi
-      @patterns << %r{^(?<start_month>#{@tokens[:m]})#{@tokens[:div]}{1,2}
-        (?<end_month>#{@tokens[:m]})#{@tokens[:div]}
-        #{@tokens[:y]}
-        (\s#{@tokens[:pt]})?$}xi
-      @patterns << /^(?<number>[1-9]\d{3})$/
-      @patterns << /^(NO\.\s)?(?<start_number>\d{1,4})-(?<end_number>\d{3,4})$/
 
       def self.sudoc_stem; end
 
@@ -39,15 +33,11 @@ module Registry
         [6_432_855, 623_448_621]
       end
 
-      def self.title
-        'Current Population Report'
-      end
-
       def preprocess(ec_string)
         ec_string.sub!(/^C. 1 /, '')
         ec_string.sub!(/ C. 1$/, '')
         ec_string.sub!(/^.*P-28[\/\s]/, '')
-        ec_string.sub!(/#{Series.tokens[:div]}C. [12]$/, '')
+        ec_string.sub!(/#{@tokens[:div]}C. [12]$/, '')
         ec_string = '1' + ec_string if ec_string =~ /^9\d\d/
         # V. 1977:MAY-JUNE
         ec_string.sub!(/^V. ([12]\d{3})/, '\1')
@@ -60,7 +50,7 @@ module Registry
 
         ec_string = preprocess(ec_string).chomp
 
-        CurrentPopulationReport.patterns.each do |p|
+        @patterns.each do |p|
           break unless matchdata.nil?
 
           matchdata ||= p.match(ec_string)

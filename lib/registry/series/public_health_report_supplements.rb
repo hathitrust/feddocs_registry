@@ -1,18 +1,14 @@
 # frozen_string_literal: true
-
-require 'pp'
+require 'registry/series/default_series_handler'
 
 module Registry
   module Series
     # Processing for Public Health Report Supplements series
-    module PublicHealthReportSupplements
-      class << self
-        attr_accessor :patterns
-        attr_accessor :tokens
+    class PublicHealthReportSupplements < DefaultSeriesHandler
+      def initialize
+        super
+        @title = 'Public Health Report Supplements'
       end
-      # @volumes = {}
-
-      @tokens = Series.tokens
 
       def self.sudoc_stem; end
 
@@ -24,17 +20,6 @@ module Registry
         'Public Health Report Supplements'
       end
 
-      #       def preprocess(ec_string)
-      #         ec_string.sub!(/^C. 1 /, '')
-      #         ec_string.sub!(/ C. 1$/, '')
-      #         ec_string.sub!(/^.*P-28[\/\s]/, '')
-      #         ec_string.sub!(/#{Series.tokens[:div]}C. [12]$/, '')
-      #         ec_string = '1' + ec_string if ec_string =~ /^9\d\d/
-      #         # V. 1977:MAY-JUNE
-      #         ec_string.sub!(/^V. ([12]\d{3})/, '\1')
-      #         ec_string
-      #       end
-
       def parse_ec(ec_string)
         matchdata = nil
 
@@ -42,7 +27,7 @@ module Registry
         # work.
         ec_string = '1' + ec_string if ec_string.match?(/^9\d\d$/)
 
-        Series.patterns.each do |p|
+        @patterns.each do |p|
           break unless matchdata.nil?
 
           matchdata ||= p.match(ec_string)

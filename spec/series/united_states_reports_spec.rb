@@ -3,7 +3,7 @@ SourceRecord = Registry::SourceRecord
 USR = Registry::Series::UnitedStatesReports
 
 describe 'UnitedStatesReports' do
-  let(:src) { Class.new { extend USR } }
+  let(:src) { USR.new }
 
   describe 'parse_ec' do
     it 'can parse them all' do

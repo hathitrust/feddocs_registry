@@ -4,7 +4,7 @@ require 'json'
 CRC = Registry::Series::CivilRightsCommission
 
 describe 'CRC' do
-  let(:src) { Class.new { extend CRC } }
+  let(:src) { CRC.new }
 
   describe 'new' do
     it 'can create a new record without parsing/exploding' do

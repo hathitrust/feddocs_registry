@@ -3,7 +3,7 @@ require 'json'
 MLR = Registry::Series::MonthlyLaborReview
 
 describe 'MonthlyLaborReview' do
-  let(:src) { Class.new { extend MLR } }
+  let(:src) { MLR.new }
 
   describe 'parse_ec' do
     it 'can parse them all' do

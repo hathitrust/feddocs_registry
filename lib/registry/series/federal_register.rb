@@ -1,44 +1,16 @@
 require 'pp'
+require 'registry/series/default_series_handler'
 
 module Registry
   module Series
-    module FederalRegister
-      # attr_accessor :number_counts, :volume_year
-      class << self; attr_accessor :nums_per_vol, :year_to_vol end
+    class FederalRegister < DefaultSeriesHandler
       @nums_per_vol = {}
       @year_to_vol = {}
 
-      # def initialize match_data
-      #  match_data.names.each {|n| instance_variable_set("@#{n}",
-      #                       match_data[n])}
-      #  #EC.convert_to_isodate self
-      # end
-
-      def self.oclcs
-        [1_768_512,
-         3_803_349,
-         9_090_879,
-         6_141_934,
-         27_183_168,
-         9_524_639,
-         60_637_209,
-         25_816_139,
-         27_163_912,
-         7_979_808,
-         4_828_080,
-         18_519_766,
-         41_954_100,
-         43_080_713,
-         38_469_925,
-         97_118_565,
-         70_285_150]
-      end
-
-      def parse_ec(ec_string)
-        m = nil
-
-        ec_string.sub!(/^C. 1 /, '')
-        patterns = [
+      def initialize
+        super
+        @title = 'Federal Register'
+        @patterns = [
           # canonical
           %r{
             ^Volume:(?<volume>\d+),\sNumber:(?<number>\d+)$
@@ -223,15 +195,41 @@ module Registry
             (?<number_end>\d+)[^\d]
             }x
         ]
-        patterns.each do |p|
-          break unless m.nil?
+      end
 
-          m ||= p.match(ec_string)
+      def self.oclcs
+        [1_768_512,
+         3_803_349,
+         9_090_879,
+         6_141_934,
+         27_183_168,
+         9_524_639,
+         60_637_209,
+         25_816_139,
+         27_163_912,
+         7_979_808,
+         4_828_080,
+         18_519_766,
+         41_954_100,
+         43_080_713,
+         38_469_925,
+         97_118_565,
+         70_285_150]
+      end
+
+      def parse_ec(ec_string)
+        matchdata = nil
+
+        ec_string = preprocess(ec_string).chomp
+
+        @patterns.each do |p|
+          break unless matchdata.nil?
+          matchdata ||= p.match(ec_string)
         end
 
-        unless m.nil?
-          ec = Hash[m.names.zip(m.captures)]
-          if m.names.include?('year') && !m.names.include?('volume')
+        unless matchdata.nil?
+          ec = matchdata.named_captures 
+          if matchdata.names.include?('year') && !matchdata.names.include?('volume')
             ec['volume'] = FederalRegister.year_to_vol[ec['year']]
           end
         end
@@ -262,12 +260,20 @@ module Registry
 
       def canonicalize(ec); end
 
+      def self.year_to_vol
+        @year_to_vol
+      end
+
+      def self.nums_per_vol
+        @nums_per_vol
+      end
+
       def self.load_context
         ncs = File.dirname(__FILE__) + '/data/fr_number_counts.tsv'
         File.open(ncs).each do |line|
           year, volume, numbers = line.chomp.split(/\t/)
-          year_to_vol[year] = volume
-          nums_per_vol[volume] = numbers
+          @year_to_vol[year] = volume
+          @nums_per_vol[volume] = numbers
         end
       end
       load_context

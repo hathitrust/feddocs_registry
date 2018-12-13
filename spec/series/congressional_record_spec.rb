@@ -3,7 +3,13 @@ require 'json'
 CR = Registry::Series::CongressionalRecord
 
 describe 'Congressional Record' do
-  let(:src) { Class.new { extend CR } }
+  let(:src) { CR.new }
+
+  describe 'title' do
+    it 'has the correct title' do
+      expect(src.title).to eq('Congressional Record')
+    end
+  end
 
   describe 'parse_ec' do
     it 'can parse them all' do

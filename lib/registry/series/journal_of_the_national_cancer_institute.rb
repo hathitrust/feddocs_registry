@@ -1,26 +1,13 @@
-require 'pp'
+# frozen_string_literal: true
+require 'registry/series/default_series_handler'
 
 module Registry
   module Series
-    module JournalOfTheNationalCancerInstitute
-      # class << self; attr_accessor :volumes end
-      # @volumes = {}
-
-      def self.sudoc_stem; end
-
-      def self.oclcs
-        [1_064_763, 36_542_869, 173_847_259, 21_986_096]
-      end
-
-      def parse_ec(ec_string)
-        # our match
-        m = nil
-
-        ec_string.chomp!
-
-        ec_string = remove_dupe_years ec_string
-        ec_string.gsub!(/^C\. \d /, '')
-
+    # Processing for The Journal of the National Cancer Institute
+    class JournalOfTheNationalCancerInstitute
+      def initialize
+        super
+        @title = 'Journal of the National Cancer Institute'
         # tokens
         v = 'V(\.|olume)[:\s](?<volume>\d{1,3})'
         n = 'Number:(?<number>\d{1,2})'
@@ -32,7 +19,7 @@ module Registry
         months = '(?<start_month>[A-z]+\.?)\s?(\d{1,2}\s?)?(-|/)(?<end_month>[A-z]+\.?)(\s\d{1,2})?'
         pages = 'P?P\.\s(?<start_page>\d{1,4})-(?<end_page>\d{1,4})'
 
-        patterns = [
+        @patterns = [
           # canonical
           # Volume:99, Number:7, Year:1997
           # V. 1
@@ -234,15 +221,31 @@ module Registry
             ^#{y}$
           }x
         ] # patterns
+      end
 
-        patterns.each do |p|
-          break unless m.nil?
+      def self.sudoc_stem; end
 
-          m ||= p.match(ec_string)
+      def self.oclcs
+        [1_064_763, 36_542_869, 173_847_259, 21_986_096]
+      end
+
+      def parse_ec(ec_string)
+        # our match
+        matchdata = nil
+
+        ec_string.chomp!
+
+        ec_string = Series.remove_dupe_years ec_string
+        ec_string.gsub!(/^C\. \d /, '')
+
+        @patterns.each do |p|
+          break unless matchdata.nil?
+
+          matchdata ||= p.match(ec_string)
         end
 
-        unless m.nil?
-          ec = Hash[m.names.zip(m.captures)]
+        unless matchdata.nil?
+          ec = matchdata.named_captures
           ec.delete_if { |_k, v| v.nil? }
 
           if ec['month'] && ec['month'] =~ /^[0-9]+$/
@@ -334,15 +337,6 @@ module Registry
         # starting with V. 80, 1988, year and volume have a one to one
         # correspondence
         (1988 + (volume.to_i - 80)).to_s if volume.to_i >= 80
-      end
-
-      def remove_dupe_years(ec_string)
-        m = ec_string.match(/ (?<first>\d{4}) (?<second>\d{4})$/)
-        if !m.nil? && (m['first'] == m['second'])
-          ec_string.gsub(/ \d{4}$/, '')
-        else
-          ec_string
-        end
       end
 
       def self.load_context; end

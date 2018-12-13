@@ -2,7 +2,7 @@ require 'json'
 FederalRegister = Registry::Series::FederalRegister
 
 describe 'FederalRegister' do
-  let(:src) { Class.new { extend FederalRegister } }
+  let(:src) { FederalRegister.new }
 
   describe 'parse_ec' do
     it 'can parse them all' do

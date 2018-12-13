@@ -1,32 +1,14 @@
 require 'pp'
+require 'registry/series/default_series_handler'
 
 module Registry
   module Series
-    module PublicPapersOfThePresidents
-      @@presidents = []
+    class PublicPapersOfThePresidents < DefaultSeriesHandler
+      @presidents = []
 
-      def self.sudoc_stem; end
-
-      def self.oclcs
-        [1_198_154, 47_858_835]
-      end
-
-      def parse_ec(ec_string)
-        # our match
-        m = nil
-
-        ec_string.chomp!
-
-        ec_string = remove_dupe_years ec_string
-        # remove copy info
-        ec_string.gsub!(/^C\. \d /, '')
-        ec_string.gsub!(/ C\. \d$/, '')
-
-        # fix the three digit years
-        ec_string = '1' + ec_string if ec_string.match?(/^[89]\d\d[^0-9]*/)
-        # seriously
-        ec_string = '2' + ec_string if ec_string.match?(/^0\d\d[^0-9]*/)
-
+      def initialize
+        super
+        @title = 'Public Papers Of The Presidents'
         # tokens
         y = '(Y(ear|R\.)?[:\s])?(?<year>\d{4})'
         ys = '(Years:\s?)?(?<start_year>\d{4})[-\/](?<end_year>\d{2,4})'
@@ -38,9 +20,9 @@ module Registry
         app = '(?<appendix>(TECH\.?\s)?APP(EN)?D?I?X?\.?)'
         sec = 'SECT?(ION)?\.?[:\s]?(?<section>\d+)'
         sup = '(?<supplement>SUPP?(LEMENT)?\.?)'
-        pres = '\(?(?<president>(' + @@presidents.join('|') + '))\)?'
+        pres = '\(?(?<president>(' + self.class.presidents.join('|') + '))\)?'
 
-        patterns = [
+        @patterns = [
           # canonical
           # Year:1960
           # Year:1960, Book:2
@@ -139,15 +121,38 @@ module Registry
             ^#{y}$
           }x
         ] # patterns
+      end
 
-        patterns.each do |p|
-          break unless m.nil?
+      def self.sudoc_stem; end
 
-          m ||= p.match(ec_string)
+      def self.oclcs
+        [1_198_154, 47_858_835]
+      end
+
+      def parse_ec(ec_string)
+        # our match
+        matchdata = nil
+
+        ec_string.chomp!
+
+        ec_string = Series.remove_dupe_years ec_string
+        # remove copy info
+        ec_string = preprocess(ec_string).chomp
+        ec_string.gsub!(/ C\. \d$/, '')
+
+        # fix the three digit years
+        ec_string = '1' + ec_string if ec_string.match?(/^[89]\d\d[^0-9]*/)
+        # seriously
+        ec_string = '2' + ec_string if ec_string.match?(/^0\d\d[^0-9]*/)
+
+        
+        @patterns.each do |p|
+          break unless matchdata.nil?
+          matchdata ||= p.match(ec_string)
         end
 
-        unless m.nil?
-          ec = Hash[m.names.zip(m.captures)]
+        unless matchdata.nil?
+          ec = matchdata.named_captures 
           ec.delete_if { |_k, v| v.nil? }
           if ec.key? 'end_year'
             ec['end_year'] = Series.calc_end_year(ec['start_year'], ec['end_year'])
@@ -186,20 +191,15 @@ module Registry
         canon << 'Index' if ec['index']
         canon.join(', ') unless canon.empty?
       end
-
-      def remove_dupe_years(ec_string)
-        m = ec_string.match(/( |^)(?<first>\d{4}) (?<second>\d{4})$/)
-        if !m.nil? && (m['first'] == m['second'])
-          ec_string.gsub(/ \d{4}$/, '')
-        else
-          ec_string
-        end
+  
+      def self.presidents
+        @presidents
       end
 
       def self.load_context
         pres = File.dirname(__FILE__) + '/data/presidents.txt'
         File.open(pres).each do |line|
-          @@presidents << line.chomp
+          @presidents << line.chomp
         end
       end
       load_context

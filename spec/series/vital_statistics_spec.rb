@@ -3,7 +3,7 @@ require 'json'
 VS = Registry::Series::VitalStatistics
 
 describe 'VitalStatistics' do
-  let(:src) { Class.new { extend VS } }
+  let(:src) { VS.new }
 
   describe 'parse_ec' do
     it 'can parse them all' do

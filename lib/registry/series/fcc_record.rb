@@ -1,234 +1,229 @@
 # frozen_string_literal: true
-
 require 'json'
 require 'pp'
+require 'registry/series/default_series_handler'
 
 module Registry
   module Series
     # Processing for FCC Record series
-    module FCCRecord
-      class << self
-        attr_accessor :patterns
-        attr_accessor :tokens
-        attr_accessor :pages_to_numbers
-      end
-      # @volumes = {}
+    class FCCRecord < DefaultSeriesHandler
+      @pages_to_numbers = {}
 
-      @tokens = Series.tokens.clone
-      # be real loose with the months
-      @tokens[:m] = '(MONTH:)?(?<month>(JAN?(UARY)?|F(EB)?(RUARY)?|MA?R(CH)?|APR?(IL)?|MA?Y|J(E|UN|UNE)|J(Y|L|UL|ULY)|AU?G(UST)?|S(EPT?)?(EMBER)?|O(CT)?(OBER)?|N(OV)?(EMBER)?|D(EC)?(EMBER)?)\.?)'
+      def initialize 
+        super
+        @title = 'FCC Record'
+        # be real loose with the months
+        @tokens[:m] = '(MONTH:)?(?<month>(JAN?(UARY)?|F(EB)?(RUARY)?|MA?R(CH)?|APR?(IL)?|MA?Y|J(E|UN|UNE)|J(Y|L|UL|ULY)|AU?G(UST)?|S(EPT?)?(EMBER)?|O(CT)?(OBER)?|N(OV)?(EMBER)?|D(EC)?(EMBER)?)\.?)'
 
-      @patterns = Series.patterns.clone
-      @patterns << /^(?<volume>\d{1,2})\/(?<number>\d{1,2})$/xi
-      # V. 11 NO. 32 SUP. 1996
-      @patterns << %r{
-                     ^#{@tokens[:v]}#{@tokens[:div]}
-                      #{@tokens[:n]}#{@tokens[:div]}
-                      #{@tokens[:sup]}
-                      (#{@tokens[:div]}#{@tokens[:y]})?$
-                    }xi
-      @patterns << %r{
-                      ^(?<volume>\d{1,2})\/
-                      #{@tokens[:ns]}$
-                    }xi
+        @patterns << /^(?<volume>\d{1,2})\/(?<number>\d{1,2})$/xi
+        # V. 11 NO. 32 SUP. 1996
+        @patterns << %r{
+                       ^#{@tokens[:v]}#{@tokens[:div]}
+                        #{@tokens[:n]}#{@tokens[:div]}
+                        #{@tokens[:sup]}
+                        (#{@tokens[:div]}#{@tokens[:y]})?$
+                      }xi
+        @patterns << %r{
+                        ^(?<volume>\d{1,2})\/
+                        #{@tokens[:ns]}$
+                      }xi
 
-      # V. V. 17:17 JUN 21 - JUN 28 2002
-      # V. 15:34 (NOV 13/24, 2000)
-      # V. 15:36 (NOV 27/DEC 2000)
-      @patterns << %r{
-                      ^#{@tokens[:v]}#{@tokens[:div]}
-                      (NO\.\s)?(?<number>\d{1,2})#{@tokens[:div]}
-                      \(?(?<start_month>#{@tokens[:m]})\s?((?<start_day>\d{1,2}))?
-                      #{@tokens[:div]}
-                      (?<end_month>#{@tokens[:m]})?\s?(?<end_day>\d{1,2})?
-                      #{@tokens[:div]}
-                      #{@tokens[:y]}\)?$
-                    }xi
-      # V. V. 12:35 1997
-      # V. 16:20(2001)
-      # V. 13:21 SUP. (1998)
-      @patterns << %r{
-                     ^#{@tokens[:v]}#{@tokens[:div]}
-                     (?<number>\d{1,2})
-                     (\s#{@tokens[:sup]}\s)?
-                     ([\s\(]+#{@tokens[:y]}\)?)?$
-                   }xi
-      @patterns << %r{
-                     ^((V\.\s)+)?(?<volume>\d{1,2})#{@tokens[:div]}
-                      (?<number>\d{1,2})
-                      (#{@tokens[:div]}#{@tokens[:sup]})?$
-                   }xi
-
-      # 3/18-20 (AUG. 29-OCT. 7, 1988)
-      # 8/21-22 (OCT 4-29, 1993)
-      # V. 9:7-10 (MAR 21-MAY 13, 1994)
-      @patterns << %r{
-                      ^((V\.\s)+)?(?<volume>\d{1,2})#{@tokens[:div]}
-                      (?<start_number>\d{1,2})-(?<end_number>\d{1,2})
-                      (\s?\(
-                        (?<start_month>#{@tokens[:m]})\s(?<start_day>\d{1,2})
+        # V. V. 17:17 JUN 21 - JUN 28 2002
+        # V. 15:34 (NOV 13/24, 2000)
+        # V. 15:36 (NOV 27/DEC 2000)
+        @patterns << %r{
+                        ^#{@tokens[:v]}#{@tokens[:div]}
+                        (NO\.\s)?(?<number>\d{1,2})#{@tokens[:div]}
+                        \(?(?<start_month>#{@tokens[:m]})\s?((?<start_day>\d{1,2}))?
                         #{@tokens[:div]}
-                        ((?<end_month>#{@tokens[:m]})\s)?
-                        (?<end_day>\d{1,2})
+                        (?<end_month>#{@tokens[:m]})?\s?(?<end_day>\d{1,2})?
                         #{@tokens[:div]}
-                        #{@tokens[:y]}\)
-                      )?$
-                   }xi
-      # 11/32-33 1996
-      # V. 12:23-24 1997
-      # V. 5:22-23 (OCT-NOV 1990)
-      @patterns << %r{
-                      ^(((V\.\s)+))?(?<volume>\d{1,2})#{@tokens[:div]}
-                      (?<start_number>\d{1,2})-(?<end_number>\d{1,2})
-                      \s?\(?((?<start_month>#{@tokens[:m]})-(?<end_month>#{@tokens[:m]}))?
-                      \s(?<year>\d{4})\)?$
-                   }xi
+                        #{@tokens[:y]}\)?$
+                      }xi
+        # V. V. 12:35 1997
+        # V. 16:20(2001)
+        # V. 13:21 SUP. (1998)
+        @patterns << %r{
+                       ^#{@tokens[:v]}#{@tokens[:div]}
+                       (?<number>\d{1,2})
+                       (\s#{@tokens[:sup]}\s)?
+                       ([\s\(]+#{@tokens[:y]}\)?)?$
+                     }xi
+        @patterns << %r{
+                       ^((V\.\s)+)?(?<volume>\d{1,2})#{@tokens[:div]}
+                        (?<number>\d{1,2})
+                        (#{@tokens[:div]}#{@tokens[:sup]})?$
+                     }xi
 
-      # V. 6:10-11 (MAY 1991)
-      @patterns << %r{
-        ^#{@tokens[:v]}#{@tokens[:div]}
-        (?<start_number>\d{1,2})-(?<end_number>\d{1,2})\s?
-        \(?#{@tokens[:m]}\s?#{@tokens[:y]}\)?$
-      }xi
+        # 3/18-20 (AUG. 29-OCT. 7, 1988)
+        # 8/21-22 (OCT 4-29, 1993)
+        # V. 9:7-10 (MAR 21-MAY 13, 1994)
+        @patterns << %r{
+                        ^((V\.\s)+)?(?<volume>\d{1,2})#{@tokens[:div]}
+                        (?<start_number>\d{1,2})-(?<end_number>\d{1,2})
+                        (\s?\(
+                          (?<start_month>#{@tokens[:m]})\s(?<start_day>\d{1,2})
+                          #{@tokens[:div]}
+                          ((?<end_month>#{@tokens[:m]})\s)?
+                          (?<end_day>\d{1,2})
+                          #{@tokens[:div]}
+                          #{@tokens[:y]}\)
+                        )?$
+                     }xi
+        # 11/32-33 1996
+        # V. 12:23-24 1997
+        # V. 5:22-23 (OCT-NOV 1990)
+        @patterns << %r{
+                        ^(((V\.\s)+))?(?<volume>\d{1,2})#{@tokens[:div]}
+                        (?<start_number>\d{1,2})-(?<end_number>\d{1,2})
+                        \s?\(?((?<start_month>#{@tokens[:m]})-(?<end_month>#{@tokens[:m]}))?
+                        \s(?<year>\d{4})\)?$
+                     }xi
 
-      # V. 12 NO. 17 P. 9617-10204 1997
-      # V. 9 NO. 15-16 P. 3239-3956 1994
-      @patterns << %r{
-                      ^#{@tokens[:v]}#{@tokens[:div]}
-                      (#{@tokens[:n]}|#{@tokens[:ns]})#{@tokens[:div]}
-                      P\.\s(?<start_page>\d{1,5})-(?<end_page>\d{1,5})
+        # V. 6:10-11 (MAY 1991)
+        @patterns << %r{
+          ^#{@tokens[:v]}#{@tokens[:div]}
+          (?<start_number>\d{1,2})-(?<end_number>\d{1,2})\s?
+          \(?#{@tokens[:m]}\s?#{@tokens[:y]}\)?$
+        }xi
+
+        # V. 12 NO. 17 P. 9617-10204 1997
+        # V. 9 NO. 15-16 P. 3239-3956 1994
+        @patterns << %r{
+                        ^#{@tokens[:v]}#{@tokens[:div]}
+                        (#{@tokens[:n]}|#{@tokens[:ns]})#{@tokens[:div]}
+                        P\.\s(?<start_page>\d{1,5})-(?<end_page>\d{1,5})
+                        (\s#{@tokens[:y]})?$
+                     }xi
+
+        # V. 7:P. 3755/4833(1992)
+        # V. 13:P. 19401/20049(1997/1998)
+        @patterns << %r{
+                        ^#{@tokens[:v]}#{@tokens[:div]}
+                        P\.\s(?<start_page>\d{1,5})#{@tokens[:div]}
+                        (?<end_page>\d{1,5})
+                        (\((#{@tokens[:y]}|(?<start_year>\d{4})\/(?<end_year>\d{2,4}))\))?$
+                     }xi
+
+        # V9NO11-12 1994
+        # V. 12NO. 7-8 1997
+        @patterns << %r{
+                      ^V(\.\s)?(?<volume>\d+)
+                      NO(\.\s)?(?<start_number>\d+)-(?<end_number>\d+)
                       (\s#{@tokens[:y]})?$
-                   }xi
+                     }xi
 
-      # V. 7:P. 3755/4833(1992)
-      # V. 13:P. 19401/20049(1997/1998)
-      @patterns << %r{
+        # V. 6:NO. 19-22 1991:SEPT. 9-NOV. 1
+        # V. 6:NO. 21-22(1991:OCT. 7-NOV. 1) <P. 5732-6472>
+        # V. 21:NO. 1 2006:JAN. 3-31
+        #  V. 15:8(2000:MARCH 6-17)
+        # V. 21:NO. 1(2006:JAN. 3/31)
+        # V. 21:NO. 1(2006:JAN. 3/JAN. 31) <P. 1-945>
+        @patterns << %r{
                       ^#{@tokens[:v]}#{@tokens[:div]}
-                      P\.\s(?<start_page>\d{1,5})#{@tokens[:div]}
-                      (?<end_page>\d{1,5})
-                      (\((#{@tokens[:y]}|(?<start_year>\d{4})\/(?<end_year>\d{2,4}))\))?$
-                   }xi
+                      (#{@tokens[:ns]}|#{@tokens[:n]}|(?<number>\d{1,2}))[\s\(]+
+                      #{@tokens[:y]}#{@tokens[:div]}
+                      (?<start_month>#{@tokens[:m]})\s?(?<start_day>\d{1,2})[-\/]
+                      ((?<end_month>#{@tokens[:m]})\s?)?(?<end_day>\d{1,2})\)?
+                      (\s<?P\.\s(?<start_page>\d{1,5})-(?<end_page>\d{1,5})>?)?
+                      $
+                    }xi
 
-      # V9NO11-12 1994
-      # V. 12NO. 7-8 1997
-      @patterns << %r{
-                    ^V(\.\s)?(?<volume>\d+)
-                    NO(\.\s)?(?<start_number>\d+)-(?<end_number>\d+)
-                    (\s#{@tokens[:y]})?$
-                   }xi
+        # V. 23(2008) P. 8153-9023
+        # V. 18:NO. 12(2003) P. 9282-10332
+        @patterns << %r{
+                      ^#{@tokens[:v]}
+                      (#{@tokens[:div]}#{@tokens[:n]})?
+                      \(#{@tokens[:y]}\)
+                      \sP.\s(?<start_page>\d{1,5})[-\/](?<end_page>\d{1,5})$
+                     }xi
 
-      # V. 6:NO. 19-22 1991:SEPT. 9-NOV. 1
-      # V. 6:NO. 21-22(1991:OCT. 7-NOV. 1) <P. 5732-6472>
-      # V. 21:NO. 1 2006:JAN. 3-31
-      #  V. 15:8(2000:MARCH 6-17)
-      # V. 21:NO. 1(2006:JAN. 3/31)
-      # V. 21:NO. 1(2006:JAN. 3/JAN. 31) <P. 1-945>
-      @patterns << %r{
-                    ^#{@tokens[:v]}#{@tokens[:div]}
-                    (#{@tokens[:ns]}|#{@tokens[:n]}|(?<number>\d{1,2}))[\s\(]+
-                    #{@tokens[:y]}#{@tokens[:div]}
-                    (?<start_month>#{@tokens[:m]})\s?(?<start_day>\d{1,2})[-\/]
-                    ((?<end_month>#{@tokens[:m]})\s?)?(?<end_day>\d{1,2})\)?
-                    (\s<?P\.\s(?<start_page>\d{1,5})-(?<end_page>\d{1,5})>?)?
-                    $
-                  }xi
+        # V. 16,NO. 20 2001 JULY-AUG.
+        @patterns << %r{
+                      ^#{@tokens[:v]}#{@tokens[:div]}
+                      #{@tokens[:n]}#{@tokens[:div]}
+                      #{@tokens[:y]}#{@tokens[:div]}
+                      (?<start_month>#{@tokens[:m]})#{@tokens[:div]}
+                      (?<end_month>#{@tokens[:m]})$
+                     }xi
 
-      # V. 23(2008) P. 8153-9023
-      # V. 18:NO. 12(2003) P. 9282-10332
-      @patterns << %r{
-                    ^#{@tokens[:v]}
-                    (#{@tokens[:div]}#{@tokens[:n]})?
-                    \(#{@tokens[:y]}\)
-                    \sP.\s(?<start_page>\d{1,5})[-\/](?<end_page>\d{1,5})$
-                   }xi
+        # V. 17:NO. 27(2001/02):P. 20086-20779
+        # V. 22:NO. 13(2007)P. 9864-10683
+        @patterns << %r{
+          ^#{@tokens[:v]}#{@tokens[:div]}
+          #{@tokens[:n]}
+          \(((?<start_year>\d{4})\/(?<end_year>\d{2,4})|#{@tokens[:y]})\)
+          ((#{@tokens[:div]})?P\.\s(?<start_page>\d{1,5})[-\/](?<end_page>\d{1,5}))?$
+        }xi
 
-      # V. 16,NO. 20 2001 JULY-AUG.
-      @patterns << %r{
-                    ^#{@tokens[:v]}#{@tokens[:div]}
-                    #{@tokens[:n]}#{@tokens[:div]}
-                    #{@tokens[:y]}#{@tokens[:div]}
-                    (?<start_month>#{@tokens[:m]})#{@tokens[:div]}
-                    (?<end_month>#{@tokens[:m]})$
-                   }xi
+        # V. 14,NO. 1 1998-1999
+        # V. 14 NO. 1 1998/99
+        @patterns << %r{
+          ^#{@tokens[:v]}#{@tokens[:div]}
+          #{@tokens[:n]}#{@tokens[:div]}
+          (?<start_year>\d{4})[-\/]
+          (?<end_year>\d{2,4})$
+        }xi
 
-      # V. 17:NO. 27(2001/02):P. 20086-20779
-      # V. 22:NO. 13(2007)P. 9864-10683
-      @patterns << %r{
-        ^#{@tokens[:v]}#{@tokens[:div]}
-        #{@tokens[:n]}
-        \(((?<start_year>\d{4})\/(?<end_year>\d{2,4})|#{@tokens[:y]})\)
-        ((#{@tokens[:div]})?P\.\s(?<start_page>\d{1,5})[-\/](?<end_page>\d{1,5}))?$
-      }xi
+        # V. V. 25:21,P. 17467-18163,DEC 20-31 2010
+        # V. V. 25:2, P. 830-1765, JAN 22-FEB 19 2010
+        @patterns << %r{
+          ^#{@tokens[:v]}#{@tokens[:div]}
+          (NO\.\s)?(?<number>\d{1,2})#{@tokens[:div]}
+          P\.\s(?<start_page>\d{1,5})[-\/]
+          (?<end_page>\d{1,5})#{@tokens[:div]}
+          ((?<supplement>SUP\.\s))?
+          (?<start_month>#{@tokens[:m]})\s?
+          (?<start_day>\d{1,2})?-
+          (?<end_month>#{@tokens[:m]})?\s?
+          (?<end_day>\d{1,2})?\s
+          #{@tokens[:y]}$
+        }xi
 
-      # V. 14,NO. 1 1998-1999
-      # V. 14 NO. 1 1998/99
-      @patterns << %r{
-        ^#{@tokens[:v]}#{@tokens[:div]}
-        #{@tokens[:n]}#{@tokens[:div]}
-        (?<start_year>\d{4})[-\/]
-        (?<end_year>\d{2,4})$
-      }xi
+        # V. 2 NO. 1-4 PG. 1-1358 1987
+        @patterns << %r{
+          ^#{@tokens[:v]}#{@tokens[:div]}
+          #{@tokens[:ns]}#{@tokens[:div]}
+          #{@tokens[:pgs]}#{@tokens[:div]}
+          (#{@tokens[:y]})?$
+        }xi
 
-      # V. V. 25:21,P. 17467-18163,DEC 20-31 2010
-      # V. V. 25:2, P. 830-1765, JAN 22-FEB 19 2010
-      @patterns << %r{
-        ^#{@tokens[:v]}#{@tokens[:div]}
-        (NO\.\s)?(?<number>\d{1,2})#{@tokens[:div]}
-        P\.\s(?<start_page>\d{1,5})[-\/]
-        (?<end_page>\d{1,5})#{@tokens[:div]}
-        ((?<supplement>SUP\.\s))?
-        (?<start_month>#{@tokens[:m]})\s?
-        (?<start_day>\d{1,2})?-
-        (?<end_month>#{@tokens[:m]})?\s?
-        (?<end_day>\d{1,2})?\s
-        #{@tokens[:y]}$
-      }xi
+        # V. 8:25-26 N29-D23(1993)
+        # V. 12:20 JY28-AG8(1997)
+        # 12/13-14 JE. 2-13 1997
+        @patterns << %r{
+        ^((V\.\s)+)?(?<volume>\d{1,2})#{@tokens[:div]}
+          ((?<start_number>\d{1,2})-(?<end_number>\d{1,2})|(?<number>\d{1,2}))\s
+          (?<start_month>#{@tokens[:m]})\s?(?<start_day>\d{1,2})-
+          (?<end_month>#{@tokens[:m]})?(?<end_day>\d{1,2})
+          ([\(\s]#{@tokens[:y]}\)?)?$
+        }xi
 
-      # V. 2 NO. 1-4 PG. 1-1358 1987
-      @patterns << %r{
-        ^#{@tokens[:v]}#{@tokens[:div]}
-        #{@tokens[:ns]}#{@tokens[:div]}
-        #{@tokens[:pgs]}#{@tokens[:div]}
-        (#{@tokens[:y]})?$
-      }xi
+        # V. 2:20-22 S-N(1987)
+        @patterns << %r{
+          ^#{@tokens[:v]}#{@tokens[:div]}
+          (?<start_number>\d{1,2})-
+          (?<end_number>\d{1,2})#{@tokens[:div]}
+          (?<start_month>#{@tokens[:m]})-(?<end_month>#{@tokens[:m]})
+          (\(#{@tokens[:y]}\))?$
+        }xi
 
-      # V. 8:25-26 N29-D23(1993)
-      # V. 12:20 JY28-AG8(1997)
-      # 12/13-14 JE. 2-13 1997
-      @patterns << %r{
-      ^((V\.\s)+)?(?<volume>\d{1,2})#{@tokens[:div]}
-        ((?<start_number>\d{1,2})-(?<end_number>\d{1,2})|(?<number>\d{1,2}))\s
-        (?<start_month>#{@tokens[:m]})\s?(?<start_day>\d{1,2})-
-        (?<end_month>#{@tokens[:m]})?(?<end_day>\d{1,2})
-        ([\(\s]#{@tokens[:y]}\)?)?$
-      }xi
+        # 13/NO. 13
+        @patterns << %r{
+          ^(?<volume>\d{1,2})#{@tokens[:div]}
+          #{@tokens[:n]}$
+        }xi
 
-      # V. 2:20-22 S-N(1987)
-      @patterns << %r{
-        ^#{@tokens[:v]}#{@tokens[:div]}
-        (?<start_number>\d{1,2})-
-        (?<end_number>\d{1,2})#{@tokens[:div]}
-        (?<start_month>#{@tokens[:m]})-(?<end_month>#{@tokens[:m]})
-        (\(#{@tokens[:y]}\))?$
-      }xi
-
-      # 13/NO. 13
-      @patterns << %r{
-        ^(?<volume>\d{1,2})#{@tokens[:div]}
-        #{@tokens[:n]}$
-      }xi
-
-      # 13/17-18 JE. 15-JL. 10 1998
-      # V. 15 NO. 15-16 MY. 15-JE. 9 2000
-      @patterns << %r{
-      ^((V\.\s)+)?(?<volume>\d{1,2})#{@tokens[:div]}
-        (NO\.\s)?(?<start_number>\d{1,2})-(?<end_number>\d{1,2})\s
-        (?<start_month>#{@tokens[:m]})\s?(?<start_day>\d{1,2})-
-        (?<end_month>#{@tokens[:m]})\s?(?<end_day>\d{1,2})\s
-        #{@tokens[:y]}$
-      }xi
-
-      def self.sudoc_stem; end
+        # 13/17-18 JE. 15-JL. 10 1998
+        # V. 15 NO. 15-16 MY. 15-JE. 9 2000
+        @patterns << %r{
+        ^((V\.\s)+)?(?<volume>\d{1,2})#{@tokens[:div]}
+          (NO\.\s)?(?<start_number>\d{1,2})-(?<end_number>\d{1,2})\s
+          (?<start_month>#{@tokens[:m]})\s?(?<start_day>\d{1,2})-
+          (?<end_month>#{@tokens[:m]})\s?(?<end_day>\d{1,2})\s
+          #{@tokens[:y]}$
+        }xi
+      end
 
       def self.oclcs
         [14_964_165,
@@ -239,14 +234,6 @@ module Registry
          70_896_877]
       end
 
-      def self.title
-        'FCC Record'
-      end
-
-      def preprocess(ec_string)
-        ec_string.sub(/^C\. [1-2] /, '').sub(/\(\s/, '(').sub(/\s\)/, ')')
-      end
-
       def parse_ec(ec_string)
         matchdata = nil
         ec_string = preprocess(ec_string).chomp
@@ -255,7 +242,7 @@ module Registry
         # work.
         ec_string = '1' + ec_string if ec_string.match?(/^9\d\d$/)
 
-        FCCRecord.patterns.each do |p|
+        @patterns.each do |p|
           break unless matchdata.nil?
 
           matchdata ||= p.match(ec_string)
@@ -326,18 +313,22 @@ module Registry
         canon
       end
 
+      def self.pages_to_numbers
+        @pages_to_numbers
+      end
+
       def self.load_context
         # Be able to look up numbers based on pages
-        self.pages_to_numbers = JSON.parse(File.open(File.dirname(__FILE__) +
+        @pages_to_numbers = JSON.parse(File.open(File.dirname(__FILE__) +
                                       '/data/fcc_record_p_to_n.json').read)
       end
       load_context
 
       def numbers_from_pages(ec)
-        ec['start_number'] = FCCRecord.pages_to_numbers[
+        ec['start_number'] = self.class.pages_to_numbers[
           [ec['volume'], ec['start_page']].to_s
         ]
-        ec['end_number'] = (FCCRecord.pages_to_numbers[
+        ec['end_number'] = (self.class.pages_to_numbers[
           [
             ec['volume'],
             (ec['end_page'].to_i + 1).to_s

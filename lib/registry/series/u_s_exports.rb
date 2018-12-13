@@ -1,34 +1,29 @@
 # frozen_string_literal: true
-
 require 'pp'
+require 'registry/series/default_series_handler'
 
 module Registry
   module Series
     # Processing for U.S. Exports series
-    module USExports
-      class << self
-        attr_accessor :patterns
-        attr_accessor :tokens
+    class USExports < DefaultSeriesHandler
+      def initialize 
+        super
+        @patterns << /^#{@tokens[:y]}#{@tokens[:div]}(?<month>\d{1,2})$/xi
+        @patterns << /^#{@tokens[:y]}\(?#{@tokens[:m]}\s\)?$/xi
+        @patterns << %r{^#{@tokens[:y]}#{@tokens[:div]}
+          (?<start_month>\d{1,2})#{@tokens[:div]}
+          (?<end_month>\d{1,2})$}xi
+        @patterns << %r{^#{@tokens[:y]}#{@tokens[:div]}\d{1,2}#{@tokens[:div]}
+          \(?#{@tokens[:m]}\s?\)?$}xi
+        @patterns << %r{^#{@tokens[:y]}
+          \(?\s?(?<start_month>#{@tokens[:m]})#{@tokens[:div]}{1,2}
+          (?<end_month>#{@tokens[:m]})\s?\)?
+          (\s?#{@tokens[:y]})?$}xi
+        @patterns << %r{^(?<start_month>#{@tokens[:m]})#{@tokens[:div]}{1,2}
+          (?<end_month>#{@tokens[:m]})#{@tokens[:div]}
+          #{@tokens[:y]}
+          (\s#{@tokens[:pt]})?$}xi
       end
-      # @volumes = {}
-
-      @tokens = Series.tokens
-      @patterns = Series.patterns.clone
-      @patterns << /^#{@tokens[:y]}#{@tokens[:div]}(?<month>\d{1,2})$/xi
-      @patterns << /^#{@tokens[:y]}\(?#{@tokens[:m]}\s\)?$/xi
-      @patterns << %r{^#{@tokens[:y]}#{@tokens[:div]}
-        (?<start_month>\d{1,2})#{@tokens[:div]}
-        (?<end_month>\d{1,2})$}xi
-      @patterns << %r{^#{@tokens[:y]}#{@tokens[:div]}\d{1,2}#{@tokens[:div]}
-        \(?#{@tokens[:m]}\s?\)?$}xi
-      @patterns << %r{^#{@tokens[:y]}
-        \(?\s?(?<start_month>#{@tokens[:m]})#{@tokens[:div]}{1,2}
-        (?<end_month>#{@tokens[:m]})\s?\)?
-        (\s?#{@tokens[:y]})?$}xi
-      @patterns << %r{^(?<start_month>#{@tokens[:m]})#{@tokens[:div]}{1,2}
-        (?<end_month>#{@tokens[:m]})#{@tokens[:div]}
-        #{@tokens[:y]}
-        (\s#{@tokens[:pt]})?$}xi
 
       def self.sudoc_stem; end
 
@@ -43,7 +38,7 @@ module Registry
       def preprocess(ec_string)
         ec_string.sub!(/^C. 1 /, '')
         ec_string.sub!(/ C. 1$/, '')
-        ec_string.sub!(/#{Series.tokens[:div]}C. [12]$/, '')
+        ec_string.sub!(/#{@tokens[:div]}C. [12]$/, '')
         ec_string = '1' + ec_string if ec_string =~ /^9\d\d/
         # V. 1977:MAY-JUNE
         ec_string.sub!(/^V. ([12]\d{3})/, '\1')
@@ -56,7 +51,7 @@ module Registry
 
         ec_string = preprocess(ec_string).chomp
 
-        USExports.patterns.each do |p|
+        @patterns.each do |p|
           break unless matchdata.nil?
 
           matchdata ||= p.match(ec_string)

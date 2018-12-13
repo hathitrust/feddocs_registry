@@ -3,7 +3,7 @@ require 'json'
 CSS = Registry::Series::CongressionalSerialSet
 
 describe 'CongressionalSerialSet' do
-  let(:src) { Class.new { extend CSS } }
+  let(:src) { CSS.new }
 
   describe 'parse_ec' do
     it 'can parse them all' do

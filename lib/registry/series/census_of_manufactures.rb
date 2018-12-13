@@ -1,16 +1,11 @@
 # frozen_string_literal: true
-
 require 'pp'
+require 'registry/series/default_series_handler'
 
 module Registry
   module Series
     # Processing for Census of Manufactures series
-    module CensusOfManufactures
-      class << self
-        attr_accessor :patterns
-        attr_accessor :tokens
-      end
-      # @volumes = {}
+    class CensusOfManufactures < DefaultSeriesHandler
 
       def self.sudoc_stem; end
 
@@ -22,6 +17,10 @@ module Registry
         'Census of Manufactures'
       end
 
+      def initialize 
+        super
+      end
+
       def preprocess(ec_string)
         ec_string = '1' + ec_string if ec_string =~ /^9\d\d/
         ec_string
@@ -29,17 +28,17 @@ module Registry
 
       def parse_ec(ec_string)
         # our match
-        m = nil
+        matchdata = nil
 
         ec_string = preprocess(ec_string).chomp
 
-        Series.patterns.each do |p|
-          break unless m.nil?
+        @patterns.each do |p|
+          break unless matchdata.nil?
 
-          m ||= p.match(ec_string)
+          matchdata ||= p.match(ec_string)
         end
 
-        m&.named_captures
+        matchdata&.named_captures
       end
 
       def explode(ec, _src = nil)

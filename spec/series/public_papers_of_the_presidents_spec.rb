@@ -3,7 +3,7 @@ require 'json'
 PubPape = Registry::Series::PublicPapersOfThePresidents
 
 describe 'PublicPapersOfThePresidents' do
-  let(:src) { Class.new { extend PubPape } }
+  let(:src) { PubPape.new }
 
   describe 'parse_ec' do
     it 'can parse them all' do

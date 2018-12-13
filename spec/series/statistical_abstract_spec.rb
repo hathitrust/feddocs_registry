@@ -2,7 +2,7 @@ require 'json'
 
 StatisticalAbstract = Registry::Series::StatisticalAbstract
 describe 'StatisticalAbstract' do
-  let(:src) { Class.new { extend StatisticalAbstract } }
+  let(:src) { StatisticalAbstract.new }
 
   describe 'parse_ec' do
     it 'can parse them all' do

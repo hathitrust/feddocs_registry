@@ -1,34 +1,19 @@
-require 'pp'
+# frozen_string_literal: true
+require 'registry/series/default_series_handler'
+
 # Yearly, sometimes in multiple parts. We need to look at pub_date for
 # monographs.
-
 module Registry
   module Series
     # Economic Report of the President, a small series.
-    module EconomicReportOfThePresident
-      # include EC
-      # class << self; attr_accessor :parts end
-      # todo: make parts a constant?
-      @@parts = Hash.new { |hash, key| hash[key] = [] }
+    class EconomicReportOfThePresident < DefaultSeriesHandler
+      class << self; attr_accessor :parts end
+      @parts = Hash.new { |hash, key| hash[key] = [] }
 
-      def self.sudoc_stem
-        'Y 4.EC 7:EC 7/2/'
-      end
-
-      def self.oclcs
-        [3_160_302, 8_762_269, 8_762_232]
-      end
-
-      def parse_ec(ec_string)
-        m = nil
-
-        # C. 1 crap from beginning and end
-        ec_string.sub!(/ ?C\. 1 ?/, '')
-
-        # occassionally a '-' at the end. not much we can do with that
-        ec_string.sub!(/-$/, '')
-
-        patterns = [
+      def initialize
+        super
+        @title = 'Economic Report Of The President'
+        @patterns = [
 
           # own canonical format
           %r{
@@ -90,8 +75,27 @@ module Registry
             ^P(AR)?T\.?\s(?<part>\d{1})$
             }x
         ]
+      end
 
-        patterns.each do |p|
+      def self.sudoc_stem
+        'Y 4.EC 7:EC 7/2/'
+      end
+
+      def self.oclcs
+        [3_160_302, 8_762_269, 8_762_232]
+      end
+
+      def parse_ec(ec_string)
+        m = nil
+
+        # C. 1 crap from beginning and end
+        ec_string.sub!(/ ?C\. 1 ?/, '')
+
+        # occassionally a '-' at the end. not much we can do with that
+        ec_string.sub!(/-$/, '')
+
+
+        @patterns.each do |p|
           break unless m.nil?
 
           m ||= p.match(ec_string)
@@ -169,15 +173,15 @@ module Registry
         if ec['year'] && !ec['part'].nil?
           canon = canonicalize(ec)
           enum_chrons[canon] = ec.clone
-          @@parts[ec['year']] << ec['part']
-          @@parts[ec['year']].uniq!
+          self.class.parts[ec['year']] << ec['part']
+          self.class.parts[ec['year']].uniq!
         elsif ec['year'] && ec['start_part']
           (ec['start_part']..ec['end_part']).each do |pt|
             canon = canonicalize('year' => ec['year'], 'part' => pt)
             enum_chrons[canon] = ec.clone
-            @@parts[ec['year']] << pt
+            self.class.parts[ec['year']] << pt
           end
-          @@parts[ec['year']].uniq!
+          self.class.parts[ec['year']].uniq!
         elsif ec['year'] # but no parts.
           # we can't assume all of them, horrible marc
           # if @parts[ec['year']].count > 0
@@ -213,15 +217,16 @@ module Registry
         canon.join(', ') unless canon.empty?
       end
 
-      def load_context
+      def self.load_context
         ps = File.open(File.dirname(__FILE__) + '/data/econreport_parts.json',
                        'r')
         # copy individually so we don't clobber the @parts definition
         # i.e. no @parts = JSON.parse(ps.read)
-        JSON.parse(ps.read).each do |key, parts|
-          @@parts[key] = parts
+        JSON.parse(ps.read).each do |key, pts|
+          @parts[key] = pts
         end
       end
+      load_context
     end
   end
 end

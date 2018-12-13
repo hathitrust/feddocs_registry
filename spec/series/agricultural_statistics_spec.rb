@@ -4,7 +4,7 @@ require 'json'
 AgriculturalStatistics = Registry::Series::AgriculturalStatistics
 
 describe 'AgriculturalStatistics' do
-  let(:src) { Class.new { extend AgriculturalStatistics } }
+  let(:src) { AgriculturalStatistics.new }
 
   describe 'parse_ec' do
     it 'can parse them all' do

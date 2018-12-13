@@ -1,10 +1,16 @@
 require 'pp'
+require 'registry/series/default_series_handler'
 # Does nothing. Just filler.
 
 module Registry
   module Series
     # Civil Rights Commission "series"
-    module CivilRightsCommission
+    class CivilRightsCommission < DefaultSeriesHandler
+      def intialize
+        super
+        @title = 'Civil Rights Commission'
+      end
+
       def self.sudoc_stem
         'CR'
       end

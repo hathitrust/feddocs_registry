@@ -1,10 +1,11 @@
 require 'pp'
+require 'registry/series/default_series_handler'
 
 module Registry
   module Series
-    module UnitedStatesReports
-      include Registry::Series
-      @@volumes = {}
+    class UnitedStatesReports < DefaultSeriesHandler
+      class << self; attr_accessor :volumes end
+      @volumes = {}
 
       def self.sudoc_stem
         'JU 6.8'
@@ -14,8 +15,8 @@ module Registry
         [10_648_533, 1_768_670]
       end
 
-      def parse_ec(ec_string)
-        m = nil
+      def initialize
+        super
         reporters = %w[DALLAS CRANCH WHEATON PETERS HOWARD BLACK WALLACE]
         v = 'V\.\s?(?<volume>\d+)'
         ot = '(?<october>OCT\.?\s(TERM)?)'
@@ -23,7 +24,7 @@ module Registry
         ys = '(?<start_year>\d{4})[/-](?<end_year>\d{2,4})'
         rpt = '(?<reporter>(' + reporters.join('|') + '))\s(?<number>\d{1,2})'
 
-        patterns = [
+        @patterns = [
           # canonical
           # Volume: 1, Year:1982-1983, WALLACE 5, October Term
           %r{
@@ -75,15 +76,19 @@ module Registry
             ^#{v}[,\s\(]
             }x
         ]
+      end
 
-        patterns.each do |p|
-          break unless m.nil?
+      def parse_ec(ec_string)
+        matchdata = nil
 
-          m ||= p.match(ec_string)
+        @patterns.each do |p|
+          break unless matchdata.nil?
+
+          matchdata ||= p.match(ec_string)
         end
 
-        unless m.nil?
-          ec = Hash[m.names.zip(m.captures)]
+        unless matchdata.nil?
+          ec = matchdata.named_captures
           ec.delete_if { |_k, v| v.nil? }
           if ec.key? 'end_year'
             ec['end_year'] = Series.calc_end_year(ec['start_year'], ec['end_year'])
@@ -122,8 +127,8 @@ module Registry
       end
 
       def canonicalize(ec)
-        if @@volumes.include? ec['volume']
-          canon = @@volumes[ec['volume']]
+        if self.class.volumes.include? ec['volume']
+          canon = self.class.volumes[ec['volume']]
         elsif ec['volume']
           canon = "Volume:#{ec['volume']}"
           canon += ", Part:#{ec['part']}" if ec['part']
@@ -141,7 +146,7 @@ module Registry
         pairs = File.dirname(__FILE__) + '/data/usr_volumes.tsv'
         File.open(pairs).each do |line|
           volume, canon = line.chomp.split(/\t/)
-          @@volumes[volume] = canon
+          self.volumes[volume] = canon
         end
       end
       load_context

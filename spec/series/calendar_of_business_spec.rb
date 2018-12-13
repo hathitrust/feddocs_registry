@@ -3,7 +3,7 @@ require 'json'
 COB = Registry::Series::CalendarOfBusiness
 
 describe 'CalendarOfBusiness' do
-  let(:src) { Class.new { extend COB } }
+  let(:src) { COB.new }
 
   describe 'parse_ec' do
     it 'can parse them all' do
@@ -34,7 +34,7 @@ describe 'CalendarOfBusiness' do
 
   describe 'title' do
     it 'has a title' do
-      expect(COB.title).to eq('Calendar of Business')
+      expect(COB.new.title).to eq('Calendar of Business')
     end
   end
 

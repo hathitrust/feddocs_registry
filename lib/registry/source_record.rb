@@ -157,6 +157,10 @@ module Registry
       self.oclc_resolved = oclc_alleged.map { |o| resolve_oclc(o) }.flatten.uniq
     end
 
+    def ocns
+      self.oclc_resolved || []
+    end
+
     # Extract the contributing institutions id for this record.
     # Enables update/replacement of source records.
     #

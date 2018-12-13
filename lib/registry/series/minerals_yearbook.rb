@@ -1,27 +1,12 @@
-require 'pp'
+# frozen_string_literal: true
+require 'registry/series/default_series_handler'
 
 module Registry
   module Series
-    module MineralsYearbook
-      # class << self; attr_accessor :volumes end
-      # @volumes = {}
-
-      def self.sudoc_stem; end
-
-      def self.oclcs
-        [1_847_412, 228_509_857, 48_997_937]
-      end
-
-      def parse_ec(ec_string)
-        # our match
-        m = nil
-
-        # fix 3 digit years
-        ec_string = '1' + ec_string if ec_string.match?(/^9\d\d[^0-9]*/)
-
-        # useless junk
-        ec_string.sub!(/^TN23 \. U612 /, '')
-
+    class MineralsYearbook < DefaultSeriesHandler
+      def initialize
+        super
+        @title = 'Minerals Yearbook'
         # tokens
         y = '(YR\.\s)?(?<year>\d{4})'
         v = 'V\.?\s?(?<volume>\d)'
@@ -35,7 +20,7 @@ module Registry
         app = '(?<appendix>APP(END)?I?X?\.?)'
         stapp = '(?<statistical_appendix>STAT(ISTICAL)?\.?\sAPP(END)?I?X?\.?)'
 
-        patterns = [
+        @patterns = [
           # canonical
           # Year:1995, Volume:1, Part:3
           # Year:1995-1996, Volume:1, Part:3
@@ -190,15 +175,31 @@ module Registry
             (#{div}#{area})?$
           }x
         ] # patterns
+      end
 
-        patterns.each do |p|
-          break unless m.nil?
+      def self.sudoc_stem; end
 
-          m ||= p.match(ec_string)
+      def self.oclcs
+        [1_847_412, 228_509_857, 48_997_937]
+      end
+
+      def parse_ec(ec_string)
+        # our match
+        matchdata = nil
+
+        # fix 3 digit years
+        ec_string = '1' + ec_string if ec_string.match?(/^9\d\d[^0-9]*/)
+
+        # useless junk
+        ec_string.sub!(/^TN23 \. U612 /, '')
+
+        @patterns.each do |p|
+          break unless matchdata.nil?
+          matchdata ||= p.match(ec_string)
         end
 
-        unless m.nil?
-          ec = Hash[m.names.zip(m.captures)]
+        unless matchdata.nil?
+          ec = matchdata.named_captures
           ec.delete_if { |_k, v| v.nil? }
           if ec.key? 'end_year'
             ec['end_year'] = Series.calc_end_year(ec['start_year'], ec['end_year'])

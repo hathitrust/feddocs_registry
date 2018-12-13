@@ -3,7 +3,7 @@ require 'json'
 PHRS = Registry::Series::PublicHealthReportSupplements
 
 describe 'PublicHealthReportSupplements' do
-  let(:src) { Class.new { extend PHRS } }
+  let(:src) {  PHRS.new }
 
   describe 'parse_ec' do
     it 'can parse them all' do
@@ -17,7 +17,7 @@ describe 'PublicHealthReportSupplements' do
         ec = src.parse_ec(line)
         if ec.nil? || ec.empty?
           misses += 1
-          puts 'no match: ' + line
+          # puts 'no match: ' + line
         else
           res = src.explode(ec)
           res.each_key do |canon|
@@ -34,7 +34,7 @@ describe 'PublicHealthReportSupplements' do
 
   describe 'title' do
     it 'has a title' do
-      expect(PHRS.title).to eq('Public Health Report Supplements')
+      expect(PHRS.new.title).to eq('Public Health Report Supplements')
     end
   end
 

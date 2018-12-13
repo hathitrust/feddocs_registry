@@ -1,13 +1,10 @@
-require 'pp'
-# require 'source_record'
+# frozen_string_literal: true
+require 'registry/series/default_series_handler'
 
 module Registry
   module Series
     # Agricultural Statistics series
-    module AgriculturalStatistics
-      # include EC
-      # attr_accessor :number_counts, :volume_year
-
+    class AgriculturalStatistics < DefaultSeriesHandler
       def self.oclcs
         [1_773_189,
          471_365_867,
@@ -15,30 +12,10 @@ module Registry
          37_238_142]
       end
 
-      def parse_ec(ec_string)
-        m = nil
-
-        # some junk in the front
-        ec_string.gsub!(/^HD1751 . A43 /, '')
-        ec_string.gsub!(/^V\. /, '')
-        ec_string.gsub!(/ ?C\. \d+ ?/, '')
-        # these are insignificant
-        ec_string.gsub!(/[()]/, '')
-        # some junk at the end
-        ec_string.gsub!(/ P77-\d+$/, '')
-        # we don't care if it's a cd
-        # 2011/CD
-        ec_string.gsub!(/\/CD$/, '')
-        # 2002 1 CD WITH CASE IN BINDER.
-        # 2009 1 CD + 1 CASE NO PAPER INSERT
-        ec_string.gsub!(/ 1 CD .*$/, '')
-        # 995-96 CD
-        ec_string.gsub!(/ CD$/, '')
-
-        # fix the three digit years
-        ec_string = '1' + ec_string if ec_string.match?(/^9\d\d[^0-9]*/)
-
-        patterns = [
+      def initialize
+        super
+        @title = 'Agricultural Statistics'
+        @patterns = [
           # simple year
           # 2008 /* 264 */
           %r{
@@ -65,15 +42,39 @@ module Registry
             ^(?<multi_year_ec>\d{4}\/\d{4}-\d{4})$
           }x
         ]
+      end
 
-        patterns.each do |p|
-          break unless m.nil?
+      def parse_ec(ec_string)
+        matchdata = nil
 
-          m ||= p.match(ec_string)
+        # some junk in the front
+        ec_string.gsub!(/^HD1751 . A43 /, '')
+        ec_string.gsub!(/^V\. /, '')
+        ec_string.gsub!(/ ?C\. \d+ ?/, '')
+        # these are insignificant
+        ec_string.gsub!(/[()]/, '')
+        # some junk at the end
+        ec_string.gsub!(/ P77-\d+$/, '')
+        # we don't care if it's a cd
+        # 2011/CD
+        ec_string.gsub!(/\/CD$/, '')
+        # 2002 1 CD WITH CASE IN BINDER.
+        # 2009 1 CD + 1 CASE NO PAPER INSERT
+        ec_string.gsub!(/ 1 CD .*$/, '')
+        # 995-96 CD
+        ec_string.gsub!(/ CD$/, '')
+
+        # fix the three digit years
+        ec_string = '1' + ec_string if ec_string.match?(/^9\d\d[^0-9]*/)
+
+        @patterns.each do |p|
+          break unless matchdata.nil?
+
+          matchdata ||= p.match(ec_string)
         end
 
-        unless m.nil?
-          ec = Hash[m.names.zip(m.captures)]
+        unless matchdata.nil?
+          ec = matchdata.named_captures 
           if ec.key?('end_year') && /^\d\d$/.match(ec['end_year'])
             ec['end_year'] = ec['start_year'][0, 2] + ec['end_year']
           elsif ec.key?('end_year') && /^\d\d\d$/.match(ec['end_year'])
@@ -86,7 +87,6 @@ module Registry
       # take a parsed enumchron and expand it into its constituent parts
       # real simple for this series
       # enum_chrons - { <canonical ec string> : {<parsed features>}, }
-      #
       def explode(ec, _src = nil)
         enum_chrons = {}
         return {} if ec.nil?

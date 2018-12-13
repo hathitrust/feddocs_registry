@@ -3,7 +3,7 @@ require 'json'
 PHR = Registry::Series::PublicHealthReports
 
 describe 'PublicHealthReports' do
-  let(:src) { Class.new { extend PHR } }
+  let(:src) { PHR.new }
 
   describe 'preprocess' do
     it 'trims off copy info' do
@@ -130,53 +130,53 @@ describe 'PublicHealthReports' do
 
   describe 'tokens.pt' do
     it 'matches "PT. 1"' do
-      expect(/#{PHR.tokens[:pt]}/xi.match('PT. 1')['part']).to eq('1')
+      expect(/#{src.tokens[:pt]}/xi.match('PT. 1')['part']).to eq('1')
     end
 
     it 'matches "PT:1"' do
-      expect(/#{PHR.tokens[:pt]}/xi.match('PT:1')['part']).to eq('1')
+      expect(/#{src.tokens[:pt]}/xi.match('PT:1')['part']).to eq('1')
     end
 
     it 'matches "Part:1"' do
-      expect(/#{PHR.tokens[:pt]}/xi.match('Part:1')['part']).to eq('1')
+      expect(/#{src.tokens[:pt]}/xi.match('Part:1')['part']).to eq('1')
     end
   end
 
   describe 'tokens.y' do
     it 'matches Year:1984' do
-      expect(/#{PHR.tokens[:y]}/xi.match('Year:1984')['year']).to eq('1984')
+      expect(/#{src.tokens[:y]}/xi.match('Year:1984')['year']).to eq('1984')
     end
 
     it 'matches "(1984)"' do
-      expect(/#{PHR.tokens[:y]}/xi.match('(1984)')['year']).to eq('1984')
+      expect(/#{src.tokens[:y]}/xi.match('(1984)')['year']).to eq('1984')
     end
 
     it 'matches "YR. 1945"' do
-      expect(/#{PHR.tokens[:y]}/xi.match('YR. 1945')['year']).to eq('1945')
+      expect(/#{src.tokens[:y]}/xi.match('YR. 1945')['year']).to eq('1945')
     end
   end
 
   describe 'tokens.ns' do
     it 'matches "NO. 01-26"' do
-      expect(/#{PHR.tokens[:ns]}/xi.match('NO. 01-26')['start_number']).to \
+      expect(/#{src.tokens[:ns]}/xi.match('NO. 01-26')['start_number']).to \
         eq('01')
     end
   end
 
   describe 'tokens.v' do
     it 'matches Volume:50' do
-      expect(/#{PHR.tokens[:v]}/xi.match('Volume:50')['volume']).to eq('50')
+      expect(/#{src.tokens[:v]}/xi.match('Volume:50')['volume']).to eq('50')
     end
 
     it 'matches "v.50"' do
-      expect(/#{PHR.tokens[:v]}/xi.match('v.50')['volume']).to eq('50')
+      expect(/#{src.tokens[:v]}/xi.match('v.50')['volume']).to eq('50')
     end
   end
 
   describe 'tokens.months' do
     it 'matches "MO. JAN. -JUNE"' do
       expect(
-        /#{PHR.tokens[:months]}/xi.match('MO. JAN. -JUNE')['start_month']
+        /#{src.tokens[:months]}/xi.match('MO. JAN. -JUNE')['start_month']
       ).to \
         eq('JAN.')
     end

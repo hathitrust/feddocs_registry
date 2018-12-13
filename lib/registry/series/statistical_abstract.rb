@@ -1,53 +1,19 @@
 require 'pp'
+require 'registry/series/default_series_handler'
+
 module Registry
   module Series
     # The Statistical Abstract was published annually, 1878 through 2012.
     # The 1944/1945, 1982/1983, and 2004/2005 editions were published as two
     # year volumes. No volume was produced for 1884 or 1927.
-    module StatisticalAbstract
-      # include EC
+    class StatisticalAbstract < DefaultSeriesHandler
       class << self; attr_accessor :years, :editions end
       @years = {}
       @editions = {}
 
-      def self.oclcs
-        [1_193_890]
-      end
-
-      def parse_ec(ec_string)
-        m = nil
-
-        # some junk in the front
-        ec_string.gsub!(/REEL \d+.* P77-/, '')
-        ec_string.gsub!(/^A V\./, 'V.')
-        ec_string.gsub!(/^: /, '')
-        ec_string.gsub!(/^C\. \d+ V/, 'V')
-        ec_string.gsub!(/^C\. \d+ ?/, '')
-
-        # space before trailing ) is always a typo
-        ec_string.gsub!(/ \)/, ')')
-
-        # trailing junk
-        ec_string.gsub!(/[,: ]$/, '')
-
-        # remove unnecessary crap
-        ec_string.gsub!(/ ?= ?[0-9]+.*/, '')
-
-        # remove useless 'copy' information
-        ec_string.gsub!(/ C(OP)?\. \d$/, '')
-
-        # we don't care about withdrawn status for enumchron parsing
-        ec_string.gsub!(/ - WD/, '')
-
-        # fix the three digit years
-        ec_string = '1' + ec_string if ec_string.match?(/^[89]\d\d[^0-9]*/)
-        # seriously
-        ec_string = '2' + ec_string if ec_string.match?(/^0\d\d[^0-9]*/)
-
-        # sometimes years get duplicated
-        ec_string.gsub!(/(?<y>\d{4}) \(?\k<y>\)?/, '\k<y>')
-
-        patterns = [
+      def initialize
+        super
+        @patterns = [
           # canonical form
           %r{
             ^Edition:(?<edition>\d{1,3}),\s
@@ -257,15 +223,54 @@ module Registry
               (?<year>\d{4})(\D|$)
           }xi
         ] # patterns
+      end
 
-        patterns.each do |p|
-          break unless m.nil?
+      def self.oclcs
+        [1_193_890]
+      end
 
-          m ||= p.match(ec_string)
+      def parse_ec(ec_string)
+        matchdata = nil
+
+        # some junk in the front
+        ec_string.gsub!(/REEL \d+.* P77-/, '')
+        ec_string.gsub!(/^A V\./, 'V.')
+        ec_string.gsub!(/^: /, '')
+        ec_string.gsub!(/^C\. \d+ V/, 'V')
+        ec_string.gsub!(/^C\. \d+ ?/, '')
+
+        # space before trailing ) is always a typo
+        ec_string.gsub!(/ \)/, ')')
+
+        # trailing junk
+        ec_string.gsub!(/[,: ]$/, '')
+
+        # remove unnecessary crap
+        ec_string.gsub!(/ ?= ?[0-9]+.*/, '')
+
+        # remove useless 'copy' information
+        ec_string.gsub!(/ C(OP)?\. \d$/, '')
+
+        # we don't care about withdrawn status for enumchron parsing
+        ec_string.gsub!(/ - WD/, '')
+
+        # fix the three digit years
+        ec_string = '1' + ec_string if ec_string.match?(/^[89]\d\d[^0-9]*/)
+        # seriously
+        ec_string = '2' + ec_string if ec_string.match?(/^0\d\d[^0-9]*/)
+
+        # sometimes years get duplicated
+        ec_string.gsub!(/(?<y>\d{4}) \(?\k<y>\)?/, '\k<y>')
+
+
+        @patterns.each do |p|
+          break unless matchdata.nil?
+
+          matchdata ||= p.match(ec_string)
         end
 
-        unless m.nil?
-          ec = Hash[m.names.zip(m.captures)]
+        unless matchdata.nil?
+          ec = matchdata.named_captures 
           # remove nils
           ec.delete_if { |_k, v| v.nil? }
           if ec.key?('year') && (ec['year'].length == 3)

@@ -3,7 +3,7 @@ SR = Registry::SourceRecord
 StatutesAtLarge = Registry::Series::StatutesAtLarge
 
 describe 'StatutesAtLarge' do
-  let(:src) { Class.new { extend StatutesAtLarge } }
+  let(:src) { StatutesAtLarge.new }
 
   describe 'parse_ec' do
     it 'can parse them all' do

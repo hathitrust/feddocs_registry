@@ -1,25 +1,12 @@
-require 'pp'
+# frozen_string_literal: true
+require 'registry/series/default_series_handler'
 
 module Registry
   module Series
-    module DecisionsOfTheCourtOfVeteransAppeals
-      # class << self; attr_accessor :volumes end
-      # @volumes = {}
-
-      def self.sudoc_stem; end
-
-      def self.oclcs
-        [27_093_456]
-      end
-
-      def parse_ec(ec_string)
-        # our match
-        m = nil
-
-        ec_string.chomp!
-
-        # useless junk
-        ec_string.sub!(/^TN23 \. U43 /, '')
+    class DecisionsOfTheCourtOfVeteransAppeals < DefaultSeriesHandler
+      def initialize
+        super
+        @title = 'Decisions of the Court of Veterans Appeals'
 
         # tokens
         div = '[\s:,;\/-]+\s?\(?'
@@ -27,7 +14,7 @@ module Registry
         y = 'Y(ear|R)\.?\s?(?<year>\d{4})'
         month = '(?<month>(JAN|FEB|MAR(CH)?|APR(IL)?|MAY|JUNE?|JULY?|AUG|SEPT?|OCT|NOV|DEC)\.?)'
 
-        patterns = [
+        @patterns = [
           # canonical
           # Number:98-8551
           # Number:98-8551-3, Decision Date:2005-05-16
@@ -79,15 +66,32 @@ module Registry
             ^#{y}$
           }x
         ] # patterns
+      end
 
-        patterns.each do |p|
-          break unless m.nil?
+      def self.sudoc_stem; end
 
-          m ||= p.match(ec_string)
+      def self.oclcs
+        [27_093_456]
+      end
+
+      def parse_ec(ec_string)
+        # our match
+        matchdata = nil
+
+        ec_string.chomp!
+
+        # useless junk
+        ec_string.sub!(/^TN23 \. U43 /, '')
+
+
+        @patterns.each do |p|
+          break unless matchdata.nil?
+
+          matchdata ||= p.match(ec_string)
         end
 
-        unless m.nil?
-          ec = Hash[m.names.zip(m.captures)]
+        unless matchdata.nil?
+          ec = matchdata.named_captures 
           ec.delete_if { |_k, v| v.nil? }
 
           # the two years in the enumchron need to match

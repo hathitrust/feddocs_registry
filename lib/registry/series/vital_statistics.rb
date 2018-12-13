@@ -1,11 +1,10 @@
 require 'pp'
+require 'registry/series/default_series_handler'
 
 module Registry
   module Series
     # Vital Statistics series
-    module VitalStatistics
-      # class << self; attr_accessor :volumes end
-      # @volumes = {}
+    class VitalStatistics < DefaultSeriesHandler
 
       def self.sudoc_stem; end
 
@@ -13,29 +12,8 @@ module Registry
         [1_168_068, 48_062_652]
       end
 
-      def parse_ec(ec_string)
-        # our match
-        m = nil
-
-        ec_string.chomp!
-
-        ec_string = remove_dupe_years ec_string
-        # remove copy info
-        ec_string.gsub!(/^C\. \d /, '')
-        ec_string.gsub!(/ C\. \d$/, '')
-
-        # remove withdrawn(?) info
-        ec_string.gsub!(/ - WD$/, '')
-
-        # remove useless
-        # 1993:V. 2:PT. A = 993/V. 2/PT. A
-        ec_string.gsub!(/ = .*$/, '')
-
-        # fix the three digit years
-        ec_string = '1' + ec_string if ec_string.match?(/^[89]\d\d[^0-9]*/)
-        # seriously
-        ec_string = '2' + ec_string if ec_string.match?(/^0\d\d[^0-9]*/)
-
+      def initialize
+        super
         # tokens
         y = '(Y(ear|R\.)?[:\s])?(?<year>\d{4})'
         v = 'V(olume|\.)?[:\s]?(?<volume>\d{1,2})'
@@ -45,7 +23,7 @@ module Registry
         sec = 'SECT?(ION)?\.?[:\s]?(?<section>\d+)'
         sup = '(?<supplement>SUPP?(LEMENT)?\.?)'
 
-        patterns = [
+        @patterns = [
           # canonical
           # Year:1960, Volume:2, Part:A
           # Year:1961, Volume:3, Appendix
@@ -197,15 +175,40 @@ module Registry
             ^#{y}$
           }x
         ] # patterns
+      end
 
-        patterns.each do |p|
-          break unless m.nil?
+      def parse_ec(ec_string)
+        # our match
+        matchdata = nil
 
-          m ||= p.match(ec_string)
+        ec_string.chomp!
+
+        ec_string = Series.remove_dupe_years ec_string
+        # remove copy info
+        ec_string.gsub!(/^C\. \d /, '')
+        ec_string.gsub!(/ C\. \d$/, '')
+
+        # remove withdrawn(?) info
+        ec_string.gsub!(/ - WD$/, '')
+
+        # remove useless
+        # 1993:V. 2:PT. A = 993/V. 2/PT. A
+        ec_string.gsub!(/ = .*$/, '')
+
+        # fix the three digit years
+        ec_string = '1' + ec_string if ec_string.match?(/^[89]\d\d[^0-9]*/)
+        # seriously
+        ec_string = '2' + ec_string if ec_string.match?(/^0\d\d[^0-9]*/)
+
+
+        @patterns.each do |p|
+          break unless matchdata.nil?
+
+          matchdata ||= p.match(ec_string)
         end
 
-        unless m.nil?
-          ec = Hash[m.names.zip(m.captures)]
+        unless matchdata.nil?
+          ec = matchdata.named_captures
           ec.delete_if { |_k, v| v.nil? }
         end
         ec
@@ -237,15 +240,6 @@ module Registry
         canon << 'Appendix' if ec['appendix']
         canon << 'Supplement' if ec['supplement']
         canon.join(', ') unless canon.empty?
-      end
-
-      def remove_dupe_years(ec_string)
-        m = ec_string.match(/ (?<first>\d{4}) (?<second>\d{4})$/)
-        if !m.nil? && (m['first'] == m['second'])
-          ec_string.gsub(/ \d{4}$/, '')
-        else
-          ec_string
-        end
       end
 
       def self.load_context; end

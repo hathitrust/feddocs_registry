@@ -4,7 +4,7 @@ Mongoid.load!(ENV['MONGOID_CONF'])
 SourceRecord = Registry::SourceRecord
 ER = Registry::Series::EconomicReportOfThePresident
 describe 'EconomicReportOfThePresident' do
-  let(:src) { Class.new { extend ER } }
+  let(:erp) { ER.new }
 
   describe 'parse_ec' do
     it 'can parse them all' do
@@ -15,7 +15,7 @@ describe 'EconomicReportOfThePresident' do
       input = File.dirname(__FILE__) + '/data/econreport_enumchrons.txt'
       File.open(input, 'r').each do |line|
         line.chomp!
-        ec = src.parse_ec(line)
+        ec = erp.parse_ec(line)
         if ec.nil? || ec.empty?
           misses += 1
           # puts "no match: "+line
@@ -30,46 +30,46 @@ describe 'EconomicReportOfThePresident' do
     end
 
     it 'parses a simple year' do
-      expect(src.parse_ec('1964')['year']).to eq('1964')
+      expect(erp.parse_ec('1964')['year']).to eq('1964')
     end
 
     it 'parses a year with part' do
-      expect(src.parse_ec('1964 PT. 4')['year']).to eq('1964')
-      expect(src.parse_ec('1964 PT. 4')['part']).to eq('4')
+      expect(erp.parse_ec('1964 PT. 4')['year']).to eq('1964')
+      expect(erp.parse_ec('1964 PT. 4')['part']).to eq('4')
     end
 
     it 'parses a year with multiple parts' do
-      expect(src.parse_ec('1964 PT. 1-3')['end_part']).to eq('3')
+      expect(erp.parse_ec('1964 PT. 1-3')['end_part']).to eq('3')
     end
 
     it 'parses multi-years' do
-      expect(src.parse_ec('1961-1962')['end_year']).to eq('1962')
+      expect(erp.parse_ec('1961-1962')['end_year']).to eq('1962')
     end
 
     it "eliminates 'C 1' junk" do
-      expect(src.parse_ec('C. 1 1988')['year']).to eq('1988')
+      expect(erp.parse_ec('C. 1 1988')['year']).to eq('1988')
     end
 
     it "can parse it's own canonical version" do
-      expect(src.parse_ec('Year:1972, Part:4')['year']).to eq('1972')
+      expect(erp.parse_ec('Year:1972, Part:4')['year']).to eq('1972')
     end
 
     it 'parses the simple sudoc' do
-      expect(src.parse_ec('Y 4. EC 7:EC 7/2/2002')['year']).to eq('2002')
+      expect(erp.parse_ec('Y 4. EC 7:EC 7/2/2002')['year']).to eq('2002')
     end
   end
 
   describe 'explode' do
     it 'handles a simple year' do
-      expect(src.explode(src.parse_ec('1960'), {})).to have_key('Year:1960')
+      expect(erp.explode(erp.parse_ec('1960'), {})).to have_key('Year:1960')
     end
 
     it 'explodes parts' do
-      expect(src.explode(src.parse_ec('1966 PT. 1-4'), {})).to have_key('Year:1966, Part:3')
+      expect(erp.explode(erp.parse_ec('1966 PT. 1-4'), {})).to have_key('Year:1966, Part:3')
     end
 
     it 'explodes years' do
-      expect(src.explode(src.parse_ec('1949-1952'), {})).to have_key('Year:1951')
+      expect(erp.explode(erp.parse_ec('1949-1952'), {})).to have_key('Year:1951')
     end
 
     it 'uses pub_date/sudocs to create a better enum_chron' do
@@ -78,6 +78,7 @@ describe 'EconomicReportOfThePresident' do
       sr.org_code = 'miaahdl'
       sr.source = File.open(File.dirname(__FILE__) +
                             '/data/econreport_src_pub_date.json').read
+      expect(sr.ec_handler.title).to eq('Economic Report Of The President')
       expect(sr.enum_chrons).to include('Year:1975, Part:2')
     end
 
@@ -90,15 +91,15 @@ describe 'EconomicReportOfThePresident' do
       expect(sr_new.enum_chrons).to include('Year:1962')
     end
 
-    it 'returns nultiple sets of features' do
-      exploded = src.explode(src.parse_ec('1966 PT. 1-4'), {})
+    it 'returns multiple sets of features' do
+      exploded = erp.explode(erp.parse_ec('1966 PT. 1-4'), {})
       expect(exploded['Year:1966, Part:2']).to_not be(exploded['Year:1966, Part:3'])
     end
   end
 
   describe 'load_context' do
     it 'has a hash of years => parts' do
-      expect(ER.class_eval('@@parts')['1975']).to include('2')
+      expect(ER.parts['1975']).to include('2')
     end
   end
 

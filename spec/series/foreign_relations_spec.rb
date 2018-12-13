@@ -3,7 +3,7 @@ require 'json'
 FR = Registry::Series::ForeignRelations
 
 describe 'ForeignRelations' do
-  let(:src) { Class.new { extend FR } }
+  let(:src) { FR.new }
 
   describe 'parse_ec' do
     it 'can parse them all' do

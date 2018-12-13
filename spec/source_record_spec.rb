@@ -117,7 +117,7 @@ RSpec.describe Registry::SourceRecord do
     expect(@sr.lc_item_numbers).to eq(['.R885 1965'])
   end
 
-  xit 'performs reasonably well' do
+  it 'performs reasonably well' do
     line = File.open(File.dirname(__FILE__) +
                 '/data/ht_record_different_3_items.json').read
     call_count = 0
@@ -130,6 +130,7 @@ RSpec.describe Registry::SourceRecord do
     sr.monograph?
     sr.fed_doc?
     sr.extract_local_id
+    puts sr.ec_handler.title
     expect(call_count).to eq(1)
     !expect { sr.source = line }.to perform_under(2).ms
   end

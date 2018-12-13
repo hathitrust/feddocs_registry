@@ -1,5 +1,8 @@
 include Registry::Series
 Series = Registry::Series
+require 'registry/source_record' 
+SourceRecord = Registry::SourceRecord
+
 describe 'Series.calc_end_year' do
   it 'handles simple 3 digit years' do
     expect(Series.calc_end_year('1995', '998')).to eq('1998')
@@ -18,22 +21,20 @@ describe 'Series.calc_end_year' do
   end
 end
 
-describe 'tokens' do
-  let(:src) { Class.new { extend Series } }
-  it 'matches "OCT."' do
-    expect(/#{Series.tokens[:m]}/xi.match('OCT.')['month']).to eq('OCT.')
+describe 'preprocess' do
+  it 'removes copy information' do
+    expect(Series.preprocess('C. 1 V. 5 1990 PP. 4783-5463')).to eq('V. 5 1990 PP. 4783-5463')
   end
+end
 
-  it 'matches "NO. 12-13"' do
-    expect(/#{Series.tokens[:ns]}/xi.match('NO. 12-13')['start_number']).to eq('12')
-  end
-
-  it 'matches "SUP."' do
-    expect(/#{Series.tokens[:sup]}/xi.match('SUP.')['supplement']).to eq('SUP.')
-  end
-
-  it 'y matches "YR. 1993"' do
-    expect(/#{Series.tokens[:y]}/xi.match('YR. 1993')['year']).to eq('1993')
+describe 'remove_dupe_years' do
+  it 'cuts off duplicate years' do
+    ec_string = 'V. 91, NO. 13-18 1999 1999'
+    expect(Series.remove_dupe_years(ec_string)).to eq('V. 91, NO. 13-18 1999')
+    ec_string = 'V. 91, NO. 13-18 1999 2000'
+    expect(
+      Series.remove_dupe_years(ec_string)
+    ).to eq('V. 91, NO. 13-18 1999 2000')
   end
 end
 
@@ -82,6 +83,21 @@ describe 'fix_months' do
   it 'converts numbered months to text months' do
     ec = /(?<month>\d{1,2})/.match('08').named_captures
     expect(Series.fix_months(ec)['month']).to eq('August')
+  end
+end
+
+describe 'ec_handler' do
+  it 'gives us default handler if no series matches' do
+    rec = SourceRecord.new(oclc_resolved:[],
+                           sudocs:[])
+    expect(rec.ec_handler.title).to eq('Default Series Handler')
+  end
+
+  it 'gives us a particular handler if a series does match' do
+    rec = SourceRecord.new(oclc_resolved:[14_964_165],
+                           sudocs:[])
+    #expect(rec.series).to eq(['FCCRecord'])
+    expect(rec.ec_handler.title).to eq('FCC Record')
   end
 end
 

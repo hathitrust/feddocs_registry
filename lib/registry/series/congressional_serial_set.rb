@@ -1,28 +1,14 @@
-require 'pp'
+# frozen_string_literal: true
+require 'registry/series/default_series_handler'
 
 module Registry
   module Series
     # The Congressional Serial Set consists of 10s of thousands of
     # Congressional reports.
-    module CongressionalSerialSet
-      # include EC
-      class << self; attr_accessor :years, :editions end
-      @years = {}
-      @editions = {}
-
-      def self.sudoc_stem
-        'Y 1.1/2:'
-      end
-
-      def self.oclcs
-        [191_710_879,
-         3_888_071,
-         4_978_913]
-      end
-
-      def parse_ec(ec_string)
-        m = nil
-
+    class CongressionalSerialSet < DefaultSeriesHandler
+      def initialize
+        super
+        @title = 'Congressional Serial Set'
         # (1996:104TH)
         # year: congress
         yc = '((\s|\s?\()(YR\.\s)?(?<year>\d{4})' \
@@ -35,16 +21,7 @@ module Registry
         sn = '(?<serial_number>\d{4,5}[A-Z]?)'
         p = 'P(art|T\.?)?[:\s]?(?<part>\w{1,2})'
 
-        ec_string.sub!(/^V\. (V\. )?/, '')
-        ec_string.sub!(/^NO\. /, '')
-        ec_string.sub!(/^SER(\.|IAL) /, '')
-        ec_string.sub!(/^DOC /, '')
-        ec_string.sub!(/ \d+(TH|ST|ND|RD) CONGRESS$/, '')
-
-        # nothing important for our purposes comes after the year
-        ec_string.sub!(/( \(\d{4}\)).*/, '\1')
-
-        patterns = [
+        @patterns = [
           # PT. 13 (1885)
           %r{
             ^#{p}#{yc}?$
@@ -130,15 +107,38 @@ module Registry
             ^(?<serial_number>\d{4,5}[A-Z])([\s:]\(?(?<year>\d{4})\)?)?$
             }x
         ]
+      end
 
-        patterns.each do |pat|
-          break unless m.nil?
+      def self.sudoc_stem
+        'Y 1.1/2:'
+      end
 
-          m ||= pat.match(ec_string)
+      def self.oclcs
+        [191_710_879,
+         3_888_071,
+         4_978_913]
+      end
+
+      def parse_ec(ec_string)
+        matchdata = nil
+
+        ec_string.sub!(/^V\. (V\. )?/, '')
+        ec_string.sub!(/^NO\. /, '')
+        ec_string.sub!(/^SER(\.|IAL) /, '')
+        ec_string.sub!(/^DOC /, '')
+        ec_string.sub!(/ \d+(TH|ST|ND|RD) CONGRESS$/, '')
+
+        # nothing important for our purposes comes after the year
+        ec_string.sub!(/( \(\d{4}\)).*/, '\1')
+
+        @patterns.each do |pat|
+          break unless matchdata.nil?
+
+          matchdata ||= pat.match(ec_string)
         end
 
-        unless m.nil?
-          ec = Hash[m.names.zip(m.captures)]
+        unless matchdata.nil?
+          ec = matchdata.named_captures 
           # remove nils
           ec.delete_if { |_k, v| v.nil? }
           if ec.key?('year') && (ec['year'].length == 3)

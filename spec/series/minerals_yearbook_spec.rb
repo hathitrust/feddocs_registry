@@ -3,7 +3,7 @@ require 'json'
 MY = Registry::Series::MineralsYearbook
 
 describe 'MineralsYearbook' do
-  let(:src) { Class.new { extend MY } }
+  let(:src) { MY.new }
 
   describe 'parse_ec' do
     it 'can parse them all' do

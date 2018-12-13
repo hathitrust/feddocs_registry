@@ -3,7 +3,7 @@ require 'json'
 ROI = Registry::Series::ReportsOfInvestigations
 
 describe 'ReportsOfInvestigations' do
-  let(:src) { Class.new { extend ROI } }
+  let(:src) { ROI.new }
 
   describe 'parse_ec' do
     it 'can parse them all' do

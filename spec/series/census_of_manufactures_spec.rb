@@ -3,7 +3,7 @@ require 'json'
 CM = Registry::Series::CensusOfManufactures
 
 describe 'CensusOfManufactures' do
-  let(:src) { Class.new { extend CM } }
+  let(:src) { CM.new }
 
   describe 'parse_ec' do
     it 'can parse them all' do
@@ -17,7 +17,7 @@ describe 'CensusOfManufactures' do
         ec = src.parse_ec(line)
         if ec.nil? || ec.empty?
           misses += 1
-          # puts 'no match: ' + line
+          #puts 'no match: ' + line
         else
           res = src.explode(ec)
           res.each_key do |canon|

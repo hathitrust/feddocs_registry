@@ -3,7 +3,7 @@ require 'json'
 Exp = Registry::Series::USExports
 
 describe 'USExports' do
-  let(:src) { Class.new { extend Exp } }
+  let(:src) { Exp.new }
 
   describe 'parse_ec' do
     it 'can parse them all' do

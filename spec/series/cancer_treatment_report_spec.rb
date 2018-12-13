@@ -3,7 +3,7 @@ require 'json'
 CTR = Registry::Series::CancerTreatmentReport
 
 describe 'CancerTreatmentReport' do
-  let(:src) { Class.new { extend CTR } }
+  let(:src) { CTR.new }
 
   describe 'parse_ec' do
     it 'can parse them all' do

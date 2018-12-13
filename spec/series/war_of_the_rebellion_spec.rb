@@ -10,7 +10,7 @@ SourceRecord = Registry::SourceRecord
 WOTR = Registry::Series::WarOfTheRebellion
 
 describe 'WOTR' do
-  let(:src) { Class.new { extend WOTR } }
+  let(:src) { WOTR.new }
 
   describe 'parse_ec' do
     it 'can parse them all' do
@@ -116,67 +116,67 @@ describe 'WOTR' do
 
   describe 'tokens.pt' do
     it 'matches "PT. 1"' do
-      expect(/#{WOTR.tokens[:pt]}/xi.match('PT. 1')['part']).to eq('1')
+      expect(/#{src.tokens[:pt]}/xi.match('PT. 1')['part']).to eq('1')
     end
 
     it 'matches "PT:1"' do
-      expect(/#{WOTR.tokens[:pt]}/xi.match('PT:1')['part']).to eq('1')
+      expect(/#{src.tokens[:pt]}/xi.match('PT:1')['part']).to eq('1')
     end
 
     it 'matches "Part:1"' do
-      expect(/#{WOTR.tokens[:pt]}/xi.match('Part:1')['part']).to eq('1')
+      expect(/#{src.tokens[:pt]}/xi.match('Part:1')['part']).to eq('1')
     end
   end
 
   describe 'tokens.s' do
     it 'matches "SERIES 1"' do
-      expect(/#{WOTR.tokens[:s]}/xi.match('SERIES 1')['series']).to eq('1')
+      expect(/#{src.tokens[:s]}/xi.match('SERIES 1')['series']).to eq('1')
     end
 
     it 'matches "SER 1"' do
-      expect(/#{WOTR.tokens[:s]}/xi.match('SER 1')['series']).to eq('1')
+      expect(/#{src.tokens[:s]}/xi.match('SER 1')['series']).to eq('1')
     end
 
     it 'matches "SER. 1"' do
-      expect(/#{WOTR.tokens[:s]}/xi.match('SER. 1')['series']).to eq('1')
+      expect(/#{src.tokens[:s]}/xi.match('SER. 1')['series']).to eq('1')
     end
 
     it 'matches "Series:1"' do
-      expect(/#{WOTR.tokens[:s]}/xi.match('Series:1')['series']).to eq('1')
+      expect(/#{src.tokens[:s]}/xi.match('Series:1')['series']).to eq('1')
     end
   end
 
   describe 'tokens.n' do
     it 'matches Number:2' do
-      expect(/#{WOTR.tokens[:n]}/xi.match('Number:2')['number']).to eq('2')
+      expect(/#{src.tokens[:n]}/xi.match('Number:2')['number']).to eq('2')
     end
 
     it 'matches "NO. 2"' do
-      expect(/#{WOTR.tokens[:n]}/xi.match('NO. 2')['number']).to eq('2')
+      expect(/#{src.tokens[:n]}/xi.match('NO. 2')['number']).to eq('2')
     end
   end
 
   describe 'tokens.v' do
     it 'matches Volume:50' do
-      expect(/#{WOTR.tokens[:v]}/xi.match('Volume:50')['volume']).to eq('50')
+      expect(/#{src.tokens[:v]}/xi.match('Volume:50')['volume']).to eq('50')
     end
 
     it 'matches "v.50"' do
-      expect(/#{WOTR.tokens[:v]}/xi.match('v.50')['volume']).to eq('50')
+      expect(/#{src.tokens[:v]}/xi.match('v.50')['volume']).to eq('50')
     end
   end
 
   describe 'tokens.y' do
     it 'matches Year:1984' do
-      expect(/#{WOTR.tokens[:y]}/xi.match('Year:1984')['year']).to eq('1984')
+      expect(/#{src.tokens[:y]}/xi.match('Year:1984')['year']).to eq('1984')
     end
 
     it 'matches "(1984)"' do
-      expect(/#{WOTR.tokens[:y]}/xi.match('(1984)')['year']).to eq('1984')
+      expect(/#{src.tokens[:y]}/xi.match('(1984)')['year']).to eq('1984')
     end
 
     it 'matches "YR. 1945"' do
-      expect(/#{WOTR.tokens[:y]}/xi.match('YR. 1945')['year']).to eq('1945')
+      expect(/#{src.tokens[:y]}/xi.match('YR. 1945')['year']).to eq('1945')
     end
   end
 
@@ -204,7 +204,7 @@ describe 'WOTR' do
 
   describe 'title' do
     it 'has a title' do
-      expect(WOTR.title).to eq('War Of The Rebellion')
+      expect(src.title).to eq('War Of The Rebellion')
     end
   end
 
