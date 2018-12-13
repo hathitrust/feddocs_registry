@@ -57,13 +57,9 @@ module Registry
       @sources = SourceRecord.where(:source_id.in => sid_cluster)
       @@collator.extract_fields(@sources)\
                 .each_with_index { |(k, v), _i| self[k] = v }
-
-      @sources.each do |src|
-        if src.series&.any?
-          self.series = src.series.map { |s| s.gsub(/([A-Z])/, ' \1').strip }
-        end
+      @sources.each do |s|
+        self.series = (self.series + s.series).uniq
       end
-      series.uniq!
 
       self.ancestors = ancestors
       self.creation_notes = notes
@@ -76,6 +72,17 @@ module Registry
       end
     end
 
+=begin    
+    # Collects Series titles from source records
+    def series
+      puts "sources collect:"
+      PP.pp @sources.collect(&:series).flatten.uniq
+      sources.each {|s| PP.pp s.series }
+      self.series = @sources.collect(&:series).flatten.uniq
+      @series
+    end
+=end
+    
     # Sets HT availability based on ht_ids_fv and ht_ids_lv fields
     def set_ht_availability
       self.ht_availability = if ht_ids_fv.any?
@@ -108,11 +115,7 @@ module Registry
         end
         source_record_ids.uniq!
         self.source_org_codes.uniq!
-        if source_record.series&.any?
-          self.series << source_record.series
-          series.flatten!
-          series.uniq!
-        end
+        self.series = (self.series + source_record.series).uniq
       end
       set_ht_availability
       save

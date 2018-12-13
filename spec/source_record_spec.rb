@@ -793,7 +793,7 @@ end
 
 RSpec.describe Registry::SourceRecord, '#extract_holdings' do
   before(:all) do
-    @src = SourceRecord.where(org_code: 'miaahdl').first
+    @src = SourceRecord.where(source_id:"ec1b9145-7e88-4774-a35d-4e9639ec8a7b").first
     @src.extract_holdings
   end
 

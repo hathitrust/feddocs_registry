@@ -181,16 +181,24 @@ RSpec.describe RR, 'add_source' do
     # making sure a bug was fixed. It wasn't expanding the name in the add_source method
     @src.source = File.open(File.dirname(__FILE__) +
                             '/series/data/econreport.json').read
-    expect(@src.series).to include('EconomicReportOfThePresident')
-    expect(@src.series).to eq(['EconomicReportOfThePresident'])
+    expect(@src.series).to include('Economic Report of the President')
+    expect(@src.series).to eq(['Economic Report of the President'])
     @orig.add_source(@src)
-    expect(@orig['series']).to include('Economic Report Of The President')
+    expect(@orig.series).to include('Economic Report of the President')
+    expect(@orig['series']).to include('Economic Report of the President')
   end
 
   after(:all) do
     @new_rec.delete
     @pd_sr.delete
     @ic_sr.delete
+  end
+end
+
+describe '#series' do
+  it 'gets series from its source records' do
+    reg = RR.new(['328ef038-92bb-4bfd-ab42-ac7abafe251c'], '', 'testing')
+    expect(reg.series).to eq(['Federal Register'])
   end
 end
 
