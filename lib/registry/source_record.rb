@@ -454,12 +454,13 @@ module Registry
     # holdings = {<ec_string> :[<each holding>]
     # ht_item_ids = [<holding id>]
     # todo: refactor with extract_enum_chrons. A lot of duplicate code/work
+    # This might be a cry for help. 
     def extract_holdings(m = nil)
       self.holdings = {}
       self.ht_item_ids = []
       @marc = m unless m.nil?
       marc.each_by_tag('974') do |field|
-        ht_item_ids << field['u']
+        ht_item_ids << field['u'] if field['r'] != 'nobody'
         z = field['z']
         z ||= ''
         ec_string = Normalize.enum_chron(z)

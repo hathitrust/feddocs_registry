@@ -797,7 +797,7 @@ end
 
 RSpec.describe Registry::SourceRecord, '#extract_holdings' do
   before(:all) do
-    @src = SourceRecord.where(org_code: 'miaahdl').first
+    @src = SourceRecord.where(source_id:"ec1b9145-7e88-4774-a35d-4e9639ec8a7b").first
     @src.extract_holdings
   end
 
@@ -808,6 +808,14 @@ RSpec.describe Registry::SourceRecord, '#extract_holdings' do
     expect(@src.holdings[v5_dig].count).to be(1)
     expect(@src.holdings[v5_dig][0][:u]).to eq('mdp.39015034759749')
     expect(@src.ht_item_ids).to include('mdp.39015034759749')
+  end
+
+  it 'removes deleted items from ht_item_ids' do
+    src_with_deleted_item = SourceRecord.new(org_code: 'miaahdl')
+    src_with_deleted_item.source = File.open(
+      File.dirname(__FILE__) + '/data/htdl_rec_with_removed_item.json'
+    ).read
+    expect(src_with_deleted_item.ht_item_ids).not_to include('mdp.39015001559569')
   end
 end
 
