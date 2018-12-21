@@ -1,6 +1,6 @@
 require 'json'
 
-DCVA = Registry::Series::DecisionsOfTheCourtOfVeteransAppeals
+DCVA = ECMangle::DecisionsOfTheCourtOfVeteransAppeals
 
 describe 'DecisionsOfTheCourtOfVeteransAppeals' do
   let(:src) { DCVA.new }
@@ -79,7 +79,7 @@ describe 'DecisionsOfTheCourtOfVeteransAppeals' do
 
   describe 'oclcs' do
     it 'has an oclcs field' do
-      expect(DCVA.oclcs).to include(27_093_456)
+      expect(DCVA.new.ocns).to include(27_093_456)
     end
   end
 end

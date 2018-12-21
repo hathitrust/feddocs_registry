@@ -1,7 +1,6 @@
-require 'registry/series/agricultural_statistics'
 require 'registry/source_record'
 require 'json'
-AgriculturalStatistics = Registry::Series::AgriculturalStatistics
+AgriculturalStatistics = ECMangle::AgriculturalStatistics
 
 describe 'AgriculturalStatistics' do
   let(:src) { AgriculturalStatistics.new }
@@ -68,7 +67,7 @@ describe 'AgriculturalStatistics' do
 
   describe 'oclcs' do
     it 'has an oclcs field' do
-      expect(AgriculturalStatistics.oclcs).to include(1_773_189)
+      expect(AgriculturalStatistics.new.ocns).to include(1_773_189)
     end
   end
 end

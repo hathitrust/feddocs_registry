@@ -1,6 +1,6 @@
 require 'json'
 SourceRecord = Registry::SourceRecord
-USR = Registry::Series::UnitedStatesReports
+USR = ECMangle::UnitedStatesReports
 
 describe 'UnitedStatesReports' do
   let(:src) { USR.new }
@@ -90,13 +90,13 @@ describe 'UnitedStatesReports' do
 
   describe 'sudoc_stem' do
     it 'has an sudoc_stem field' do
-      expect(USR.sudoc_stem).to eq('JU 6.8')
+      expect(USR.new.sudoc_stems).to eq(['JU 6.8'])
     end
   end
 
   describe 'oclcs' do
     it 'has an oclcs field' do
-      expect(USR.oclcs).to include(10_648_533)
+      expect(USR.new.ocns).to include(10_648_533)
     end
   end
 end

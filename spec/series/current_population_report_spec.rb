@@ -1,6 +1,6 @@
 require 'json'
 
-CPR = Registry::Series::CurrentPopulationReport
+CPR = ECMangle::CurrentPopulationReport
 
 describe 'CurrentPopulationReport' do
   let(:src) { CPR.new }
@@ -51,7 +51,7 @@ describe 'CurrentPopulationReport' do
 
   describe 'oclcs' do
     it 'has an oclcs field' do
-      expect(CPR.oclcs).to eq([6_432_855, 623_448_621])
+      expect(CPR.new.ocns).to eq([6_432_855, 623_448_621])
     end
   end
 

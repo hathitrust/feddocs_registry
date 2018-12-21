@@ -1,6 +1,6 @@
 require 'json'
 
-PHR = Registry::Series::PublicHealthReports
+PHR = ECMangle::PublicHealthReports
 
 describe 'PublicHealthReports' do
   let(:src) { PHR.new }
@@ -219,7 +219,7 @@ describe 'PublicHealthReports' do
 
   describe 'oclcs' do
     it 'has an oclcs field' do
-      expect(PHR.oclcs).to eq([48_450_485, 1_007_653, 181_336_288, 1_799_423])
+      expect(PHR.new.ocns).to eq([48_450_485, 1_007_653, 181_336_288, 1_799_423])
     end
   end
 end

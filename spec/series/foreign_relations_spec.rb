@@ -1,6 +1,6 @@
 require 'json'
 
-FR = Registry::Series::ForeignRelations
+FR = ECMangle::ForeignRelations
 
 describe 'ForeignRelations' do
   let(:src) { FR.new }
@@ -63,7 +63,7 @@ describe 'ForeignRelations' do
     it "removes trailing 'SUPPLEMENT'" do
       s = '1958/60:V. 3:SUP.'
       p = src.parse_ec(s)
-      expect(s).to eq('1958/60:V. 3')
+      expect(p['volume']).to eq('3')
     end
   end
 
@@ -83,13 +83,13 @@ describe 'ForeignRelations' do
 
   describe 'sudoc_stem' do
     it 'has a sudoc_stem field' do
-      expect(FR.sudoc_stem).to eq('S 1.1:')
+      expect(FR.new.sudoc_stems).to eq(['S 1.1:'])
     end
   end
 
   describe 'oclcs' do
     it 'has an oclcs field' do
-      # expect(FR.oclcs).to include(10648533)
+      # expect(FR.new.ocns).to include(10648533)
     end
   end
 end

@@ -1,6 +1,6 @@
 require 'json'
 
-JNCI = Registry::Series::JournalOfTheNationalCancerInstitute
+JNCI = ECMangle::JournalOfTheNationalCancerInstitute
 
 describe 'JournalOfTheNationalCancerInstitute' do
   let(:src) { JNCI.new }
@@ -145,7 +145,7 @@ describe 'JournalOfTheNationalCancerInstitute' do
 
   describe 'oclcs' do
     it 'has an oclcs field' do
-      expect(JNCI.oclcs).to eq([1_064_763, 36_542_869, 173_847_259, 21_986_096])
+      expect(JNCI.new.ocns).to eq([1_064_763, 36_542_869, 173_847_259, 21_986_096])
     end
   end
 end

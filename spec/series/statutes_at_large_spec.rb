@@ -1,6 +1,6 @@
 require 'json'
 SR = Registry::SourceRecord
-StatutesAtLarge = Registry::Series::StatutesAtLarge
+StatutesAtLarge = ECMangle::StatutesAtLarge
 
 describe 'StatutesAtLarge' do
   let(:src) { StatutesAtLarge.new }
@@ -160,7 +160,7 @@ describe 'StatutesAtLarge' do
 
   describe 'oclcs' do
     it 'has an oclcs field' do
-      expect(StatutesAtLarge.oclcs).to include(1_768_474)
+      expect(StatutesAtLarge.new.ocns).to include(1_768_474)
     end
   end
 end

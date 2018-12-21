@@ -2,7 +2,7 @@ require 'json'
 Dotenv.load
 Mongoid.load!(ENV['MONGOID_CONF'])
 SourceRecord = Registry::SourceRecord
-ER = Registry::Series::EconomicReportOfThePresident
+ER = ECMangle::EconomicReportOfThePresident
 describe 'EconomicReportOfThePresident' do
   let(:erp) { ER.new }
 
@@ -105,13 +105,13 @@ describe 'EconomicReportOfThePresident' do
 
   describe 'sudoc_stem' do
     it 'has a sudoc_stem field' do
-      expect(ER.sudoc_stem).to eq('Y 4.EC 7:EC 7/2/')
+      expect(ER.new.sudoc_stems).to eq(['Y 4.EC 7:EC 7/2/'])
     end
   end
 
   describe 'oclcs' do
     it 'has an oclcs field' do
-      expect(ER.oclcs).to eq([3_160_302, 8_762_269, 8_762_232])
+      expect(ER.new.ocns).to eq([3_160_302, 8_762_269, 8_762_232])
     end
   end
 end

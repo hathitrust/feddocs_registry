@@ -1,6 +1,6 @@
 require 'json'
 
-ROI = Registry::Series::ReportsOfInvestigations
+ROI = ECMangle::ReportsOfInvestigations
 
 describe 'ReportsOfInvestigations' do
   let(:src) { ROI.new }
@@ -107,7 +107,7 @@ describe 'ReportsOfInvestigations' do
 
   describe 'oclcs' do
     it 'has an oclcs field' do
-      expect(ROI.oclcs).to include(1_728_640)
+      expect(ROI.new.ocns).to include(1_728_640)
     end
   end
 end

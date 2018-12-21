@@ -1,6 +1,6 @@
 require 'json'
 
-CTR = Registry::Series::CancerTreatmentReport
+CTR = ECMangle::CancerTreatmentReport
 
 describe 'CancerTreatmentReport' do
   let(:src) { CTR.new }
@@ -80,7 +80,7 @@ describe 'CancerTreatmentReport' do
 
   describe 'oclcs' do
     it 'has an oclcs field' do
-      expect(CTR.oclcs).to eq([2_101_497, 681_450_829])
+      expect(CTR.new.ocns).to eq([2_101_497, 681_450_829])
     end
   end
 end

@@ -7,7 +7,7 @@ Dotenv.load
 Mongoid.load!(ENV['MONGOID_CONF'])
 SourceRecord = Registry::SourceRecord
 
-WOTR = Registry::Series::WarOfTheRebellion
+WOTR = ECMangle::WarOfTheRebellion
 
 describe 'WOTR' do
   let(:src) { WOTR.new }
@@ -210,7 +210,7 @@ describe 'WOTR' do
 
   describe 'oclcs' do
     it 'has an oclcs field' do
-      expect(WOTR.oclcs).to eq([427_057,
+      expect(WOTR.new.ocns).to eq([427_057,
                                 471_419_901])
     end
   end

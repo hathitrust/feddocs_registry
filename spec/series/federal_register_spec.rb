@@ -1,5 +1,5 @@
 require 'json'
-FederalRegister = Registry::Series::FederalRegister
+FederalRegister = ECMangle::FederalRegister
 
 describe 'FederalRegister' do
   let(:src) { FederalRegister.new }
@@ -139,7 +139,7 @@ describe 'FederalRegister' do
 
   describe 'oclcs' do
     it 'has an ocls field' do
-      expect(FederalRegister.oclcs).to include(43_080_713)
+      expect(FederalRegister.new.ocns).to include(43_080_713)
     end
   end
 end

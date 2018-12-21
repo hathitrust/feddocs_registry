@@ -1,6 +1,6 @@
 require 'json'
 
-PubPape = Registry::Series::PublicPapersOfThePresidents
+PubPape = ECMangle::PublicPapersOfThePresidents
 
 describe 'PublicPapersOfThePresidents' do
   let(:src) { PubPape.new }
@@ -47,7 +47,7 @@ describe 'PublicPapersOfThePresidents' do
 
   describe 'oclcs' do
     it 'has an oclcs field' do
-      expect(PubPape.oclcs).to eq([1_198_154, 47_858_835])
+      expect(PubPape.new.ocns).to eq([1_198_154, 47_858_835])
     end
   end
 end

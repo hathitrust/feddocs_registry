@@ -1,6 +1,6 @@
 require 'json'
 
-CSS = Registry::Series::CongressionalSerialSet
+CSS = ECMangle::CongressionalSerialSet
 
 describe 'CongressionalSerialSet' do
   let(:src) { CSS.new }
@@ -51,15 +51,15 @@ describe 'CongressionalSerialSet' do
 
   describe 'sudoc_stem' do
     it 'has a sudoc_stem field' do
-      expect(CSS.sudoc_stem).to eq('Y 1.1/2:')
+      expect(CSS.new.sudoc_stems).to eq(['Y 1.1/2:'])
     end
   end
 
   describe 'oclcs' do
     it 'has an oclcs field' do
-      expect(CSS.oclcs).to include(3_888_071)
-      expect(CSS.oclcs).to include(4_978_913)
-      expect(CSS.oclcs).to include(191_710_879)
+      expect(CSS.new.ocns).to include(3_888_071)
+      expect(CSS.new.ocns).to include(4_978_913)
+      expect(CSS.new.ocns).to include(191_710_879)
     end
   end
 end

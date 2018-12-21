@@ -4,9 +4,9 @@ require 'marc'
 require 'pp'
 require 'dotenv'
 require 'registry/collator'
-require 'registry/series'
 require 'yaml'
 require 'digest'
+require 'ecmangle'
 require 'filter'
 require 'filter/blacklist'
 require 'filter/whitelist'
@@ -23,7 +23,7 @@ module Registry
   class SourceRecord
     include Mongoid::Document
     include Mongoid::Attributes::Dynamic
-    include Registry::Series
+    include ECMangle
     include OclcAuthoritative
     include Filter
     store_in collection: 'source_records'

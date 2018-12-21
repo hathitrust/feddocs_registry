@@ -1,4 +1,10 @@
 GIT
+  remote: https://github.com/HTGovdocs/ecmangle.git
+  revision: 5aad34135e73385d6609fec94a19669437ec5ed2
+  specs:
+    ecmangle (0.1.1)
+
+GIT
   remote: https://github.com/HTGovdocs/filter.git
   revision: 1bc5b4cb576fb730bd4088a335c7d876b01223a6
   specs:
@@ -240,6 +246,7 @@ PLATFORMS
 DEPENDENCIES
   celluloid
   dotenv
+  ecmangle!
   filter!
   flog
   google-api-client (= 0.11.2)

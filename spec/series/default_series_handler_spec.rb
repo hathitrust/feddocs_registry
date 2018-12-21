@@ -1,4 +1,4 @@
-DSH = Registry::Series::DefaultSeriesHandler
+DSH = ECMangle::DefaultMangler
 
 describe 'tokens' do
   it 'matches "OCT."' do

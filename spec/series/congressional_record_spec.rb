@@ -1,6 +1,6 @@
 require 'json'
 
-CR = Registry::Series::CongressionalRecord
+CR = ECMangle::CongressionalRecord
 
 describe 'Congressional Record' do
   let(:src) { CR.new }
@@ -162,13 +162,13 @@ describe 'Congressional Record' do
 
   describe 'sudoc_stem' do
     it 'has a sudoc_stem field' do
-      expect(CR.sudoc_stem).to eq('X 1.1:')
+      expect(CR.new.sudoc_stems).to eq(['X 1.1:'])
     end
   end
 
   describe 'oclcs' do
     it 'has an oclcs field' do
-      # expect(UnitedStatesReports.oclcs).to include(10648533)
+      # expect(UnitedStatesReports.new.ocns).to include(10648533)
     end
   end
 end

@@ -1,6 +1,6 @@
 require 'json'
 
-MLR = Registry::Series::MonthlyLaborReview
+MLR = ECMangle::MonthlyLaborReview
 
 describe 'MonthlyLaborReview' do
   let(:src) { MLR.new }
@@ -149,7 +149,7 @@ describe 'MonthlyLaborReview' do
 
   describe 'oclcs' do
     it 'has an oclcs field' do
-      expect(MLR.oclcs).to include(5_345_258)
+      expect(MLR.new.ocns).to include(5_345_258)
     end
   end
 end

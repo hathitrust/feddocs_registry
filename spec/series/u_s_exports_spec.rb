@@ -1,6 +1,6 @@
 require 'json'
 
-Exp = Registry::Series::USExports
+Exp = ECMangle::USExports
 
 describe 'USExports' do
   let(:src) { Exp.new }
@@ -59,13 +59,13 @@ describe 'USExports' do
 
   describe 'title' do
     it 'has a title' do
-      expect(Exp.title).to eq('U.S. Exports')
+      expect(Exp.new.title).to eq('U.S. Exports')
     end
   end
 
   describe 'oclcs' do
     it 'has an oclcs field' do
-      expect(Exp.oclcs).to eq([1_799_484, 698_024_555])
+      expect(Exp.new.ocns).to eq([1_799_484, 698_024_555])
     end
   end
 

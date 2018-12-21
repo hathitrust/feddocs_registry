@@ -1,4 +1,4 @@
-# require 'registry/source_record'
+require 'registry/source_record'
 require 'dotenv'
 require 'pp'
 
@@ -1093,7 +1093,7 @@ RSpec.describe Registry::SourceRecord, '#series' do
   end
 
   it 'detects CMs' do
-    expect(Registry::Series.available_ec_handlers.count).to eq(26)
+    expect(ECMangle.available_ec_handlers.count).to eq(28)
     @src.source = File.open(File.dirname(__FILE__) +
                        '/series/data/census_manufactures.json').read
     expect(@src.series).to eq(['Census of Manufactures'])
@@ -1102,7 +1102,7 @@ RSpec.describe Registry::SourceRecord, '#series' do
   it 'detects US Exports' do
     @src.source = File.open(File.dirname(__FILE__) +
                        '/series/data/us_exports.json').read
-    expect(@src.series).to eq(['US Exports'])
+    expect(@src.series).to eq(['U.S. Exports'])
   end
 
   after(:each) do

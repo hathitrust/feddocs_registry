@@ -1,6 +1,6 @@
 require 'json'
 
-StatisticalAbstract = Registry::Series::StatisticalAbstract
+StatisticalAbstract = ECMangle::StatisticalAbstract
 describe 'StatisticalAbstract' do
   let(:src) { StatisticalAbstract.new }
 
@@ -109,7 +109,7 @@ describe 'StatisticalAbstract' do
 
   describe 'oclcs' do
     it 'has an oclcs field' do
-      expect(StatisticalAbstract.oclcs).to include(1_193_890)
+      expect(StatisticalAbstract.new.ocns).to include(1_193_890)
     end
   end
 end

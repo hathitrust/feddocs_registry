@@ -7,6 +7,7 @@ gem 'multi_json'
 gem 'rspec'
 
 gem 'celluloid'
+gem 'ecmangle', git: 'https://github.com/HTGovdocs/ecmangle.git'
 gem 'filter', git: 'https://github.com/HTGovdocs/filter.git'
 gem 'google-api-client', '0.11.2'
 gem 'library_stdnums', '~> 1.0.2'

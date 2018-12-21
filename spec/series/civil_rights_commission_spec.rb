@@ -1,7 +1,6 @@
 require 'registry/source_record'
-require 'registry/series/civil_rights_commission'
 require 'json'
-CRC = Registry::Series::CivilRightsCommission
+CRC = ECMangle::CivilRightsCommission
 
 describe 'CRC' do
   let(:src) { CRC.new }
@@ -29,7 +28,7 @@ describe 'CRC' do
 
   describe 'sudoc_stem' do
     it 'has an sudocs field' do
-      expect(CRC.sudoc_stem).to eq('CR')
+      expect(CRC.new.sudoc_stems).to eq(['CR'])
     end
   end
 end

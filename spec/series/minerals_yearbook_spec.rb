@@ -1,6 +1,6 @@
 require 'json'
 
-MY = Registry::Series::MineralsYearbook
+MY = ECMangle::MineralsYearbook
 
 describe 'MineralsYearbook' do
   let(:src) { MY.new }
@@ -104,7 +104,7 @@ describe 'MineralsYearbook' do
 
   describe 'oclcs' do
     it 'has an oclcs field' do
-      expect(MY.oclcs).to include(1_847_412)
+      expect(MY.new.ocns).to include(1_847_412)
     end
   end
 end

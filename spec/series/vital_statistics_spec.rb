@@ -1,6 +1,6 @@
 require 'json'
 
-VS = Registry::Series::VitalStatistics
+VS = ECMangle::VitalStatistics
 
 describe 'VitalStatistics' do
   let(:src) { VS.new }
@@ -83,7 +83,7 @@ describe 'VitalStatistics' do
 
   describe 'oclcs' do
     it 'has an oclcs field' do
-      expect(VS.oclcs).to eq([1_168_068, 48_062_652])
+      expect(VS.new.ocns).to eq([1_168_068, 48_062_652])
     end
   end
 end

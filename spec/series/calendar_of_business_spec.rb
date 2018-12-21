@@ -1,6 +1,6 @@
 require 'json'
 
-COB = Registry::Series::CalendarOfBusiness
+COB = ECMangle::CalendarOfBusiness
 
 describe 'CalendarOfBusiness' do
   let(:src) { COB.new }
@@ -40,7 +40,7 @@ describe 'CalendarOfBusiness' do
 
   describe 'oclcs' do
     it 'has an oclcs field' do
-      expect(COB.oclcs).to eq([30_003_375,
+      expect(COB.new.ocns).to eq([30_003_375,
                                1_768_284,
                                41_867_070])
     end

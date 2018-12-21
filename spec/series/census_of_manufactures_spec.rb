@@ -1,6 +1,6 @@
 require 'json'
 
-CM = Registry::Series::CensusOfManufactures
+CM = ECMangle::CensusOfManufactures
 
 describe 'CensusOfManufactures' do
   let(:src) { CM.new }
@@ -40,7 +40,7 @@ describe 'CensusOfManufactures' do
 
   describe 'oclcs' do
     it 'has an oclcs field' do
-      expect(CM.oclcs).to eq([2_842_584, 623_028_861])
+      expect(CM.new.ocns).to eq([2_842_584, 623_028_861])
     end
   end
 

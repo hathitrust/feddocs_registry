@@ -1,6 +1,6 @@
 require 'json'
 
-FCCR = Registry::Series::FCCRecord
+FCCR = ECMangle::FCCRecord
 
 pages_to_numbers = {} # [<start>, <end>] => [<start>, <end>]
 
@@ -51,7 +51,7 @@ describe 'FCCRecord' do
 
   describe 'oclcs' do
     it 'has an oclcs field' do
-      expect(FCCR.oclcs).to eq([14_964_165,
+      expect(FCCR.new.ocns).to eq([14_964_165,
                                 25_705_333,
                                 31_506_723,
                                 52_110_163,
