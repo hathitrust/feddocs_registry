@@ -137,13 +137,18 @@ RSpec.describe Registry::SourceRecord do
 end
 
 RSpec.describe Registry::SourceRecord, '#resolve_oclc' do
+  it 'has a MAX_OCN' do
+    expect(SourceRecord::MAX_OCN).to eq(2_000_000_000)
+  end
+
   it 'resolves OCLCs for records with multiple OCLCs' do
     sr = SourceRecord.new
     sr.org_code = 'azu'
     sr.source = File.open(File.dirname(__FILE__) + '/data/oclc_resolution.json').read
     # the second oclc number is bogus but will resolve to 227681. We should hang onto
     # 1198154
-    expect(sr.oclc_alleged).to eq([1_198_154, 244_155])
+    # the third oclc number is obviously invalid and is ignored
+    expect(sr.oclc_alleged).to eq([1_198_154, 9_999_999_999, 244_155])
     expect(sr.oclc_resolved).to eq([1_198_154, 227_681])
   end
 end
@@ -804,6 +809,14 @@ RSpec.describe Registry::SourceRecord, '#extract_holdings' do
     expect(@src.holdings[v5_dig].count).to be(1)
     expect(@src.holdings[v5_dig][0][:u]).to eq('mdp.39015034759749')
     expect(@src.ht_item_ids).to include('mdp.39015034759749')
+  end
+
+  it 'removes deleted items from ht_item_ids' do
+    src_with_deleted_item = SourceRecord.new(org_code: 'miaahdl')
+    src_with_deleted_item.source = File.open(
+      File.dirname(__FILE__) + '/data/htdl_rec_with_removed_item.json'
+    ).read
+    expect(src_with_deleted_item.ht_item_ids).not_to include('mdp.39015001559569')
   end
 end
 
