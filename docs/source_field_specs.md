@@ -163,7 +163,7 @@ pub_date
 publisher_headings
 ------------------
   type: array of strings 
-  MARC 260
+  MARC 260b
 
 series
 ------

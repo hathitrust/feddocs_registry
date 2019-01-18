@@ -91,6 +91,15 @@ RSpec.describe Registry::SourceRecord do
     expect(copy.author_parts).to include('United States.')
   end
 
+  it 'extracts publisher' do 
+    line = File.open(File.open(File.dirname(__FILE__) +
+                               '/data/record_with_publisher.json') ).read
+    src = SourceRecord.new(org_code:'mdu',
+                          source:line)
+    expect(src['publisher_headings']).to include('Government Printing Office,')
+    expect(src.publisher_headings).to include('Government Printing Office,')
+  end
+
   it 'extracts oclc number from 001, 035, 776' do
     expect(@sr.oclc_resolved).to eq([38, 812_424_058])
     expect(@sr.oclcs_from_776_fields).to eq([812_424_058])
