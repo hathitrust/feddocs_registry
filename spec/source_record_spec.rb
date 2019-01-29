@@ -1127,6 +1127,12 @@ RSpec.describe Registry::SourceRecord, '#series' do
     expect(@src.series).to eq(['U.S. Exports'])
   end
 
+  it 'detects SEC News Digest' do
+    @src.source = File.open(File.dirname(__FILE__) +
+                            '/series/data/sec_news_digest.json').read
+    expect(@src.series).to eq(['SEC News Digest'])
+  end
+
   after(:each) do
     @src.delete
   end
