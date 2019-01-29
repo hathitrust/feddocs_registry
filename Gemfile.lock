@@ -1,8 +1,8 @@
 GIT
   remote: https://github.com/HTGovdocs/ecmangle.git
-  revision: dde6394c6b72ba0ddb12e0f8139da2c83e02ca38
+  revision: 4476a9bff4587c3dc60910c1481714c960df12f9
   specs:
-    ecmangle (0.5.0)
+    ecmangle (0.5.1)
 
 GIT
   remote: https://github.com/HTGovdocs/filter.git

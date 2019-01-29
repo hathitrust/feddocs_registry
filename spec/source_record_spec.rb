@@ -139,7 +139,6 @@ RSpec.describe Registry::SourceRecord do
     sr.monograph?
     sr.fed_doc?
     sr.extract_local_id
-    puts sr.ec_handler.title
     expect(call_count).to eq(1)
     !expect { sr.source = line }.to perform_under(2).ms
   end
@@ -1115,7 +1114,7 @@ RSpec.describe Registry::SourceRecord, '#series' do
   end
 
   it 'detects CMs' do
-    expect(ECMangle.available_ec_handlers.count).to eq(29)
+    expect(ECMangle.available_ec_manglers.count).to eq(30)
     @src.source = File.open(File.dirname(__FILE__) +
                        '/series/data/census_manufactures.json').read
     expect(@src.series).to eq(['Census of Manufactures'])
