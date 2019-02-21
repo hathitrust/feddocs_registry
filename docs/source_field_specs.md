@@ -77,6 +77,14 @@ gpo_item_numbers
 	type: array of strings
 	MARC 074a
 
+gpo_ids
+-------
+  type: array of integers
+  MARC 035a matching GPO
+  Some libraries have accidentally turned these into OCNs, so we need to use 
+  to filter our list of ocns.
+
+
 holdings
 --------
 	type: document

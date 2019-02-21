@@ -43,6 +43,7 @@ module Registry
     field :file_path, type: String
     field :formats, type: Array
     field :gpo_item_numbers, type: Array
+    field :gpo_ids, type: Array
     field :holdings
     field :ht_item_ids
     field :in_registry, type: Boolean, default: false
@@ -156,7 +157,8 @@ module Registry
       extract_sudocs
 
       self.oclc_resolved = oclc_alleged.map { |o| resolve_oclc(o) }
-                                       .flatten.uniq.select { |o| o < MAX_OCN }
+                                       .flatten.uniq
+        .select { |o| o < MAX_OCN and !matches_gpo_ids(o) }
     end
 
     def ocns
@@ -178,6 +180,11 @@ module Registry
         id = ''
       end
       id
+    end
+
+    # Find OCNs that match GPO ids
+    def matches_gpo_ids(ocn)
+      gpo_ids.select { |gid| gid.to_s.match? /#{ocn.to_s}/ }.any?
     end
 
     # Extract marcive_ids from the 035
@@ -270,6 +277,14 @@ module Registry
     # takes a SuDoc string and tries to repair it if mangled
     def fix_sudoc(sstring)
       sstring.sub(/^II0 +a/, '')
+    end
+
+    def gpo_ids(m = nil)
+      @marc = m unless m.nil?
+      self.gpo_ids = []
+      ids = Traject::MarcExtractor.cached('035a').extract(marc)
+      self.gpo_ids = ids.select { |i| /GPO/.match? i }
+        .map { |i| i.gsub(/[^0-9]/, '').to_i }
     end
 
     def extract_oclcs(m = nil)

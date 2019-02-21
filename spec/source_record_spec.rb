@@ -17,6 +17,7 @@ RSpec.describe SourceRecord do
     sr = SourceRecord.new(org_code: 'miu',
                           source: @fr_rec)
     expect(sr.series).to include('Federal Register')
+    crc_rec = File.open(File.dirname(__FILE__) + '/series/data/crc_record.json').read
   end
 
   it 'parses the enumchron if it has a series' do
@@ -40,6 +41,7 @@ RSpec.describe SourceRecord do
                           source: rec)
     expect { sr.save }.to raise_error(BSON::String::IllegalKey)
   end
+
 end
 
 RSpec.describe Registry::SourceRecord do
@@ -158,6 +160,28 @@ RSpec.describe Registry::SourceRecord, '#resolve_oclc' do
     # the third oclc number is obviously invalid and is ignored
     expect(sr.oclc_alleged).to eq([1_198_154, 9_999_999_999, 244_155])
     expect(sr.oclc_resolved).to eq([1_198_154, 227_681])
+  end
+
+  it 'removes OCNs that match a GPO number' do
+    sr = SourceRecord.new(org_code:"miaahdl",
+                          source: File.open(
+                            File.dirname(__FILE__) +
+                            '/data/bogus_gpo_ocn.json').read
+                         )
+    expect(sr.oclc_alleged).to eq([76006743])
+    expect(sr.matches_gpo_ids(sr.oclc_alleged[0])).to be true
+    expect(sr.oclc_resolved).to eq([])
+  end
+end
+
+RSpec.describe Registry::SourceRecord, 'gpo_ids' do
+  it 'extracts gpo ids' do
+    sr = SourceRecord.new(org_code:"miaahdl",
+                          source: File.open(
+                            File.dirname(__FILE__) +
+                            '/data/bogus_gpo_ocn.json').read
+                         )
+    expect(sr.gpo_ids).to eq([76006743])
   end
 end
 
@@ -1114,7 +1138,7 @@ RSpec.describe Registry::SourceRecord, '#series' do
   end
 
   it 'detects CMs' do
-    expect(ECMangle.available_ec_manglers.count).to eq(30)
+    expect(ECMangle.available_ec_manglers.count).to eq(31)
     @src.source = File.open(File.dirname(__FILE__) +
                        '/series/data/census_manufactures.json').read
     expect(@src.series).to eq(['Census of Manufactures'])
