@@ -654,6 +654,14 @@ RSpec.describe Registry::SourceRecord, 'fed_doc?' do
     expect(s.fed_doc?).to be_truthy
   end
 
+  it 'uses publisher headings' do
+    s = SourceRecord.new(
+      org_code: 'miaahdl',
+      source: File.open(File.dirname(__FILE__) + '/data/oak_ridge_rec.json').read
+    )
+    expect(s.fed_doc?).to be(true)
+  end
+
   it 'returns true/false not 0 or nil' do
     gd = SourceRecord.new
     gd.org_code = 'miaahdl'
