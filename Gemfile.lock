@@ -1,8 +1,8 @@
 GIT
   remote: https://github.com/HTGovdocs/ecmangle.git
-  revision: 761c10aa9912ab7abb3df4a8d750e30c6c47345d
+  revision: 0342acfac3e66db05b2a81e7ce1df0d7a40368e0
   specs:
-    ecmangle (0.7)
+    ecmangle (0.8)
 
 GIT
   remote: https://github.com/HTGovdocs/filter.git
@@ -52,7 +52,7 @@ GIT
 PATH
   remote: .
   specs:
-    registry (0.18)
+    registry (0.18.1)
       dotenv
       library_stdnums (~> 1.0.2)
       marc
