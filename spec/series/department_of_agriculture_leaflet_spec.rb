@@ -137,9 +137,9 @@ describe 'DepartmentOfAgricultureLeaflet' do
   describe 'oclcs' do
     it 'has an oclcs field' do
       expect(DAGL.new.ocns).to eq([1_432_804,
-                                34_452_947,
-                                567_905_741,
-                                608_882_398])
+                                   34_452_947,
+                                   567_905_741,
+                                   608_882_398])
     end
   end
 end

@@ -41,7 +41,6 @@ RSpec.describe SourceRecord do
                           source: rec)
     expect { sr.save }.to raise_error(BSON::String::IllegalKey)
   end
-
 end
 
 RSpec.describe Registry::SourceRecord do
@@ -88,18 +87,17 @@ RSpec.describe Registry::SourceRecord do
     copy = SourceRecord.find_by(source_id: sr_id)
     expect(copy.lccn_normalized).to eq(['65062399'])
     expect(copy.sudocs).to eq(['Y 4.R 86/2:SM 6/965'])
-    expect(copy.publisher_headings).to include('U.S. Govt. Print. Off.,')
-    expect(copy.author_headings).to include('United States. Congress. Senate. Committee on Rules and Administration. Subcommittee on the Smithsonian Institution.')
-    expect(copy.author_parts).to include('United States.')
+    expect(copy.publisher).to include('U.S. Govt. Print. Off.,')
+    expect(copy.author).to include('United States. Congress. Senate. Committee on Rules and Administration. Subcommittee on the Smithsonian Institution.')
   end
 
-  it 'extracts publisher' do 
+  it 'extracts publisher' do
     line = File.open(File.open(File.dirname(__FILE__) +
-                               '/data/record_with_publisher.json') ).read
-    src = SourceRecord.new(org_code:'mdu',
-                          source:line)
-    expect(src['publisher_headings']).to include('Government Printing Office,')
-    expect(src.publisher_headings).to include('Government Printing Office,')
+                               '/data/record_with_publisher.json')).read
+    src = SourceRecord.new(org_code: 'mdu',
+                           source: line)
+    expect(src['publisher']).to include('Government Printing Office,')
+    expect(src.publisher).to include('Government Printing Office,')
   end
 
   it 'extracts oclc number from 001, 035, 776' do
@@ -163,12 +161,12 @@ RSpec.describe Registry::SourceRecord, '#resolve_oclc' do
   end
 
   it 'removes OCNs that match a GPO number' do
-    sr = SourceRecord.new(org_code:"miaahdl",
+    sr = SourceRecord.new(org_code: 'miaahdl',
                           source: File.open(
                             File.dirname(__FILE__) +
-                            '/data/bogus_gpo_ocn.json').read
-                         )
-    expect(sr.oclc_alleged).to eq([76006743])
+                            '/data/bogus_gpo_ocn.json'
+                          ).read)
+    expect(sr.oclc_alleged).to eq([76_006_743])
     expect(sr.matches_gpo_ids(sr.oclc_alleged[0])).to be true
     expect(sr.oclc_resolved).to eq([])
   end
@@ -176,12 +174,12 @@ end
 
 RSpec.describe Registry::SourceRecord, 'gpo_ids' do
   it 'extracts gpo ids' do
-    sr = SourceRecord.new(org_code:"miaahdl",
+    sr = SourceRecord.new(org_code: 'miaahdl',
                           source: File.open(
                             File.dirname(__FILE__) +
-                            '/data/bogus_gpo_ocn.json').read
-                         )
-    expect(sr.gpo_ids).to eq([76006743])
+                            '/data/bogus_gpo_ocn.json'
+                          ).read)
+    expect(sr.gpo_ids).to eq([76_006_743])
   end
 end
 
@@ -380,7 +378,7 @@ RSpec.describe Registry::SourceRecord, '#add_to_registry' do
     repl_rec.update_in_registry
     deleted_ecs.each do |ec|
       expect(RegistryRecord.where(source_record_ids: @old_rec.source_id,
-                                  enumchron_display: ec,
+                                  enum_chron: ec,
                                   deprecated_timestamp: { "$exists": 0 }).count).to eq(0)
     end
     RegistryRecord.where(:source_record_ids.in => [old_rec.source_id,
@@ -396,7 +394,7 @@ RSpec.describe Registry::SourceRecord, '#add_to_registry' do
     expect(@repl_rec.source_id).to eq(@old_rec.source_id)
     new_ecs.each do |ec|
       expect(RegistryRecord.where(source_record_ids: @old_rec.source_id,
-                                  enumchron_display: ec,
+                                  enum_chron: ec,
                                   deprecated_timestamp: { "$exists": 0 }).count).to eq(1)
     end
   end
@@ -414,7 +412,7 @@ RSpec.describe Registry::SourceRecord, '#add_to_registry' do
     results = @new_rec.add_to_registry
     @new_rec.enum_chrons.each do |ec|
       expect(RegistryRecord.where(source_record_ids: @new_rec.source_id,
-                                  enumchron_display: ec,
+                                  enum_chron: ec,
                                   deprecated_timestamp: { "$exists": 0 }).count).to eq(1)
     end
     expect(results[:num_new]).to eq(3)
@@ -838,7 +836,7 @@ end
 
 RSpec.describe Registry::SourceRecord, '#extract_holdings' do
   before(:all) do
-    @src = SourceRecord.where(source_id:"ec1b9145-7e88-4774-a35d-4e9639ec8a7b").first
+    @src = SourceRecord.where(source_id: 'ec1b9145-7e88-4774-a35d-4e9639ec8a7b').first
     @src.extract_holdings
   end
 
@@ -1146,7 +1144,7 @@ RSpec.describe Registry::SourceRecord, '#series' do
   end
 
   it 'detects CMs' do
-    expect(ECMangle.available_ec_manglers.count).to eq(31)
+    expect(ECMangle.available_ec_manglers.count).to eq(37)
     @src.source = File.open(File.dirname(__FILE__) +
                        '/series/data/census_manufactures.json').read
     expect(@src.series).to eq(['Census of Manufactures'])

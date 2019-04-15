@@ -23,16 +23,17 @@ module Registry
     field :source_record_ids, type: Array
     field :source_org_codes, type: Array
     field :creation_notes, type: String
-    field :enumchron_display, type: String
+    field :enum_chron, type: String
     field :suppressed, type: Boolean, default: false
+    field :oclc, type: Array
     field :ht_ids_fv
     field :ht_ids_lv
     field :ht_availability
-    field :subject_t
+    field :subject_topic_facet, type: Array
     field :author_lccns, type: Array
     field :added_entry_lccns, type: Array
     field :electronic_resources, type: Array
-    field :print_holdings_t, type: Array
+    field :print_holdings, type: Array
 
     @@collator = Collator.new(__dir__ + '/../../config/'\
                                         'traject_registry_record_config.rb')
@@ -58,31 +59,29 @@ module Registry
       @@collator.extract_fields(@sources)\
                 .each_with_index { |(k, v), _i| self[k] = v }
       @sources.each do |s|
-        self.series = (self.series + s.series).uniq
+        self.series = (series + s.series).uniq
       end
 
       self.ancestors = ancestors
       self.creation_notes = notes
       self.registry_id ||= SecureRandom.uuid
-      self.enumchron_display = enum_chron
+      self.enum_chron = enum_chron
       set_ht_availability
-      if (print_holdings_t.nil? || print_holdings_t.count.zero?) &&
-         oclcnum_t.any?
+      if (@print_holdings.nil? || @print_holdings.count.zero?) &&
+         oclc.any?
         print_holdings
       end
     end
 
-=begin    
-    # Collects Series titles from source records
-    def series
-      puts "sources collect:"
-      PP.pp @sources.collect(&:series).flatten.uniq
-      sources.each {|s| PP.pp s.series }
-      self.series = @sources.collect(&:series).flatten.uniq
-      @series
-    end
-=end
-    
+    #     # Collects Series titles from source records
+    #     def series
+    #       puts "sources collect:"
+    #       PP.pp @sources.collect(&:series).flatten.uniq
+    #       sources.each {|s| PP.pp s.series }
+    #       self.series = @sources.collect(&:series).flatten.uniq
+    #       @series
+    #     end
+
     # Sets HT availability based on ht_ids_fv and ht_ids_lv fields
     def set_ht_availability
       self.ht_availability = if ht_ids_fv.any?
@@ -115,7 +114,7 @@ module Registry
         end
         source_record_ids.uniq!
         self.source_org_codes.uniq!
-        self.series = (self.series + source_record.series).uniq
+        self.series = (series + source_record.series).uniq
       end
       set_ht_availability
       save
@@ -219,50 +218,51 @@ module Registry
     def self.cluster(s, enum_chron)
       # OCLC first
       if s.oclc_resolved&.any?
-        rec = RegistryRecord.where(oclcnum_t: { "$in": s.oclc_resolved },
-                                   enumchron_display: enum_chron,
+        rec = RegistryRecord.where(oclc: { "$in": s.oclc_resolved },
+                                   enum_chron: enum_chron,
                                    deprecated_timestamp: { "$exists": 0 }).first
       end
       # lccn
       if s.lccn_normalized&.any? && !rec
-        rec = RegistryRecord.where(lccn_t: s.lccn_normalized,
-                                   enumchron_display: enum_chron,
+        rec = RegistryRecord.where(lccn: s.lccn_normalized,
+                                   enum_chron: enum_chron,
                                    deprecated_timestamp: { "$exists": 0 }).first
       end
       # isbn
       if s.isbns_normalized&.any? && !rec
-        rec = RegistryRecord.where(isbn_t: s.isbns_normalized,
-                                   enumchron_display: enum_chron,
+        rec = RegistryRecord.where(isbn: s.isbns_normalized,
+                                   enum_chron: enum_chron,
                                    deprecated_timestamp: { "$exists": 0 }).first
       end
       # issn
       if s.issn_normalized&.any? && !rec
-        rec = RegistryRecord.where(issn_t: s.issn_normalized,
-                                   enumchron_display: enum_chron,
+        rec = RegistryRecord.where(issn: s.issn_normalized,
+                                   enum_chron: enum_chron,
                                    deprecated_timestamp: { "$exists": 0 }).first
       end
       # sudoc
       full_sudocs = s.sudocs&.select { |sud| sud =~ /:.+/ }
       if full_sudocs&.any? && !rec
-        rec = RegistryRecord.where(sudoc_display: full_sudocs,
-                                   enumchron_display: enum_chron,
+        rec = RegistryRecord.where(sudocs: { "$in": full_sudocs },
+                                   enum_chron: enum_chron,
                                    deprecated_timestamp: { "$exists": 0 }).first
       end
       rec
     end
 
     def print_holdings(oclcs = nil)
-      oclcs ||= oclcnum_t
-      self.print_holdings_t = []
+      oclcs ||= oclc
+      @print_holdings = []
       if oclcs.any?
         get_holdings = "SELECT DISTINCT(member_id) from holdings_memberitem
                         WHERE oclc IN(#{@@db_conn.escape(oclcs.join(','))})"
         @results = @@db_conn.query(get_holdings)
         @results.each do |row|
-          print_holdings_t << row['member_id']
+          @print_holdings << row['member_id']
         end
       end
-      print_holdings_t.uniq
+      @print_holdings.uniq!
+      @print_holdings
     end
   end
 end

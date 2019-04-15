@@ -30,8 +30,7 @@ end
 
 # author
 
-to_field 'author_headings', extract_marc('100abcdgqu:110abcdgnu:111acdegjnqu')
-to_field 'author_parts', extract_marc('100abcdgqu:110abcdgnu:111acdegjnqu', separator: nil)
+to_field 'author', extract_marc('100abcdgqu:110abcdgnu:111acdegjnqu')
 
 to_field 'author_lccns', extract_marc('100abcd:110abntd') do |_rec, acc|
   acc.map! { |auth| Authority.search(auth)&.sameAs }
@@ -54,7 +53,7 @@ to_field 'formats', marc_formats
 to_field 'gpo_item_numbers', extract_marc('074a')
 
 # publisher
-to_field 'publisher_headings', extract_marc('260b')
+to_field 'publisher', extract_marc('260b')
 
 # pubdate
 to_field 'pub_date', marc_publication_date

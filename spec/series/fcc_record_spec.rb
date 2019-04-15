@@ -52,11 +52,11 @@ describe 'FCCRecord' do
   describe 'oclcs' do
     it 'has an oclcs field' do
       expect(FCCR.new.ocns).to eq([14_964_165,
-                                25_705_333,
-                                31_506_723,
-                                52_110_163,
-                                58_055_590,
-                                70_896_877])
+                                   25_705_333,
+                                   31_506_723,
+                                   52_110_163,
+                                   58_055_590,
+                                   70_896_877])
     end
   end
 

@@ -24,19 +24,19 @@ module Registry
       fields[:ht_ids_fv] = []
       fields[:ht_ids_lv] = []
       fields[:source_org_codes] = sources.collect(&:org_code).flatten.uniq
-      fields[:sudoc_display] = sources.collect(&:sudocs).flatten.uniq
-      fields[:oclcnum_t] = sources.collect(&:oclc_resolved).flatten.uniq
-      fields[:isbn_t] = sources.collect(&:isbns_normalized).flatten.uniq
-      fields[:issn_t] = sources.collect(&:issn_normalized).flatten.uniq
-      fields[:lccn_t] = sources.collect(&:lccn_normalized).flatten.uniq
-      fields[:author_t] = sources.collect(&:author_headings).flatten.uniq
+      fields[:sudocs] = sources.collect(&:sudocs).flatten.uniq
+      fields[:oclc] = sources.collect(&:oclc_resolved).flatten.uniq
+      fields[:isbn] = sources.collect(&:isbns_normalized).flatten.uniq
+      fields[:issn] = sources.collect(&:issn_normalized).flatten.uniq
+      fields[:lccn] = sources.collect(&:lccn_normalized).flatten.uniq
+      fields[:author] = sources.collect(&:author).flatten.uniq
       fields[:author_lccns] = sources.collect(&:author_lccns).flatten.uniq
       fields[:report_numbers] = sources.collect(&:report_numbers).flatten.uniq
       fields[:added_entry_lccns] = sources.collect(&:added_entry_lccns).flatten.uniq
       fields[:electronic_resources] = sources.collect(&:electronic_resources).flatten.uniq
       fields[:related_electronic_resources] = sources.collect(&:related_electronic_resources).flatten.uniq
       fields[:electronic_versions] = sources.collect(&:electronic_versions).flatten.uniq
-      fields[:publisher_headings] = sources.collect(&:publisher_headings).flatten.uniq
+      fields[:publisher] = sources.collect(&:publisher).flatten.uniq
       fields[:pub_date] = sources.collect(&:pub_date).flatten.uniq
       fields[:gpo_item_numbers] = sources.collect(&:gpo_item_numbers).flatten.uniq
       sources.each do |rec|

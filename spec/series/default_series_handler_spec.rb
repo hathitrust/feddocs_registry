@@ -17,5 +17,3 @@ describe 'tokens' do
     expect(/#{DSH.new.tokens[:y]}/xi.match('YR. 1993')['year']).to eq('1993')
   end
 end
-
-

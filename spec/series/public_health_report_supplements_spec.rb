@@ -3,7 +3,7 @@ require 'json'
 PHRS = ECMangle::PublicHealthReportSupplements
 
 describe 'PublicHealthReportSupplements' do
-  let(:src) {  PHRS.new }
+  let(:src) { PHRS.new }
 
   describe 'parse_ec' do
     it 'can parse them all' do

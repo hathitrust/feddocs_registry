@@ -28,11 +28,8 @@ module Registry
     include Filter
     store_in collection: 'source_records'
 
-    field :author_parts
-    field :author_headings
     field :author_lccns, type: Array
     field :added_entry_lccns, type: Array
-    field :author_addl_headings
     field :cataloging_agency
     field :deprecated_reason, type: String
     field :deprecated_timestamp, type: DateTime
@@ -60,7 +57,7 @@ module Registry
     field :oclc_resolved
     field :org_code, type: String, default: 'miaahdl'
     field :pub_date
-    field :publisher_headings
+    field :publisher
     field :report_numbers, type: Array
     field :series, type: Array, default: []
     field :source
@@ -93,7 +90,7 @@ module Registry
           (?:(?:\(OCo?LC\)) |
       (?:\(OCo?LC\))?(?:(?:ocm)|(?:ocn)|(?:on))
       )(\d+)
-      }x
+      }x.freeze
 
     def initialize(*args)
       super
@@ -158,7 +155,7 @@ module Registry
 
       self.oclc_resolved = oclc_alleged.map { |o| resolve_oclc(o) }
                                        .flatten.uniq
-        .select { |o| o < MAX_OCN and !matches_gpo_ids(o) }
+                                       .select { |o| (o < MAX_OCN) && !matches_gpo_ids(o) }
     end
 
     def ocns
@@ -284,7 +281,7 @@ module Registry
       self.gpo_ids = []
       ids = Traject::MarcExtractor.cached('035a').extract(marc)
       self.gpo_ids = ids.select { |i| /GPO/.match? i }
-        .map { |i| i.gsub(/[^0-9]/, '').to_i }
+                        .map { |i| i.gsub(/[^0-9]/, '').to_i }
     end
 
     def extract_oclcs(m = nil)
@@ -473,7 +470,7 @@ module Registry
     # holdings = {<ec_string> :[<each holding>]
     # ht_item_ids = [<holding id>]
     # todo: refactor with extract_enum_chrons. A lot of duplicate code/work
-    # This might be a cry for help. 
+    # This might be a cry for help.
     def extract_holdings(m = nil)
       self.holdings = {}
       self.ht_item_ids = []
@@ -551,7 +548,7 @@ module Registry
     def add_to_registry(reason_str = '')
       ecs_in_reg = RegistryRecord.where(source_record_ids: self.source_id,
                                         deprecated_timestamp: { "$exists": 0 })
-                                 .no_timeout.pluck(:enumchron_display)
+                                 .no_timeout.pluck(:enum_chron)
       new_ecs = enum_chrons - ecs_in_reg
       new_ecs.each { |ec| add_enumchron(ec, reason_str) }
       # make sure it's "in_registry"
@@ -570,7 +567,7 @@ module Registry
     def delete_enumchron(ec, reason_str = '')
       # in theory should only be one
       RegistryRecord.where(source_record_ids: self.source_id,
-                           enumchron_display: ec,
+                           enum_chron: ec,
                            deprecated_timestamp: { "$exists": 0 })
                     .no_timeout
                     .each do |reg|
@@ -648,13 +645,12 @@ module Registry
                              extractions[field.to_s]
                            end
     end
-    alias author_headings extracted_field
-    alias author_parts extracted_field
+    alias author extracted_field
     alias author_lccns extracted_field
     alias added_entry_lccns extracted_field
     alias gpo_item_numbers extracted_field
     alias formats extracted_field
-    alias publisher_headings extracted_field
+    alias publisher extracted_field
     alias pub_date extracted_field
     alias electronic_resources extracted_field
     alias electronic_versions extracted_field

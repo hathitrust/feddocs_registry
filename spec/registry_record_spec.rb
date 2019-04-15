@@ -43,12 +43,12 @@ RSpec.describe RR, '#initialize' do
   end
 
   it 'collates the source records' do
-    expect(@new_rec.author_display).to be_instance_of(Array)
-    expect(@new_rec.sudoc_display).to eq ['Y 4.R 86/2:SM 6-6/2', 'Y 4.R 86/2:SM 6/965']
-    expect(@new_rec.oclcnum_t).to eq [38]
-    expect(@new_rec.lccn_t).to eq ['65062399']
-    expect(@new_rec.isbn_t).to eq []
-    expect(@new_rec.issn_t).to eq []
+    expect(@new_rec.author).to be_instance_of(Array)
+    expect(@new_rec.sudocs).to eq ['Y 4.R 86/2:SM 6-6/2', 'Y 4.R 86/2:SM 6/965']
+    expect(@new_rec.oclc).to eq [38]
+    expect(@new_rec.lccn).to eq ['65062399']
+    expect(@new_rec.isbn).to eq []
+    expect(@new_rec.issn).to eq []
   end
 
   it 'adds org codes' do
@@ -78,7 +78,7 @@ RSpec.describe RR, '#cluster' do
     @src = Registry::SourceRecord.new(org_code: 'miaahdl',
                                       oclc_resolved: [5, 25])
     @rr = RR.new([1, 2], '', '')
-    @rr.oclcnum_t = [5]
+    @rr.oclc = [5]
     @rr.save
   end
 
@@ -91,7 +91,7 @@ RSpec.describe RR, '#cluster' do
 
   it 'finds a matching cluster for any oclc' do
     expect(RR.cluster(@src, '')).to eq(@rr)
-    @rr.oclcnum_t << 50
+    @rr.oclc << 50
     @rr.save
     expect(RR.cluster(@src, '')).to eq(@rr)
   end
@@ -145,7 +145,7 @@ RSpec.describe RR, 'add_source' do
 
   it 'adds source record to cluster' do
     expect(@new_rec.source_record_ids).to include(@src.source_id)
-    expect(@new_rec.oclcnum_t).to include(39)
+    expect(@new_rec.oclc).to include(39)
   end
 
   it 'adds org code' do
@@ -289,12 +289,12 @@ end
 
 RSpec.describe RR, 'monograph?' do
   it 'returns true if one or more source records is a monograph bib' do
-    rec = RR.where(oclcnum_t: 447_925).first
+    rec = RR.where(oclc: 447_925).first
     expect(rec.monograph?).to be true
   end
 
   it 'returns false if none of the source records are a monograph bib' do
-    rec = RR.where(oclcnum_t: 243_871_545).first
+    rec = RR.where(oclc: 243_871_545).first
     expect(rec.monograph?).to be false
   end
 end
@@ -340,7 +340,7 @@ RSpec.describe RR, '#split' do
   end
 
   it 'updates with the correct enumchron' do
-    expect(@new_recs.last.enumchron_display).to eq('ec C')
+    expect(@new_recs.last.enum_chron).to eq('ec C')
   end
 end
 
@@ -367,7 +367,7 @@ end
 RSpec.describe RR, '#print_holdings' do
   before(:all) do
     @rec = RR.where(:source_record_ids.with_size => 6).first
-    @rec.oclcnum_t = [10_210_704]
+    @rec.oclc = [10_210_704]
   end
 
   it 'retrieves member ids from the print holdings database' do
@@ -378,7 +378,7 @@ RSpec.describe RR, '#print_holdings' do
   #   it "processes a hundred print holdings a second" do
   #     start = Time.now
   #     count = 0
-  #     RR.where(oclcnum_t:{"$exists":1}).no_timeout.each do |r|
+  #     RR.where(oclc:{"$exists":1}).no_timeout.each do |r|
   #       count += 1
   #       if count > 5000
   #         break

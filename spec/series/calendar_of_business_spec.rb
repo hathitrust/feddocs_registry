@@ -41,8 +41,8 @@ describe 'CalendarOfBusiness' do
   describe 'oclcs' do
     it 'has an oclcs field' do
       expect(COB.new.ocns).to eq([30_003_375,
-                               1_768_284,
-                               41_867_070])
+                                  1_768_284,
+                                  41_867_070])
     end
   end
 

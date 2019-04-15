@@ -211,7 +211,7 @@ describe 'WOTR' do
   describe 'oclcs' do
     it 'has an oclcs field' do
       expect(WOTR.new.ocns).to eq([427_057,
-                                471_419_901])
+                                   471_419_901])
     end
   end
 

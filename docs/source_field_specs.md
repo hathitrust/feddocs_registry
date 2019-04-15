@@ -1,7 +1,8 @@
-author_headings
+author
 ---------------
 	type: array of strings
-	MARC 110
+	MARC 100abcdgqu:110abcdgnu:111acdegjnqu
+  Renamed from author_headings
 
 author_lccns
 -----------
@@ -168,10 +169,11 @@ pub_date
 	type: String ( because this MARC and MARC doesn't do actual dates )
 	Extracted using Traject's marc_publication_date which uses the 008. 
 
-publisher_headings
+publisher
 ------------------
   type: array of strings 
   MARC 260b
+  Previously named publisher_headings
 
 series
 ------
