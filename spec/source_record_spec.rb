@@ -506,6 +506,8 @@ RSpec.describe Registry::SourceRecord, 'extract_sudocs' do
     @marc_fs = MARC::Record.new_from_hash(JSON.parse(fed_state))
     mangled = File.open(File.dirname(__FILE__) + '/data/ht_pd_record.json').read
     @marc_mang = MARC::Record.new_from_hash(JSON.parse(mangled))
+    caption = File.open(File.dirname(__FILE__) + '/data/sudoc_caption.json').read
+    @sudoc_caption = MARC::Record.new_from_hash(JSON.parse(caption))
   end
 
   # not much we can do about it
@@ -549,6 +551,28 @@ RSpec.describe Registry::SourceRecord, 'extract_sudocs' do
     sudocs = s.extract_sudocs(@marc_mang)
     expect(s.sudocs).not_to include('II0 aC 13.44:137')
     expect(s.sudocs).to include('C 13.44:137')
+  end
+
+  it 'ignores SuDoc captions' do
+    s = SourceRecord.new
+    sudocs = s.extract_sudocs(@sudoc_caption)
+    expect(s.sudocs).not_to include('I 19.81:(nos.-letters)/(ed.yr.)')
+  end
+end
+
+RSpec.describe Registry::SourceRecord, 'remove_caption_sudocs' do
+  before(:all) do
+    caption = File.open(File.dirname(__FILE__) + '/data/sudoc_caption.json').read
+    @sudoc_caption = MARC::Record.new_from_hash(JSON.parse(caption))
+  end
+
+  it 'removes caption sudocs from the sudoc list' do
+    s = SourceRecord.new
+    s.sudocs = ['I 19.81:(nos.-letters)/(ed.yr.)']
+    s.non_sudocs = []
+    s.remove_caption_sudocs
+    expect(s.sudocs).to eq([])
+    expect(s.non_sudocs).to eq(['I 19.81:(nos.-letters)/(ed.yr.)'])
   end
 end
 

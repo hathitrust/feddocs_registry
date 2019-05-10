@@ -3,6 +3,7 @@ config/mongoid.yml
 .rspec
 .bundle
 *.tmp
+*.swp
 
 .client_secret.json
 .credentials

@@ -264,11 +264,19 @@ module Registry
           end
         end
       end
+      remove_caption_sudocs
       self.non_sudocs.uniq!
       self.invalid_sudocs.uniq!
       self.sudocs.uniq!
+      # Remove caption sudocs
       self.sudocs = (self.sudocs - self.non_sudocs).map { |s| fix_sudoc s }
       self.sudocs
+    end
+
+    def remove_caption_sudocs
+      if self.sudocs.delete('I 19.81:(nos.-letters)/(ed.yr.)')
+        self.non_sudocs << 'I 19.81:(nos.-letters)/(ed.yr.)'
+      end
     end
 
     # takes a SuDoc string and tries to repair it if mangled

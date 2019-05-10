@@ -52,7 +52,7 @@ GIT
 PATH
   remote: .
   specs:
-    registry (0.18.1)
+    registry (0.19)
       dotenv
       library_stdnums (~> 1.0.2)
       marc
