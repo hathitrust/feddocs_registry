@@ -1,8 +1,8 @@
 GIT
   remote: https://github.com/HTGovdocs/ecmangle.git
-  revision: 1e96b553737f2b3a72ad40e68c974390a36ca20f
+  revision: 4b16726ba34a58b5b05e285671df971f353b5ff0
   specs:
-    ecmangle (0.13)
+    ecmangle (0.14)
 
 GIT
   remote: https://github.com/HTGovdocs/filter.git
@@ -35,7 +35,7 @@ GIT
 
 GIT
   remote: https://github.com/traject/traject.git
-  revision: fcb17711fe7a0590e72ecbd39fd3c61d77689f24
+  revision: 1841e58373f02ff79102fd16808da72f5b89c617
   specs:
     traject (3.1.0)
       concurrent-ruby (>= 0.8.0)
@@ -102,10 +102,10 @@ GEM
     declarative-option (0.1.0)
     diff-lcs (1.3)
     docile (1.3.2)
-    domain_name (0.5.20180417)
+    domain_name (0.5.20190701)
       unf (>= 0.0.5, < 1.0.0)
     dot-properties (0.1.3)
-    dotenv (2.7.2)
+    dotenv (2.7.5)
     faraday (0.15.4)
       multipart-post (>= 1.2, < 3)
     flog (4.6.2)
@@ -119,7 +119,7 @@ GEM
       mime-types (>= 3.0)
       representable (~> 3.0)
       retriable (>= 2.0, < 4.0)
-    googleauth (0.8.1)
+    googleauth (0.9.0)
       faraday (~> 0.12)
       jwt (>= 1.4, < 3.0)
       memoist (~> 0.16)
@@ -140,13 +140,13 @@ GEM
     httpclient (2.8.3)
     i18n (1.6.0)
       concurrent-ruby (~> 1.0)
-    jaro_winkler (1.5.2)
-    jaro_winkler (1.5.2-java)
+    jaro_winkler (1.5.3)
+    jaro_winkler (1.5.3-java)
     json (2.2.0)
     json (2.2.0-java)
     jwt (2.2.1)
     library_stdnums (1.0.2)
-    marc (1.0.3)
+    marc (1.0.4)
       scrub_rb (>= 1.0.1, < 2)
       unf
     marc-fastxmlwriter (1.0.0)
@@ -157,7 +157,7 @@ GEM
     mime-types-data (3.2019.0331)
     mini_portile2 (2.4.0)
     minitest (5.11.3)
-    mongo (2.8.0)
+    mongo (2.9.0)
       bson (>= 4.4.2, < 5.0.0)
     mongoid (7.0.4)
       activemodel (>= 5.1, < 6.0.0)
@@ -173,9 +173,9 @@ GEM
     parser (2.6.3.0)
       ast (~> 2.4.0)
     path_expander (1.0.4)
-    public_suffix (3.1.0)
+    public_suffix (3.1.1)
     rainbow (3.0.0)
-    rake (12.3.2)
+    rake (12.3.3)
     representable (3.0.4)
       declarative (< 0.1.0)
       declarative-option (< 0.2.0)
@@ -190,7 +190,7 @@ GEM
       benchmark-perf (~> 0.5.0)
       benchmark-trend (~> 0.3.0)
       rspec (>= 3.0.0, < 4.0.0)
-    rspec-core (3.8.1)
+    rspec-core (3.8.2)
       rspec-support (~> 3.8.0)
     rspec-expectations (3.8.4)
       diff-lcs (>= 1.2.0, < 2.0)
@@ -199,7 +199,7 @@ GEM
       diff-lcs (>= 1.2.0, < 2.0)
       rspec-support (~> 3.8.0)
     rspec-support (3.8.2)
-    rubocop (0.71.0)
+    rubocop (0.74.0)
       jaro_winkler (~> 1.5.1)
       parallel (~> 1.10)
       parser (>= 2.6)
@@ -216,7 +216,7 @@ GEM
       faraday (~> 0.9)
       jwt (>= 1.5, < 3.0)
       multi_json (~> 1.10)
-    simplecov (0.16.1)
+    simplecov (0.17.0)
       docile (~> 1.1)
       json (>= 1.8, < 3)
       simplecov-html (~> 0.10.0)
