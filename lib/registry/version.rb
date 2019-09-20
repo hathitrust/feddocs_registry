@@ -1,3 +1,3 @@
 module Registry
-  VERSION = '0.20'.freeze
+  VERSION = '0.20.1'.freeze
 end
