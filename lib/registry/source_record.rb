@@ -181,7 +181,7 @@ module Registry
 
     # Find OCNs that match GPO ids
     def matches_gpo_ids(ocn)
-      gpo_ids.select { |gid| gid.to_s.match? /#{ocn.to_s}/ }.any?
+      gpo_ids.select { |gid| gid.to_s.match? /#{ocn}/ }.any?
     end
 
     # Extract marcive_ids from the 035
@@ -369,7 +369,7 @@ module Registry
           # coincidence
           next if o2 < 10_000
 
-          bad_oclcs << o2 if o1.to_s.match?(/.+#{o2.to_s}$/)
+          bad_oclcs << o2 if o1.to_s.match?(/.+#{o2}$/)
         end
       end
       oclcs - bad_oclcs

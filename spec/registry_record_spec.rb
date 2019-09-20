@@ -9,10 +9,10 @@ SourceRecord = Registry::SourceRecord
 
 RSpec.describe RR, '#initialize' do
   before(:all) do
-    cluster = [
-      'c6c38adb-2533-4997-85f5-328e91c224a8',
-      'c514673d-f634-4f74-a8de-68cd4b281ced',
-      '55f97400-6497-46ce-9b9f-477dbbf5e78b'
+    cluster = %w[
+      c6c38adb-2533-4997-85f5-328e91c224a8
+      c514673d-f634-4f74-a8de-68cd4b281ced
+      55f97400-6497-46ce-9b9f-477dbbf5e78b
     ]
     ec = 'ec A'
     @new_rec = RR.new(cluster, ec, 'testing')
@@ -120,10 +120,10 @@ end
 
 RSpec.describe RR, 'add_source' do
   before(:all) do
-    cluster = [
-      'c6c38adb-2533-4997-85f5-328e91c224a8',
-      'c514673d-f634-4f74-a8de-68cd4b281ced',
-      '55f97400-6497-46ce-9b9f-477dbbf5e78b'
+    cluster = %w[
+      c6c38adb-2533-4997-85f5-328e91c224a8
+      c514673d-f634-4f74-a8de-68cd4b281ced
+      55f97400-6497-46ce-9b9f-477dbbf5e78b
     ]
     ec = 'ec A'
     @new_rec = RR.new(cluster, ec, 'testing')
@@ -209,15 +209,35 @@ RSpec.describe RR do
                             source: mrc)
     @src.save
     @reg = RR.new([@src.source_id], '', 'testing')
+
+    @psrc = File.open(File.dirname(__FILE__) + '/data/pub_date.json').read
+    @pub = SourceRecord.new(org_code: 'mnu',
+                            source: @psrc)
   end
 
   it 'collects pub_dates' do
     expect(@src.pub_date).to eq([1966])
-    expect(@reg.pub_date).to eq([1966])
+  end
+
+  it 'handles sources with empty pub_dates' do
+    expect(@pub.pub_date).to eq([1953])
+    @pub.remove_attribute('pub_date')
+    @pub.remove_attribute("source")
+    @pub.remove_instance_variable(:@extractions)
+    expect(@pub['pub_date']).to be_nil
+    expect(@pub.pub_date).to eq([])
+    @pub.source = @psrc
+    @pub.save
+    pub_less = RR.new([@pub.source_id], '', 'testing')
+    expect(pub_less.pub_date).to eq([1953])
+    # but if it has a source field it will get recreated
+    # pub['source'] = JSON.parse(src)
+    # expect(pub.pub_date).to eq([1953])
   end
 
   after(:all) do
     @src.delete
+    @pub.delete
   end
 end
 
@@ -233,10 +253,10 @@ end
 
 RSpec.describe RR, '#merge' do
   before(:all) do
-    @old_ids = [
-      'ada3c4a3-57dc-4f7e-9d54-bd61c0d52eaf',
-      '8a2e3921-fa17-4bba-8db5-80e34a3667c9',
-      'a363f4ef-4a5a-4574-b979-7fcf170c4004'
+    @old_ids = %w[
+      ada3c4a3-57dc-4f7e-9d54-bd61c0d52eaf
+      8a2e3921-fa17-4bba-8db5-80e34a3667c9
+      a363f4ef-4a5a-4574-b979-7fcf170c4004
     ]
     @res = RR.merge(@old_ids, 'new enumchron', 'testing the merge')
   end
@@ -371,7 +391,7 @@ RSpec.describe RR, '#print_holdings' do
   end
 
   it 'retrieves member ids from the print holdings database' do
-    expect(@rec.print_holdings([10_210_704]).count).to eq(14)
+    expect(@rec.print_holdings([10_210_704]).count).to eq(15)
     expect(@rec.print_holdings([10_210_704])).to include('northwestern')
   end
 

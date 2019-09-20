@@ -28,7 +28,7 @@ describe 'CalendarOfBusiness' do
       end
       puts "Calendar of Business match: #{matches}"
       puts "Calendar of Business no match: #{misses}"
-      expect(matches).to eq(3024) # actual: 3084
+      expect(matches).to eq(3029) # actual: 3084
     end
   end
 
@@ -49,6 +49,10 @@ describe 'CalendarOfBusiness' do
   describe 'parse_ec' do
     it 'parses "2001/13"' do
       expect(src.parse_ec('2001/13')['number']).to eq('13')
+    end
+
+    it 'parses "1982:NOS. 66-96"' do
+      expect(src.parse_ec('1982:NOS. 66-96')['end_number']).to eq('96')
     end
   end
 

@@ -45,7 +45,8 @@ end
 
 RSpec.describe Registry::SourceRecord do
   before(:each) do
-    @raw_source = File.open(File.dirname(__FILE__) + '/data/default_source_rec.json').read
+    @raw_source = File.open(File.dirname(__FILE__) +
+                            '/data/default_source_rec.json').read
     @sr = SourceRecord.new(org_code: 'miaahdl',
                            source: @raw_source)
   end
@@ -57,6 +58,21 @@ RSpec.describe Registry::SourceRecord do
 
   it 'sets the publication date' do
     expect(@sr.pub_date).to eq([1965])
+  end
+
+  it 'reset the publication date' do
+    src = File.open(File.dirname(__FILE__) + '/data/pub_date.json').read
+    pub = SourceRecord.new(org_code: 'mnu',
+                           source: src)
+    expect(pub.pub_date).to eq([1953])
+    pub.remove_attribute('pub_date')
+    pub.remove_attribute('source')
+    pub.remove_instance_variable(:@extractions)
+    expect(pub['pub_date']).to be_nil
+    expect(pub.pub_date).to eq([])
+    # but if it has a source field it will get recreated
+    pub['source'] = JSON.parse(src)
+    expect(pub.pub_date).to eq([1953])
   end
 
   it 'sets a marc field' do
@@ -1168,7 +1184,7 @@ RSpec.describe Registry::SourceRecord, '#series' do
   end
 
   it 'detects CMs' do
-    expect(ECMangle.available_ec_manglers.count).to eq(37)
+    expect(ECMangle.available_ec_manglers.count).to eq(39)
     @src.source = File.open(File.dirname(__FILE__) +
                        '/series/data/census_manufactures.json').read
     expect(@src.series).to eq(['Census of Manufactures'])
