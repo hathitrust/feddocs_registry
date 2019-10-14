@@ -165,9 +165,9 @@ GEM
     multi_json (1.13.1)
     multipart-post (2.1.1)
     mysql2 (0.5.2)
-    nokogiri (1.10.3)
+    nokogiri (1.10.4)
       mini_portile2 (~> 2.4.0)
-    nokogiri (1.10.3-java)
+    nokogiri (1.10.4-java)
     os (1.0.1)
     parallel (1.17.0)
     parser (2.6.3.0)
@@ -263,4 +263,4 @@ DEPENDENCIES
   traject!
 
 BUNDLED WITH
-   1.17.3
+   2.0.2
