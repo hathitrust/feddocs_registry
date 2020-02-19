@@ -1,33 +1,33 @@
 GIT
-  remote: https://github.com/HTGovdocs/ecmangle.git
+  remote: https://github.com/hathitrust/feddocs_ecmangle.git
   revision: 27d04591ed09e73ae56004f41e9d4523f94f7b18
   specs:
     ecmangle (0.15)
 
 GIT
-  remote: https://github.com/HTGovdocs/filter.git
-  revision: 3909644abd5094cf614d02c77221b9394e62fb55
+  remote: https://github.com/hathitrust/feddocs_filter.git
+  revision: 3506b40748c63910b730961c783945d0e06ecc82
   specs:
     filter (0.6)
       dotenv
       google-api-client (= 0.11.2)
 
 GIT
-  remote: https://github.com/HTGovdocs/nauth.git
+  remote: https://github.com/hathitrust/feddocs_nauth.git
   revision: 9d9f8b4cf94db63ad20da4c9196fdfed5b917cd6
   specs:
     nauth (0.2.1)
       dotenv
 
 GIT
-  remote: https://github.com/HTGovdocs/normalize.git
+  remote: https://github.com/hathitrust/feddocs_normalize.git
   revision: 10b9abf908069a2d57fe6533266447279638863f
   specs:
     normalize (0.4)
 
 GIT
-  remote: https://github.com/HTGovdocs/oclc_authoritative.git
-  revision: 134e51b3fec3f02170cc69a081587cc4585bf698
+  remote: https://github.com/hathitrust/feddocs_oclc_authoritative.git
+  revision: e926d76562a10b0d6c53c44becf6a8c9389a1c78
   specs:
     oclc_authoritative (0.1)
       dotenv
@@ -35,13 +35,13 @@ GIT
 
 GIT
   remote: https://github.com/traject/traject.git
-  revision: 1841e58373f02ff79102fd16808da72f5b89c617
+  revision: e17515a5f4c524b1096daa1f2e2997776754fdfc
   specs:
-    traject (3.1.0)
+    traject (3.3.0)
       concurrent-ruby (>= 0.8.0)
       dot-properties (>= 0.1.1)
-      hashie (~> 3.1)
-      http (~> 3.0)
+      hashie (>= 3.1, < 5)
+      http (>= 3.0, < 5)
       httpclient (~> 2.5)
       marc (~> 1.0)
       marc-fastxmlwriter (~> 1.0)
@@ -65,9 +65,9 @@ PATH
 GEM
   remote: https://rubygems.org/
   specs:
-    activemodel (5.2.3)
-      activesupport (= 5.2.3)
-    activesupport (5.2.3)
+    activemodel (5.2.4.1)
+      activesupport (= 5.2.4.1)
+    activesupport (5.2.4.1)
       concurrent-ruby (~> 1.0, >= 1.0.2)
       i18n (>= 0.7, < 2)
       minitest (~> 5.1)
@@ -78,8 +78,8 @@ GEM
     benchmark-malloc (0.1.0)
     benchmark-perf (0.5.0)
     benchmark-trend (0.3.0)
-    bson (4.5.0)
-    bson (4.5.0-java)
+    bson (4.7.1)
+    bson (4.7.1-java)
     celluloid (0.17.4)
       celluloid-essentials
       celluloid-extras
@@ -97,7 +97,7 @@ GEM
       timers (>= 4.1.1)
     celluloid-supervision (0.20.6)
       timers (>= 4.1.1)
-    concurrent-ruby (1.1.5)
+    concurrent-ruby (1.1.6)
     declarative (0.0.10)
     declarative-option (0.1.0)
     diff-lcs (1.3)
@@ -106,9 +106,14 @@ GEM
       unf (>= 0.0.5, < 1.0.0)
     dot-properties (0.1.3)
     dotenv (2.7.5)
-    faraday (0.17.0)
+    faraday (0.17.3)
       multipart-post (>= 1.2, < 3)
-    flog (4.6.2)
+    ffi (1.12.2)
+    ffi (1.12.2-java)
+    ffi-compiler (1.0.1)
+      ffi (>= 1.0.0)
+      rake
+    flog (4.6.4)
       path_expander (~> 1.0)
       ruby_parser (~> 3.1, > 3.1.0)
       sexp_processor (~> 4.8)
@@ -126,24 +131,22 @@ GEM
       multi_json (~> 1.11)
       os (>= 0.9, < 2.0)
       signet (~> 0.12)
-    hashie (3.6.0)
-    http (3.3.0)
+    hashie (4.1.0)
+    http (4.3.0)
       addressable (~> 2.3)
       http-cookie (~> 1.0)
-      http-form_data (~> 2.0)
-      http_parser.rb (~> 0.6.0)
+      http-form_data (~> 2.2)
+      http-parser (~> 1.2.0)
     http-cookie (1.0.3)
       domain_name (~> 0.5)
-    http-form_data (2.1.1)
-    http_parser.rb (0.6.0)
-    http_parser.rb (0.6.0-java)
+    http-form_data (2.2.0)
+    http-parser (1.2.1)
+      ffi-compiler (>= 1.0, < 2.0)
     httpclient (2.8.3)
-    i18n (1.6.0)
+    i18n (1.8.2)
       concurrent-ruby (~> 1.0)
-    jaro_winkler (1.5.3)
-    jaro_winkler (1.5.3-java)
-    json (2.2.0)
-    json (2.2.0-java)
+    jaro_winkler (1.5.4)
+    jaro_winkler (1.5.4-java)
     jwt (2.2.1)
     library_stdnums (1.0.2)
     marc (1.0.4)
@@ -151,89 +154,90 @@ GEM
       unf
     marc-fastxmlwriter (1.0.0)
       marc (~> 1.0)
-    memoist (0.16.0)
-    mime-types (3.3)
+    memoist (0.16.2)
+    mime-types (3.3.1)
       mime-types-data (~> 3.2015)
     mime-types-data (3.2019.1009)
     mini_portile2 (2.4.0)
-    minitest (5.11.3)
-    mongo (2.9.0)
+    minitest (5.14.0)
+    mongo (2.11.3)
       bson (>= 4.4.2, < 5.0.0)
-    mongoid (7.0.4)
-      activemodel (>= 5.1, < 6.0.0)
+    mongoid (7.0.5)
+      activemodel (>= 5.1, < 6.1)
       mongo (>= 2.5.1, < 3.0.0)
     multi_json (1.14.1)
     multipart-post (2.1.1)
-    mysql2 (0.5.2)
-    nokogiri (1.10.4)
+    mysql2 (0.5.3)
+    nokogiri (1.10.8)
       mini_portile2 (~> 2.4.0)
-    nokogiri (1.10.4-java)
+    nokogiri (1.10.8-java)
     os (1.0.1)
-    parallel (1.17.0)
-    parser (2.6.3.0)
+    parallel (1.19.1)
+    parser (2.7.0.2)
       ast (~> 2.4.0)
-    path_expander (1.0.4)
-    public_suffix (4.0.1)
+    path_expander (1.1.0)
+    public_suffix (4.0.3)
     rainbow (3.0.0)
-    rake (12.3.3)
+    rake (13.0.1)
     representable (3.0.4)
       declarative (< 0.1.0)
       declarative-option (< 0.2.0)
       uber (< 0.2.0)
     retriable (3.1.2)
-    rspec (3.8.0)
-      rspec-core (~> 3.8.0)
-      rspec-expectations (~> 3.8.0)
-      rspec-mocks (~> 3.8.0)
-    rspec-benchmark (0.5.0)
+    rexml (3.2.4)
+    rspec (3.9.0)
+      rspec-core (~> 3.9.0)
+      rspec-expectations (~> 3.9.0)
+      rspec-mocks (~> 3.9.0)
+    rspec-benchmark (0.5.1)
       benchmark-malloc (~> 0.1.0)
       benchmark-perf (~> 0.5.0)
       benchmark-trend (~> 0.3.0)
       rspec (>= 3.0.0, < 4.0.0)
-    rspec-core (3.8.2)
-      rspec-support (~> 3.8.0)
-    rspec-expectations (3.8.4)
+    rspec-core (3.9.1)
+      rspec-support (~> 3.9.1)
+    rspec-expectations (3.9.0)
       diff-lcs (>= 1.2.0, < 2.0)
-      rspec-support (~> 3.8.0)
-    rspec-mocks (3.8.1)
+      rspec-support (~> 3.9.0)
+    rspec-mocks (3.9.1)
       diff-lcs (>= 1.2.0, < 2.0)
-      rspec-support (~> 3.8.0)
-    rspec-support (3.8.2)
-    rubocop (0.74.0)
+      rspec-support (~> 3.9.0)
+    rspec-support (3.9.2)
+    rubocop (0.80.0)
       jaro_winkler (~> 1.5.1)
       parallel (~> 1.10)
-      parser (>= 2.6)
+      parser (>= 2.7.0.1)
       rainbow (>= 2.2.2, < 4.0)
+      rexml
       ruby-progressbar (~> 1.7)
       unicode-display_width (>= 1.4.0, < 1.7)
     ruby-progressbar (1.10.1)
-    ruby_parser (3.13.1)
+    ruby_parser (3.14.2)
       sexp_processor (~> 4.9)
     scrub_rb (1.0.1)
-    sexp_processor (4.12.1)
+    sexp_processor (4.14.1)
     signet (0.12.0)
       addressable (~> 2.3)
       faraday (~> 0.9)
       jwt (>= 1.5, < 3.0)
       multi_json (~> 1.10)
-    simplecov (0.17.0)
+    simplecov (0.18.2)
       docile (~> 1.1)
-      json (>= 1.8, < 3)
-      simplecov-html (~> 0.10.0)
-    simplecov-html (0.10.2)
+      simplecov-html (~> 0.11)
+    simplecov-html (0.12.0)
     slop (3.6.0)
     thread_safe (0.3.6)
     thread_safe (0.3.6-java)
     timers (4.3.0)
-    tzinfo (1.2.5)
+    tzinfo (1.2.6)
       thread_safe (~> 0.1)
     uber (0.1.0)
     unf (0.1.4)
       unf_ext
     unf (0.1.4-java)
     unf_ext (0.0.7.6)
-    unicode-display_width (1.6.0)
-    yell (2.2.0)
+    unicode-display_width (1.6.1)
+    yell (2.2.2)
 
 PLATFORMS
   java

@@ -115,6 +115,28 @@ issns_normalized
 	type: array of strings
 	List of ISSNs (MARC 022a) run through StdNum::ISSN.normalize.
 
+~~lc_call_numbers~~
+---------------
+  ~~type: array of strings~~
+  ~~Call numbers taken from 050ab, separator: ''~~
+  Deprecated. Does not need to be extracted from source records and was causing
+  problems when they were malformed.
+
+~~lc_classifications~~
+------------------
+  ~~type: array of string~~
+  ~~LoC call numbers taken from 050a~~
+  Deprecated. Does not need to be extracted from source records and was causing
+  problems when they were malformed.
+
+~~lc_item_numbers~~
+------------------
+  ~~type: array of string~~
+  ~~LoC call numbers taken from 050b~~
+  Deprecated. Does not need to be extracted from source records and was causing
+  problems when they were malformed.
+
+
 lccn_normalized
 ---------------
 	type: array of strings

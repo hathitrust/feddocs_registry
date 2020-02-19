@@ -74,11 +74,6 @@ to_field 'lccn_normalized', extract_marc('010a') do |_rec, acc|
   acc.uniq!
 end
 
-# LC call numbers
-to_field 'lc_call_numbers', extract_marc('050ab', separator: '')
-to_field 'lc_classifications', extract_marc('050a')
-to_field 'lc_item_numbers', extract_marc('050b')
-
 # issns
 to_field 'issn_normalized', extract_marc('022a:776x') do |_rec, acc|
   acc.map! { |issn| StdNum::ISSN.normalize(issn) }

@@ -75,6 +75,12 @@ RSpec.describe Registry::SourceRecord do
     expect(pub.pub_date).to eq([1953])
   end
 
+  it 'does not extract the lc_callnumbers' do
+    expect(@sr['lc_call_numbers']).to be_nil
+    expect(@sr['lc_classifications']).to be_nil
+    expect(@sr['lc_item_numbers']).to be_nil
+  end
+
   it 'sets a marc field' do
     expect(@sr.marc['008'].value).to eq('690605s1965    dcu           000 0 eng  ')
   end
@@ -128,18 +134,6 @@ RSpec.describe Registry::SourceRecord do
   it 'extracts formats' do
     expect(@sr['formats']).to eq(%w[Book Print])
     expect(@sr.formats).to eq(%w[Book Print])
-  end
-
-  it 'extracts lc_call_number' do
-    expect(@sr.lc_call_numbers).to eq(['KF26.R885 1965'])
-  end
-
-  it 'extracts lc_classification' do
-    expect(@sr.lc_classifications).to eq(['KF26'])
-  end
-
-  it 'extracts lc_item_number' do
-    expect(@sr.lc_item_numbers).to eq(['.R885 1965'])
   end
 
   it 'performs reasonably well' do

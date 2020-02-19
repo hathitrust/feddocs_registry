@@ -222,7 +222,7 @@ RSpec.describe RR do
   it 'handles sources with empty pub_dates' do
     expect(@pub.pub_date).to eq([1953])
     @pub.remove_attribute('pub_date')
-    @pub.remove_attribute("source")
+    @pub.remove_attribute('source')
     @pub.remove_instance_variable(:@extractions)
     expect(@pub['pub_date']).to be_nil
     expect(@pub.pub_date).to eq([])
@@ -381,6 +381,36 @@ RSpec.describe RR, '#report_numbers' do
   after(:all) do
     @rec.delete
     @src.delete
+  end
+end
+
+RSpec.describe RR, 'lc_call_numbers' do
+  before(:all) do
+    @bad_src = SourceRecord.new(org_code: 'miaahdl')
+    @bad_src.source = File.open(File.dirname(__FILE__) +
+                           '/data/bad_lc_call_num.json').read
+    @bad_src.save
+    @bad_rec = RR.new([@bad_src.source_id], '', '')
+    @src = SourceRecord.new(org_code: 'miaahdl')
+    @src.source = File.open(File.dirname(__FILE__) +
+                            '/data/default_source_rec.json').read
+    @src.save
+    @rec = RR.new([@src.source_id], '', '')
+  end
+
+  it 'has fixed lc_call_numbers' do
+    expect(@bad_rec['lc_call_numbers']).to be_nil
+  end
+
+  it 'has good lc_call_numbers' do
+    expect(@rec.lc_call_numbers).to eq(['KF26 .R885 1965'])
+  end
+
+  after(:all) do
+    @bad_src.delete
+    @bad_rec.delete
+    @src.delete
+    @rec.delete
   end
 end
 

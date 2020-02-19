@@ -15,7 +15,7 @@ require 'nauth/authority'
 require 'oclc_authoritative'
 Authority = Nauth::Authority
 
-Dir[File.dirname(__FILE__) + '/series/*.rb'].each { |file| require file }
+Dir[File.dirname(__FILE__) + '/series/*.rb'].sort.each { |file| require file }
 
 module Registry
   # Source Record is a MARC bibliographic record along with extracted and
@@ -48,9 +48,6 @@ module Registry
     field :issn_normalized
     field :lccn_normalized
     field :last_modified, type: DateTime
-    field :lc_call_numbers, type: Array
-    field :lc_classifications, type: Array
-    field :lc_item_numbers, type: Array
     field :line_number, type: Integer
     field :local_id, type: String
     field :oclc_alleged
@@ -665,9 +662,6 @@ module Registry
     alias related_electronic_resources extracted_field
     alias report_numbers extracted_field
     alias lccn_normalized extracted_field
-    alias lc_call_numbers extracted_field
-    alias lc_classifications extracted_field
-    alias lc_item_numbers extracted_field
     alias issn_normalized extracted_field
     alias isbns_normalized extracted_field
 

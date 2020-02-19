@@ -63,7 +63,9 @@ to_field 'publisher_all', extract_marc('260abef:261abef:262ab:264ab')
 to_field 'place_of_publication', extract_marc('260a:264|1*|abc', trim_punctuation: true)
 
 # lc call number
-to_field 'lc_call_numbers', extract_marc('050ab')
+to_field 'lc_call_numbers', extract_marc('050ab') do |_record, accumulator|
+  accumulator.delete_if { |lc| lc == ' . ' }
+end
 
 # physical description 300
 to_field 'material_type', extract_marc('300')

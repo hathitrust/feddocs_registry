@@ -177,7 +177,7 @@ lc_call_numbers
 ------------------
   type: String
   050ab
-  Renamed from lc_callnum_display
+  Renamed from lc_callnum_display. Fields equalling ' . ' are removed.
 
 lccn
 ------
