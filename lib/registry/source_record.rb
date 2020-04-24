@@ -486,38 +486,21 @@ module Registry
         z ||= ''
         ec_string = Normalize.enum_chron(z)
 
-        # possible to parse/explode one enumchron into many for select series
-        ecs = []
-        if series.nil? || (series == [])
-          ecs << ec_string
-        else
-          parsed_ec = parse_ec ec_string
-          if !parsed_ec.nil?
-            exploded = explode(parsed_ec, self)
-            if exploded.keys.any?
-              exploded.each_key do |canonical|
-                ecs << canonical
-              end
-            else # parseable not explodeable
-              ecs << ec_string
-            end
-          else # not parseable
-            ecs << ec_string
-          end
-        end
+        ecs = (ec || extract_enum_chrons)
+        # find matching ecs
+        ecs.each do |key, enum_chron|
+          next unless enum_chron['string'] == ec_string
 
-        ecs.each do |ec|
-          # add to holdings field
-          # we can't use a raw string because Mongo doesn't like '.' in fields
-          ec_digest = Digest::SHA256.hexdigest(ec)
-          holdings[ec_digest] ||= [] # array of holdings for this enumchron
-          holdings[ec_digest] << { ec: ec,
-                                   c: field['c'],
-                                   z: field['z'],
-                                   y: field['y'],
-                                   r: field['r'],
-                                   s: field['s'],
-                                   u: field['u'] }
+          ec_hash = key
+          # possible to have multiple holdings for one ec
+          holdings[ec_hash] ||= []
+          holdings[ec_hash] << { ec: (enum_chron['canonical'] || enum_chron['string']),
+                                 c: field['c'],
+                                 z: field['z'],
+                                 y: field['y'],
+                                 r: field['r'],
+                                 s: field['s'],
+                                 u: field['u'] }
         end
       end
       ht_item_ids.uniq!
