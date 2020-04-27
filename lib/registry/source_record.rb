@@ -493,8 +493,8 @@ module Registry
 
           ec_hash = key
           # possible to have multiple holdings for one ec
-          holdings[ec_hash] ||= []
-          holdings[ec_hash] << { ec: (enum_chron['canonical'] || enum_chron['string']),
+          self.holdings[ec_hash] ||= []
+          self.holdings[ec_hash] << { ec: (enum_chron['canonical'] || enum_chron['string']),
                                  c: field['c'],
                                  z: field['z'],
                                  y: field['y'],
