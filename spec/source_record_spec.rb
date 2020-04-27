@@ -890,6 +890,13 @@ RSpec.describe Registry::SourceRecord, '#extract_holdings' do
     ).read
     expect(src_with_deleted_item.ht_item_ids).not_to include('mdp.39015001559569')
   end
+
+  it 'creates a holdings for items without enumchrons' do
+    src = SourceRecord.new
+    src.source = File.open(File.dirname(__FILE__) + '/data/miaahdl_no_enum_chron.json').read
+    PP.pp src
+    expect(src.holdings.keys).to include(Digest::SHA256.hexdigest(''))
+  end
 end
 
 RSpec.describe Registry::SourceRecord, '#monograph' do

@@ -487,6 +487,9 @@ module Registry
         ec_string = Normalize.enum_chron(z)
 
         ecs = (ec || extract_enum_chrons)
+        unless ecs.any?
+          ecs = {Digest::SHA256.hexdigest('') => {'string'=>''}}
+        end 
         # find matching ecs
         ecs.each do |key, enum_chron|
           next unless enum_chron['string'] == ec_string
@@ -496,7 +499,7 @@ module Registry
           self.holdings[ec_hash] ||= []
           self.holdings[ec_hash] << { ec: (enum_chron['canonical'] || enum_chron['string']),
                                  c: field['c'],
-                                 z: field['z'],
+                                 z: (field['z'] || ''),
                                  y: field['y'],
                                  r: field['r'],
                                  s: field['s'],
