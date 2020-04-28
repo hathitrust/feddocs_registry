@@ -488,16 +488,16 @@ module Registry
 
         ecs = (ec || extract_enum_chrons)
         unless ecs.any?
-          ecs = {Digest::SHA256.hexdigest('') => {'string'=>''}}
-        end 
+          ecs = { Digest::SHA256.hexdigest('') => { 'string' => '' } }
+        end
         # find matching ecs
         ecs.each do |key, enum_chron|
           next unless enum_chron['string'] == ec_string
 
           ec_hash = key
           # possible to have multiple holdings for one ec
-          self.holdings[ec_hash] ||= []
-          self.holdings[ec_hash] << { ec: (enum_chron['canonical'] || enum_chron['string']),
+          holdings[ec_hash] ||= []
+          holdings[ec_hash] << { ec: (enum_chron['canonical'] || enum_chron['string']),
                                  c: field['c'],
                                  z: (field['z'] || ''),
                                  y: field['y'],

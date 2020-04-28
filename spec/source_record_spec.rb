@@ -871,7 +871,6 @@ end
 RSpec.describe Registry::SourceRecord, '#extract_holdings' do
   before(:all) do
     @src = SourceRecord.where(source_id: 'ec1b9145-7e88-4774-a35d-4e9639ec8a7b').first
-    @src.extract_holdings
   end
 
   it 'transforms 974s into a holdings field' do
@@ -881,6 +880,15 @@ RSpec.describe Registry::SourceRecord, '#extract_holdings' do
     expect(@src.holdings[v5_dig].count).to be(1)
     expect(@src.holdings[v5_dig][0][:u]).to eq('mdp.39015034759749')
     expect(@src.ht_item_ids).to include('mdp.39015034759749')
+  end
+
+  it 'has holdings that match enum chrons' do
+    @src.ec = @src.extract_enum_chrons
+    strings_in_holdings = []
+    @src.holdings.collect do |_k, holdings|
+      strings_in_holdings << holdings.collect { |h| h[:ec] }.sort.uniq
+    end
+    expect(@src.enum_chrons.sort.uniq).to eq(strings_in_holdings.flatten.sort.uniq)
   end
 
   it 'removes deleted items from ht_item_ids' do
@@ -894,7 +902,6 @@ RSpec.describe Registry::SourceRecord, '#extract_holdings' do
   it 'creates a holdings for items without enumchrons' do
     src = SourceRecord.new
     src.source = File.open(File.dirname(__FILE__) + '/data/miaahdl_no_enum_chron.json').read
-    PP.pp src
     expect(src.holdings.keys).to include(Digest::SHA256.hexdigest(''))
   end
 end
