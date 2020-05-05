@@ -127,7 +127,7 @@ module Registry
       enum_chrons << '' if enum_chrons.count.zero?
       self.holdings = holdings if org_code == 'miaahdl'
       if org_code == 'miaahdl'
-        self.ht_item_ids = holdings.each { |_k, h| h['u'] }
+        self.ht_item_ids = self.holdings.collect { |_k, h| h[:u] }
       end
     end
 

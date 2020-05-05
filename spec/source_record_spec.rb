@@ -824,6 +824,7 @@ RSpec.describe Registry::SourceRecord, '#extract_enum_chrons' do
     src = SourceRecord.new
     src.source = File.open(File.dirname(__FILE__) + '/data/multi_holding_same_canon.json').read
     expect(src.ht_item_ids.count).to eq(src.holdings.count)
+    expect(src.ht_item_ids.first).to eq('uc1.l0079982559')
   end
 
   #   it "hasn't changed since last extraction" do
