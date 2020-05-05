@@ -12,7 +12,7 @@ describe 'CRC' do
       sr.source = File.open(File.dirname(__FILE__) +
                             '/data/civil_rights_commission.json').read
       expect(sr.enum_chrons[0]).to eq('NOT A REAL ENUMCHRON')
-      expect(sr.holdings.values[0][0][:ec]).to eq('NOT A REAL ENUMCHRON')
+      expect(sr.holdings.first[1][:enum_chrons]).to include('NOT A REAL ENUMCHRON')
       # PP.pp sr
     end
   end

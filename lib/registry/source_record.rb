@@ -125,7 +125,10 @@ module Registry
         end
       end
       enum_chrons << '' if enum_chrons.count.zero?
-      extract_holdings marc if org_code == 'miaahdl'
+      self.holdings = holdings if org_code == 'miaahdl'
+      if org_code == 'miaahdl'
+        self.ht_item_ids = holdings.each { |_k, h| h['u'] }
+      end
     end
 
     # A source record may be deprecated if it is out of scope.
@@ -391,6 +394,8 @@ module Registry
               Normalize.enum_chron(sf.value)
             end
           end
+        elsif self.org_code == 'miaahdl'
+          ec_strings << ''
         end
       end
       # a fix for some of George Mason's garbage
@@ -456,9 +461,7 @@ module Registry
             ecs[Digest::SHA256.hexdigest(canonical)].merge(features)
           end
         elsif (parsed_ec.keys.count == 1) && (parsed_ec['string'] == '')
-          # our enumchron was '' and explode couldn't find anything
-          # elsewhere in the MARC, so don't bother with it.
-          next
+          ecs[Digest::SHA256.hexdigest('')] ||= { 'string' => '' }
         else # we couldn't explode it.
           ecs[Digest::SHA256.hexdigest(ec_string)] ||= parsed_ec
           ecs[Digest::SHA256.hexdigest(ec_string)].merge(parsed_ec)
@@ -467,46 +470,45 @@ module Registry
       ecs
     end
 
-    # extract_holdings
-    #
-    # Currently designed for HT records that have individual holding
-    # info in 974. Transform those into a coherent holdings field grouped by
-    # normalized/parsed enum_chrons.
-    # holdings = {<ec_string> :[<each holding>]
-    # ht_item_ids = [<holding id>]
-    # todo: refactor with extract_enum_chrons. A lot of duplicate code/work
-    # This might be a cry for help.
-    def extract_holdings(m = nil)
-      self.holdings = {}
-      self.ht_item_ids = []
+    # Currenty designed for HT records that have individual holding info in
+    # 974.
+    # holdings = { <htitemid> : {<subfields>, enum_chrons:[]}}
+    # todo: refactor with extract_Enum_chrons. A lot of duplicate code/work
+    def holdings(m = nil)
       @marc = m unless m.nil?
+      hs = {}
       marc.each_by_tag('974') do |field|
-        ht_item_ids << field['u'] if field['r'] != 'nobody'
-        z = field['z']
-        z ||= ''
+        h = {}
+        ht_item_id = field['u']
+        digest = Digest::SHA256.hexdigest(field['u'])
+        z = (field['z'] || '')
+        h = { c: field['c'],
+              z: z,
+              y: field['y'],
+              r: field['r'],
+              s: field['s'],
+              u: field['u'],
+              enum_chrons: [] }
+
         ec_string = Normalize.enum_chron(z)
 
-        ecs = (ec || extract_enum_chrons)
-        unless ecs.any?
-          ecs = { Digest::SHA256.hexdigest('') => { 'string' => '' } }
-        end
-        # find matching ecs
-        ecs.each do |key, enum_chron|
-          next unless enum_chron['string'] == ec_string
+        parsed_ec = (parse_ec(ec_string) || {})
+        parsed_ec['string'] = ec_string
+        exploded = explode(parsed_ec, self)
 
-          ec_hash = key
-          # possible to have multiple holdings for one ec
-          holdings[ec_hash] ||= []
-          holdings[ec_hash] << { ec: (enum_chron['canonical'] || enum_chron['string']),
-                                 c: field['c'],
-                                 z: (field['z'] || ''),
-                                 y: field['y'],
-                                 r: field['r'],
-                                 s: field['s'],
-                                 u: field['u'] }
+        # anything we can do with it?
+        # .explode might be able to use ec_string == '' if there is a relevant
+        # pub_date/sudoc in the MARC
+        if exploded.keys.any?
+          exploded.each do |canonical, _features|
+            h[:enum_chrons] << canonical
+          end
+        else
+          h[:enum_chrons] << ec_string
         end
+        hs[digest] = h
       end
-      ht_item_ids.uniq!
+      hs
     end
 
     # monograph?

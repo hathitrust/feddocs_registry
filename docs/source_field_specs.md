@@ -90,9 +90,9 @@ holdings
 --------
 	type: document
 	Designed for HT records that have individual holding info in 974. The 974s are
-	transformed into a coherent holdings field grouped by normalized/parsed
-	enum_chrons.
-	e.g. holdings = {<ec_string> :[<each holding>]
+	transformed into a coherent holdings field with one or more enum_chrons
+	e.g. holdings = {<htitemid> :{u : <u>, z : <z>, enum_chrons:[]}}
+            
 	
 ht_item_ids
 -----------

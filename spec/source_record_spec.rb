@@ -813,6 +813,19 @@ RSpec.describe Registry::SourceRecord, '#extract_enum_chrons' do
     expect(sr.enum_chrons[0]).to eq('')
   end
 
+  it 'creates strings if miaahdl 974 is missing subfield z' do
+    src = SourceRecord.new
+    src.source = File.open(File.dirname(__FILE__) + '/data/multi_holding.json').read
+    expect(src.extract_enum_chron_strings.count).to eq(2)
+    expect(src.ec.count).to eq(2)
+  end
+
+  it 'has the same number of htitemids as holdings' do
+    src = SourceRecord.new
+    src.source = File.open(File.dirname(__FILE__) + '/data/multi_holding_same_canon.json').read
+    expect(src.ht_item_ids.count).to eq(src.holdings.count)
+  end
+
   #   it "hasn't changed since last extraction" do
   #     SourceRecord.where(deprecated_timestamp:{"$exists":0}).no_timeout.each do |src|
   #       if src.enum_chrons.include? 'INDEX:V. 58-59 YR. 1993-1994'
@@ -866,28 +879,28 @@ RSpec.describe Registry::SourceRecord, '#extract_enum_chron_strings' do
     sr.source = File.open(File.dirname(__FILE__) + '/data/sudoc_enumchron.json').read
     expect(sr.extract_enum_chron_strings).to eq([])
   end
+
+  it 'creates strings if miaahdl 974 is missing subfield z' do
+    src = SourceRecord.new
+    src.source = File.open(File.dirname(__FILE__) + '/data/multi_holding.json').read
+    expect(src.extract_enum_chron_strings.count).to eq(2)
+  end
 end
 
-RSpec.describe Registry::SourceRecord, '#extract_holdings' do
+RSpec.describe Registry::SourceRecord, '#holdings' do
   before(:all) do
     @src = SourceRecord.where(source_id: 'ec1b9145-7e88-4774-a35d-4e9639ec8a7b').first
   end
 
   it 'transforms 974s into a holdings field' do
-    v4_dig = Digest::SHA256.hexdigest('Volume:4')
-    v5_dig = Digest::SHA256.hexdigest('Volume:5')
-    expect(@src.holdings.keys).to include(v4_dig)
-    expect(@src.holdings[v5_dig].count).to be(1)
-    expect(@src.holdings[v5_dig][0][:u]).to eq('mdp.39015034759749')
+    dig = Digest::SHA256.hexdigest('mdp.39015034759749')
+    expect(@src.holdings.keys).to include(dig)
     expect(@src.ht_item_ids).to include('mdp.39015034759749')
   end
 
   it 'has holdings that match enum chrons' do
     @src.ec = @src.extract_enum_chrons
-    strings_in_holdings = []
-    @src.holdings.collect do |_k, holdings|
-      strings_in_holdings << holdings.collect { |h| h[:ec] }.sort.uniq
-    end
+    strings_in_holdings = @src.holdings.collect { |_k, h| h[:enum_chrons] }.flatten.sort.uniq
     expect(@src.enum_chrons.sort.uniq).to eq(strings_in_holdings.flatten.sort.uniq)
   end
 
@@ -902,7 +915,13 @@ RSpec.describe Registry::SourceRecord, '#extract_holdings' do
   it 'creates a holdings for items without enumchrons' do
     src = SourceRecord.new
     src.source = File.open(File.dirname(__FILE__) + '/data/miaahdl_no_enum_chron.json').read
-    expect(src.holdings.keys).to include(Digest::SHA256.hexdigest(''))
+    expect(src.holdings.keys).to include(Digest::SHA256.hexdigest('uiug.30112060127294'))
+  end
+
+  it 'creates holdings for every item even if missing a subfield z' do
+    src = SourceRecord.new
+    src.source = File.open(File.dirname(__FILE__) + '/data/multi_holding.json').read
+    expect(src.holdings.keys.count).to eq(2)
   end
 end
 
