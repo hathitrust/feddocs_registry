@@ -14,7 +14,7 @@ gem 'library_stdnums', '~> 1.0.2'
 gem 'mysql2'
 gem 'nauth', git: 'https://github.com/hathitrust/feddocs_nauth.git'
 gem 'normalize', git: 'https://github.com/hathitrust/feddocs_normalize.git'
-gem 'oclc_authoritative', git: 'https://github.com/hathitrust/feddocs_oclc_authoritative.git'
+gem 'oclc_authoritative', git: 'git@github.com:Hathitrust/feddocs_oclc_authoritative.git'
 gem 'traject', git: 'https://github.com/traject/traject.git'
 
 gem 'flog'
