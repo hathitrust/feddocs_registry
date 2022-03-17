@@ -8,7 +8,7 @@ gem 'rspec'
 
 gem 'celluloid'
 gem 'ecmangle', git: 'https://github.com/hathitrust/feddocs_ecmangle.git'
-gem 'filter', git: 'https://github.com/hathitrust/feddocs_filter.git'
+gem 'filter', git: 'https://github.com/hathitrust/feddocs_filter.git', branch: "main"
 gem 'google-api-client', '0.11.2'
 gem 'library_stdnums', '~> 1.0.2'
 gem 'mysql2'
