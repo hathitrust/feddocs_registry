@@ -21,6 +21,7 @@ gem 'flog'
 gem 'rake'
 gem 'rspec-benchmark'
 gem 'rubocop'
+gem 'pry'
 
 gem 'simplecov', require: false, group: :test
 gemspec
