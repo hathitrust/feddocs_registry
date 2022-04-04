@@ -14,10 +14,10 @@ GIT
 
 GIT
   remote: https://github.com/hathitrust/feddocs_filter.git
-  revision: 035d7e705a2a2f77312077a181a2ee6f79384fd9
+  revision: 6e0f8e3d4a5af330adea396bff07b5eec9cc3ad6
   branch: main
   specs:
-    filter (0.7.3)
+    filter (0.7.4)
 
 GIT
   remote: https://github.com/hathitrust/feddocs_nauth.git
@@ -51,7 +51,7 @@ GIT
 PATH
   remote: .
   specs:
-    registry (0.22.4)
+    registry (0.22.5)
       dotenv
       library_stdnums (~> 1.0.2)
       marc
